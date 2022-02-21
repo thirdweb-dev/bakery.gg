@@ -10,7 +10,6 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { WalletLinkConnector } from "wagmi/connectors/walletLink";
-import { StatusLoader } from "../components/status-loader/StatusLoader";
 import theme from "../theme";
 
 export const queryClient = new QueryClient({
@@ -40,8 +39,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <DefaultSeo
-        defaultTitle="thirdweb x ETH Denver"
-        description="A limited-edition NFT collection celebrating the builders and hackers at ETH.Denver 2022"
+        defaultTitle="bakery.gg"
+        description="Have you ever clicked some cookies?"
         additionalLinkTags={[
           {
             rel: "icon",
@@ -49,17 +48,17 @@ function MyApp({ Component, pageProps }: AppProps) {
           },
         ]}
         openGraph={{
-          title: "Have you seen web3?",
+          title: "bakery.gg",
           type: "website",
           locale: "en_US",
-          url: "https://hasanyoneseenweb3.thirdweb.com/",
-          site_name: "thirdweb",
+          url: "https://bakery.gg/",
+          site_name: "bakery.gg",
           images: [
             {
               url: `/opengraph-thumbnail.png`,
               width: 1200,
               height: 630,
-              alt: "thirdweb",
+              alt: "bakery.gg",
             },
           ],
         }}
@@ -72,7 +71,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <ThirdwebProvider
           desiredChainId={137}
-          dAppName="thirdweb at ETH Denver"
+          dAppName="bakery.gg"
           advanced={{
             queryClient,
             supportedChains,
@@ -93,8 +92,8 @@ function MyApp({ Component, pageProps }: AppProps) {
                 new WalletLinkConnector({
                   chains: supportedChains,
                   options: {
-                    appName: "thirdweb at ETH Denver",
-                    appLogoUrl: "https://thirdweb.com/favicon.ico",
+                    appName: "bakery.gg",
+                    appLogoUrl: "https://bakery.gg/favicon.ico",
                     darkMode: true,
                     jsonRpcUrl: process.env.NEXT_PUBLIC_RPC_URL,
                   },
@@ -104,10 +103,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           }}
         >
           <ChakraProvider resetCSS theme={theme}>
-            <>
-              <StatusLoader />
-              <Component {...pageProps} />
-            </>
+            <Component {...pageProps} />
           </ChakraProvider>
         </ThirdwebProvider>
       </QueryClientProvider>
