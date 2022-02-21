@@ -13,15 +13,17 @@ export class MainScene extends Scene {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor("#24252A");
     this.scale.on("resize", this.resize, this);
+  }
 
-    this.load.image("cookie", "assets/goldcookie.png");
+  preload() {
+    this.load.image("goldcookie", "assets/goldcookie.png");
   }
 
   create() {
     this.lastUpdateTime = this.time.now;
 
     this.cookie = this.add
-      .sprite(200, 200, "cookie")
+      .sprite(200, 200, "goldcookie")
       .setInteractive({ pixelPerfect: true })
       .on("pointerdown", this.onClickCookie, this);
 
