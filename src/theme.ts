@@ -81,8 +81,8 @@ function createShades(centerColor: string): Record<number, string> {
 
 const fonts = {
   mono: `'Menlo', monospace`,
-  heading: "DM Sans",
-  body: "DM Sans",
+  heading: "Breathe Fire III",
+  body: "Breathe Fire III",
 };
 
 const breakpoints = createBreakpoints({
@@ -114,6 +114,15 @@ const theme = extendTheme({
       "::-moz-selection": {
         backgroundColor: "#90cdf4",
         color: "#fefefe",
+      },
+      "@font-face": {
+        fontFamily: "Breathe Fire III",
+        fontStyle: "normal",
+        fontWeight: 700,
+        fontDisplay: "swap",
+        src: "url(/fonts/breath-fire-iii.otf) format('otf')",
+        unicodeRange:
+          "U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF",
       },
     },
   },
