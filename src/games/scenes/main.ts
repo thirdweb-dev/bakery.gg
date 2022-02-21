@@ -12,6 +12,7 @@ export class MainScene extends Scene {
   init() {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor("#24252A");
+    this.scale.on("resize", this.resize, this);
 
     this.load.image("cookie", "assets/goldcookie.png");
   }
@@ -20,9 +21,9 @@ export class MainScene extends Scene {
     this.lastUpdateTime = this.time.now;
 
     this.cookie = this.add
-      .sprite(400, 400, "cookie")
-      .setInteractive({ pixelPerfect: true });
-    this.cookie.on("pointerdown", this.onClickCookie, this);
+      .sprite(200, 200, "cookie")
+      .setInteractive({ pixelPerfect: true })
+      .on("pointerdown", this.onClickCookie, this);
 
     this.cookieCountLabel = this.add.text(0, 0, "Hello World", {
       fontFamily: "Rancho",
@@ -42,5 +43,9 @@ export class MainScene extends Scene {
 
   onClickCookie() {
     this.cookieCount += this.cookieClickReward;
+  }
+
+  resize(gameSize: GameObjects.Components.Size) {
+    this.cameras.resize(gameSize.width, gameSize.height);
   }
 }
