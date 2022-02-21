@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { useGame } from "../hooks/useGame";
-import gameConfig from "../games";
+import { useGame } from "../../hooks/useGame";
+import gameConfig from "../../games";
 
 // eshint-disable react/forbid-dom-props
 export const GameCanvas = () => {
