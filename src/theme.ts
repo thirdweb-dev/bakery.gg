@@ -103,11 +103,6 @@ const theme = extendTheme({
       },
       html: {
         backgroundColor: "#000",
-        backgroundImage: "url(/images/swirl-mobile.png)",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "top left",
-        backgroundSize: "contain",
-        backgroundAttachment: "fixed",
       },
       body: {
         background: "transparent",
