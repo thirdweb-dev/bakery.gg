@@ -1,24 +1,32 @@
 import { Scene, GameObjects, Cameras } from "phaser";
 
 export class MainScene extends Scene {
-  private helloLabel!: GameObjects.Text;
+  private cookieCountLabel!: GameObjects.Text;
+  private cookie!: GameObjects.Sprite;
   private camera!: Cameras.Scene2D.Camera;
   private lastUpdateTime = 0;
   private cookieCount = 0;
   private cookiePerSecond = 1.0;
+  private cookieClickReward = 100.0;
 
   init() {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor("#24252A");
+
+    this.load.image("cookie", "assets/goldcookie.png");
   }
 
   create() {
-    const { centerX, centerY } = this.camera;
     this.lastUpdateTime = this.time.now;
 
-    this.helloLabel = this.add.text(0, 0, "Hello World", {
+    this.cookie = this.add
+      .sprite(400, 400, "cookie")
+      .setInteractive({ pixelPerfect: true });
+    this.cookie.on("pointerdown", this.onClickCookie, this);
+
+    this.cookieCountLabel = this.add.text(0, 0, "Hello World", {
       fontFamily: "Rancho",
-      fontSize: "40px",
+      fontSize: "24px",
     });
   }
 
@@ -27,6 +35,12 @@ export class MainScene extends Scene {
     const dt = (now - this.lastUpdateTime) / 1000;
     this.cookieCount += dt * this.cookiePerSecond;
     this.lastUpdateTime = now;
-    this.helloLabel.setText(`Cookie count: ${this.cookieCount.toFixed(2)}`);
+    this.cookieCountLabel.setText(
+      `Cookie count: ${this.cookieCount.toFixed(2)}`,
+    );
+  }
+
+  onClickCookie() {
+    this.cookieCount += this.cookieClickReward;
   }
 }
