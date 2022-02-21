@@ -3,6 +3,10 @@ import { Scene, GameObjects, Cameras } from "phaser";
 export class MainScene extends Scene {
   private helloLabel!: GameObjects.Text;
   private camera!: Cameras.Scene2D.Camera;
+  private lastUpdateTime = 0;
+  private cookieCount = 0;
+  private cookiePerSecond = 1.0;
+
   init() {
     this.camera = this.cameras.main;
     this.camera.setBackgroundColor("#24252A");
@@ -10,16 +14,19 @@ export class MainScene extends Scene {
 
   create() {
     const { centerX, centerY } = this.camera;
-    this.helloLabel = this.add
-      .text(centerX, centerY, "Hello World", {
-        fontFamily: "Rancho",
-        fontSize: "40px",
-      })
-      .setShadow(5, 5, "#5588EE", 0, true, true)
-      .setOrigin(0.5, 0.5);
+    this.lastUpdateTime = this.time.now;
+
+    this.helloLabel = this.add.text(0, 0, "Hello World", {
+      fontFamily: "Rancho",
+      fontSize: "40px",
+    });
   }
 
   update() {
-    this.helloLabel.angle += 1;
+    const now = this.time.now;
+    const dt = (now - this.lastUpdateTime) / 1000;
+    this.cookieCount += dt * this.cookiePerSecond;
+    this.lastUpdateTime = now;
+    this.helloLabel.setText(`Cookie count: ${this.cookieCount.toFixed(2)}`);
   }
 }

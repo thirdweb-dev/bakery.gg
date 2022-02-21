@@ -4,8 +4,9 @@ import dynamic from "next/dynamic";
 
 // eslint-disable-next-line
 // @ts-ignore-next-line
-const GameCanvas = dynamic(() =>
-  import("../components/games/GameCanvas").then((m) => m.GameCanvas),
+const GameCanvas = dynamic(
+  () => import("../components/games/GameCanvas").then((m) => m.GameCanvas),
+  { ssr: false },
 );
 
 const GamePage = () => {
