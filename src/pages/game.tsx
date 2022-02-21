@@ -2,9 +2,7 @@ import { Center } from "@chakra-ui/react";
 
 import dynamic from "next/dynamic";
 
-// eslint-disable-next-line
-// @ts-ignore-next-line
-const GameCanvas = dynamic(
+const GameCanvas = dynamic<any>(
   () => import("../components/games/GameCanvas").then((m) => m.GameCanvas),
   { ssr: false },
 );
