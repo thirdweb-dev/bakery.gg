@@ -1,0 +1,18 @@
+{
+  "newTransactions": [
+    {
+      "batch": 0,
+      "txHash": "0x0123",
+      "createdAt": 1640000000,
+      "from": "0x0123"
+    }
+  ],
+  "processedTransactions": [
+    {
+      "batch": 0,
+      "txHash": "0x0123",
+      "createdAt": 1640000000,
+      "from": "0x0123"
+    }
+  ]
+}
