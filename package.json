@@ -31,9 +31,11 @@
     "react-icons": "^4.3.1",
     "react-query": "^3.34.16",
     "react-tweet-embed": "^2.0.0",
+    "react-use-timeout": "^1.0.0",
     "tiny-invariant": "^1.2.0",
     "use-http": "^1.0.26",
-    "webfontloader": "^1.6.28"
+    "webfontloader": "^1.6.28",
+    "zustand": "^3.7.0"
   },
   "devDependencies": {
     "@types/color": "^3.0.3",
