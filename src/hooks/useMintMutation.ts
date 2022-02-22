@@ -1,53 +1,48 @@
 import invariant from "tiny-invariant";
-import { useAddress, useSigner } from "@thirdweb-dev/react";
+import { useAddress, useBundleDropModule } from "@thirdweb-dev/react";
 import { useMutation } from "react-query";
 import { queryClient } from "../pages/_app";
+import { useToast } from "@chakra-ui/react";
+import { BigNumberish } from "ethers";
+import { parseError } from "../utils/parseError";
+
+interface BundleDropMintMutation {
+  tokenId: BigNumberish;
+  quantity: BigNumberish;
+}
 
 export function useMintMutation() {
   const address = useAddress();
-  const signer = useSigner();
+  const editionDrop = useBundleDropModule(
+    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+  );
+  const toast = useToast();
 
   return useMutation(
-    async () => {
-      invariant(signer.data, "useMintMutation: signer is not defined");
-      invariant(address, "useMintMutation: address is not defined");
-
-      const challengeResponse = await fetch("/api/challenge", {
-        method: "POST",
-        body: JSON.stringify({
-          address,
-        }),
-      });
-      if (!challengeResponse.ok) {
-        throw new Error(
-          `Fetching challenge failed: ${
-            challengeResponse.status
-          } - ${await challengeResponse.text()}`,
-        );
+    (data: BundleDropMintMutation) => {
+      if (!address || !editionDrop) {
+        throw new Error("No address or Edition Drop");
       }
-      const challenge = await challengeResponse.text();
-
-      const sig = await signer.data.signMessage(challenge);
-
-      const claimResponse = await fetch("/api/claim", {
-        body: JSON.stringify({
-          sig,
-          address,
-        }),
-        method: "POST",
-      });
-
-      if (!claimResponse.ok) {
-        throw new Error(
-          `Fetching to post the claim: ${
-            claimResponse.status
-          } - ${await claimResponse.text()}`,
-        );
-      }
+      return editionDrop.claim(data.tokenId, data.quantity);
     },
     {
       onSuccess: () => {
-        return queryClient.invalidateQueries(["claim-status"]);
+        queryClient.invalidateQueries();
+        toast({
+          title: "Successfuly claimed.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      },
+      onError: (err) => {
+        toast({
+          title: "Minting failed",
+          description: parseError(err),
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
       },
     },
   );
