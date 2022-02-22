@@ -8,9 +8,6 @@ export class MainScene extends Scene {
   private characters!: Character[] = new Array(5);
   private upgrades!: GameObjects.Sprite[] = new Array(5);
   private camera!: Cameras.Scene2D.Camera;
-  private lastUpdateTime = 0;
-  private cookieCount = 0;
-  private cookiePerSecond = 1.0;
 
   init() {
     this.camera = this.cameras.main;
@@ -23,14 +20,27 @@ export class MainScene extends Scene {
   }
 
   create() {
-    this.lastUpdateTime = this.time.now;
-
     this.cookie = new Cookie(this, 0, 200, {
       tiers: [
         {
           texture: "goldcookie",
           cookiePerSecond: 1.0,
           cookiePerClick: 1.0,
+        },
+        {
+          texture: "goldcookie",
+          cookiePerSecond: 5.0,
+          cookiePerClick: 5.0,
+        },
+        {
+          texture: "goldcookie",
+          cookiePerSecond: 10.0,
+          cookiePerClick: 10.0,
+        },
+        {
+          texture: "goldcookie",
+          cookiePerSecond: 50.0,
+          cookiePerClick: 50.0,
         },
       ],
     }).on(EVENT_COOKIE_CLICKED, this.onCookieClicked, this);
@@ -58,18 +68,14 @@ export class MainScene extends Scene {
   createUpgrades() {}
 
   update() {
-    const now = this.time.now;
-    const dt = (now - this.lastUpdateTime) / 1000;
-    this.cookieCount += dt * this.cookiePerSecond;
-    this.lastUpdateTime = now;
     this.cookieCountLabel.setText(
-      `Cookie count: ${this.cookieCount.toFixed(2)}`,
+      `Cookie count: ${this.cookie.cookieCount.toFixed(2)}`,
     );
   }
 
   // event handlers
   onCookieClicked(tier: CookieTier) {
-    this.cookieCount += tier.cookiePerClick;
+    this.cookie.cookieCount += tier.cookiePerClick;
   }
 
   resize(gameSize: GameObjects.Components.Size) {

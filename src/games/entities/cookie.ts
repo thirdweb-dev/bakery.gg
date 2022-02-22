@@ -15,11 +15,14 @@ export class Cookie extends GameObjects.Container {
   private options: CookieOptions;
   private sprite!: GameObjects.Sprite;
   private activeTier = 0;
+  private lastUpdateTime = 0;
+  public cookieCount = 0;
 
   constructor(scene: Scene, x: number, y: number, options: CookieOptions) {
     super(scene, x, y, []);
     this.options = options;
 
+    this.lastUpdateTime = scene.time.now;
     this.create(scene);
     scene.add.existing(this);
   }
@@ -32,6 +35,10 @@ export class Cookie extends GameObjects.Container {
       .on("pointerup", this.onUp, this);
   }
 
+  public getActiveTier() {
+    return this.options.tiers[this.activeTier];
+  }
+
   private onDown() {
     this.sprite.setScale(0.95);
     this.emit(EVENT_COOKIE_CLICKED, this.options.tiers[this.activeTier]);
@@ -41,5 +48,10 @@ export class Cookie extends GameObjects.Container {
     this.sprite.setScale(1.0);
   }
 
-  // preUpdate(time, delta) {}
+  preUpdate(time: number) {
+    const now = time;
+    const dt = (now - this.lastUpdateTime) / 1000;
+    this.cookieCount += dt * this.getActiveTier().cookiePerSecond;
+    this.lastUpdateTime = now;
+  }
 }
