@@ -44,7 +44,7 @@ export interface BakeryInterface extends utils.Interface {
     "land()": FunctionFragment;
     "ovens(address)": FunctionFragment;
     "owner()": FunctionFragment;
-    "rebake()": FunctionFragment;
+    "rebake((address,uint256,uint256,uint256),bytes)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "reward()": FunctionFragment;
     "rewardMultiplierBps(address,uint256)": FunctionFragment;
@@ -76,7 +76,10 @@ export interface BakeryInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "land", values?: undefined): string;
   encodeFunctionData(functionFragment: "ovens", values: [string]): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(functionFragment: "rebake", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "rebake",
+    values: [Bakery.SpiceStruct, BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "renounceOwnership",
     values?: undefined
@@ -220,6 +223,8 @@ export interface Bakery extends BaseContract {
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     rebake(
+      _spice: Bakery.SpiceStruct,
+      _signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -290,6 +295,8 @@ export interface Bakery extends BaseContract {
   owner(overrides?: CallOverrides): Promise<string>;
 
   rebake(
+    _spice: Bakery.SpiceStruct,
+    _signature: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -361,7 +368,11 @@ export interface Bakery extends BaseContract {
 
     owner(overrides?: CallOverrides): Promise<string>;
 
-    rebake(overrides?: CallOverrides): Promise<void>;
+    rebake(
+      _spice: Bakery.SpiceStruct,
+      _signature: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
@@ -430,6 +441,8 @@ export interface Bakery extends BaseContract {
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     rebake(
+      _spice: Bakery.SpiceStruct,
+      _signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -496,6 +509,8 @@ export interface Bakery extends BaseContract {
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     rebake(
+      _spice: Bakery.SpiceStruct,
+      _signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

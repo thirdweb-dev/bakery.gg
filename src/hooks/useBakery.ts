@@ -5,7 +5,7 @@ import { Bakery__factory } from "../../types/ethers-contracts";
 import { ChainId } from "../utils/network";
 
 const CONTRACT_ADDRESSES: Record<number, string> = {
-  [ChainId.Mumbai]: "",
+  [ChainId.Mumbai]: "0x65f018eff3dfaeea7c2e34dec949e9e14815c27c",
 };
 
 export function useBakery() {
