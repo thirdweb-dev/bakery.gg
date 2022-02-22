@@ -19,13 +19,18 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export declare namespace Bakery {
   export type SpiceStruct = {
-    undefined: string;
-    undefined: BigNumberish;
-    undefined: BigNumberish;
-    undefined: BigNumberish;
+    to: string;
+    amount: BigNumberish;
+    expiryTime: BigNumberish;
+    salt: BigNumberish;
   };
 
-  export type SpiceStructOutput = [string, BigNumber, BigNumber, BigNumber];
+  export type SpiceStructOutput = [string, BigNumber, BigNumber, BigNumber] & {
+    to: string;
+    amount: BigNumber;
+    expiryTime: BigNumber;
+    salt: BigNumber;
+  };
 }
 
 export interface BakeryInterface extends utils.Interface {
