@@ -70,6 +70,19 @@ const _abi = [
   },
   {
     type: "function",
+    name: "cursor",
+    inputs: [],
+    outputs: [
+      {
+        internalType: "contract ITokenERC1155",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "earlyaccess",
     inputs: [],
     outputs: [
@@ -203,19 +216,8 @@ const _abi = [
   },
   {
     type: "function",
-    name: "rewardMultiplierBps",
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
+    name: "rewardPerBlock",
+    inputs: [],
     outputs: [
       {
         internalType: "uint256",
@@ -223,11 +225,11 @@ const _abi = [
         type: "uint256",
       },
     ],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
   {
     type: "function",
-    name: "rewardPerBlock",
+    name: "rewardPerSpice",
     inputs: [],
     outputs: [
       {
@@ -296,6 +298,30 @@ const _abi = [
     ],
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "totalBoostedSpice",
+    inputs: [
+      {
+        internalType: "address",
+        name: "_to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_spice",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
