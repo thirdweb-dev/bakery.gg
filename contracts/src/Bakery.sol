@@ -98,8 +98,8 @@ contract Bakery is Ownable, EIP712 {
     delete ovens[msg.sender];
 
     uint256 accuredReward = rewardBlockCount * rewardPerBlock();
-    uint256 multiplerBps = oven.token == address(earlyaccess) ? earlyAccessMultiplierBps[oven.tokenId] : 0;
-    uint256 totalReward = accuredReward * (multiplerBps + 10000) / 10000;
+    uint256 eaMultiplierBps = oven.token == address(earlyaccess) ? earlyAccessMultiplierBps[oven.tokenId] : 0;
+    uint256 totalReward = accuredReward * (eaMultiplierBps + 10000) / 10000;
 
     if (ovens[msg.sender].accumulatedSpiceAmount > 0) {
       totalReward += totalBoostedSpice(msg.sender, ovens[msg.sender].accumulatedSpiceAmount) * rewardPerSpice();
