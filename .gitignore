@@ -40,3 +40,6 @@ yalc.lock
 
 #env
 .env
+out/
+cache/
+key/
