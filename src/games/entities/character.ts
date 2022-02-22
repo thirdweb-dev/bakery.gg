@@ -1,4 +1,5 @@
 import { GameObjects, Scene } from "phaser";
+import { EVENT_CHARACTER_CLICKED } from "../constants";
 
 export interface CharacterOptions {
   name: string;
@@ -26,43 +27,46 @@ export class Character extends GameObjects.Container {
   }
 
   private create(scene: Scene) {
-    this.characterSprite = scene.add
-      .sprite(this.x, this.y, this.options.texture)
-      .setDisplaySize(60, 60)
-      .setOrigin(0, 0)
-      .setInteractive({ pixelPerfect: true })
+    this.characterSprite = this.scene.add
+      .sprite(0, 0, this.options.texture)
+      .setScale(0.2, 0.2)
+      .setDisplayOrigin(0, 0)
+      .setInteractive()
       .on("pointerdown", this.onClickCharacter, this);
 
-    this.nameLabel = scene.add
-      .text(this.x + 72, this.y, this.options.name, {
-        fontSize: LABEL_FONT_SIZE,
-      })
-      .setOrigin(0, 0);
+    this.nameLabel = scene.add.text(72, 0, this.options.name, {
+      fontSize: LABEL_FONT_SIZE,
+    });
 
-    this.cookiePerSecondLabel = scene.add
-      .text(
-        this.x + 72,
-        this.y + 16,
-        `Cookie Per Second: ${this.options.cookiePerSecond}`,
-        {
-          fontSize: LABEL_FONT_SIZE,
-        },
-      )
-      .setOrigin(0, 0);
-    this.priceLabel = scene.add
-      .text(this.x + 72, this.y + 32, `Price: ${this.options.price}`, {
+    this.cookiePerSecondLabel = scene.add.text(
+      72,
+      16,
+      `Cookie Per Second: ${this.options.cookiePerSecond}`,
+      {
         fontSize: LABEL_FONT_SIZE,
-      })
-      .setOrigin(0, 0);
-    this.ownedLabel = scene.add
-      .text(this.x + 72, this.y + 48, `Owned: ${this.owned}`, {
-        fontSize: LABEL_FONT_SIZE,
-      })
-      .setOrigin(0, 0);
+      },
+    );
+
+    this.priceLabel = scene.add.text(72, 32, `Price: ${this.options.price}`, {
+      fontSize: LABEL_FONT_SIZE,
+    });
+
+    this.ownedLabel = scene.add.text(72, 48, `Owned: ${this.owned}`, {
+      fontSize: LABEL_FONT_SIZE,
+    });
+
+    this.add([
+      this.characterSprite,
+      this.nameLabel,
+      this.cookiePerSecondLabel,
+      this.priceLabel,
+      this.ownedLabel,
+    ]);
   }
 
-  onClickCharacter(obj: GameObjects.Sprite) {
-    console.log(obj);
+  onClickCharacter() {
+    // TODO: in the scene calls, subscribe to the events, then add new spawned characters to the scene.
+    console.log(EVENT_CHARACTER_CLICKED, this);
   }
 
   // preUpdate(time, delta) {}
