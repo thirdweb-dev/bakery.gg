@@ -1,16 +1,16 @@
 import { Scene, GameObjects, Cameras } from "phaser";
-import { Character } from "../entities/character";
+import { EVENT_COOKIE_CLICKED } from "../constants";
+import { Character, Cookie, CookieTier } from "../entities";
 
 export class MainScene extends Scene {
   private cookieCountLabel!: GameObjects.Text;
-  private cookie!: GameObjects.Sprite;
+  private cookie!: Cookie;
   private characters!: Character[] = new Array(5);
   private upgrades!: GameObjects.Sprite[] = new Array(5);
   private camera!: Cameras.Scene2D.Camera;
   private lastUpdateTime = 0;
   private cookieCount = 0;
   private cookiePerSecond = 1.0;
-  private cookieClickReward = 1.0;
 
   init() {
     this.camera = this.cameras.main;
@@ -25,11 +25,15 @@ export class MainScene extends Scene {
   create() {
     this.lastUpdateTime = this.time.now;
 
-    this.cookie = this.add
-      .sprite(200, 200, "goldcookie")
-      .setDisplaySize(64, 64)
-      .setInteractive({ pixelPerfect: true })
-      .on("pointerdown", this.onClickCookie, this);
+    this.cookie = new Cookie(this, 0, 200, {
+      tiers: [
+        {
+          texture: "goldcookie",
+          cookiePerSecond: 1.0,
+          cookiePerClick: 1.0,
+        },
+      ],
+    }).on(EVENT_COOKIE_CLICKED, this.onCookieClicked, this);
 
     this.cookieCountLabel = this.add.text(0, 0, "", {
       fontFamily: "Rancho",
@@ -64,12 +68,8 @@ export class MainScene extends Scene {
   }
 
   // event handlers
-  onClickCookie() {
-    this.cookieCount += this.cookieClickReward;
-  }
-
-  onClickCharacter(obj: GameObjects.Sprite) {
-    console.log(obj);
+  onCookieClicked(tier: CookieTier) {
+    this.cookieCount += tier.cookiePerClick;
   }
 
   resize(gameSize: GameObjects.Components.Size) {
