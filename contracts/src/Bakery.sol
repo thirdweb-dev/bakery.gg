@@ -103,8 +103,11 @@ contract Bakery is Ownable, EIP712 {
     return 0.2 ether;
   }
 
-  function rebake() external {
+  function rebake(Spice calldata _spice, bytes calldata _signature) external {
     Oven memory oven = ovens[msg.sender];
+    if (_signature.length > 0) {
+      spice(_spice, _signature);
+    }
     unbake();
     bake(oven.token, oven.tokenId);
   }
