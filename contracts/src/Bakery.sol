@@ -40,6 +40,7 @@ contract Bakery is Ownable, EIP712 {
   ITokenERC20 immutable public reward = ITokenERC20(0xeF960235b91E653327d82337e9329Ff7c85c917E);
   // thirdweb community early access token (not transferable)
   ITokenERC1155 immutable public earlyaccess = ITokenERC1155(0xa9e893cC12026A2F6bD826FdB295EAc9c18A7E88);
+  ITokenERC1155 immutable public cursor = ITokenERC1155(0x0000000000000000000000000000000000000000);
   ITokenERC1155 immutable public character = ITokenERC1155(0x0000000000000000000000000000000000000000);
   ITokenERC1155 immutable public upgrade = ITokenERC1155(0x0000000000000000000000000000000000000000);
   ITokenERC1155 immutable public land = ITokenERC1155(0x0000000000000000000000000000000000000000);
@@ -52,10 +53,15 @@ contract Bakery is Ownable, EIP712 {
   mapping (address => Oven) public ovens;
   mapping (uint256 => bool) public salt;
 
-  // token => tokenId => multiplier bps
-  mapping (address => mapping(uint256 => uint256)) public rewardMultiplierBps;
+  // early access: tokenId => multiplier bps
+  mapping (uint256 => uint256) private earlyAccessMultiplierBps;
 
   constructor() Ownable() EIP712("Bakery", "1") {
+    earlyAccessMultiplierBps[0] = 300; // purple => 1.3x
+    earlyAccessMultiplierBps[1] = 200; // blue => 1.2x
+    earlyAccessMultiplierBps[2] = 100; // silver => 1.1x
+    earlyAccessMultiplierBps[3] = 500; // gold => 1.5x
+    earlyAccessMultiplierBps[4] = 500; // cookie => 1.5x
   }
 
   function bake(address token, uint256 tokenId) public {
@@ -92,8 +98,12 @@ contract Bakery is Ownable, EIP712 {
     delete ovens[msg.sender];
 
     uint256 accuredReward = rewardBlockCount * rewardPerBlock();
-    uint256 multiplerBps = rewardMultiplierBps[oven.token][oven.tokenId];
+    uint256 multiplerBps = oven.token == address(earlyaccess) ? earlyAccessMultiplierBps[oven.tokenId] : 0;
     uint256 totalReward = accuredReward * (multiplerBps + 10000) / 10000;
+
+    if (ovens[msg.sender].accumulatedSpiceAmount > 0) {
+      totalReward += totalBoostedSpice(msg.sender, ovens[msg.sender].accumulatedSpiceAmount) * rewardPerSpice();
+    }
 
     reward.mint(msg.sender, totalReward);
   }
@@ -101,6 +111,17 @@ contract Bakery is Ownable, EIP712 {
   function rewardPerBlock() public pure returns (uint256) {
     // TODO
     return 0.2 ether;
+  }
+
+  function rewardPerSpice() public pure returns (uint256) {
+    // TODO
+    return 0.1 ether;
+  }
+
+  function totalBoostedSpice(address _to, uint256 _spice) public view returns (uint256) {
+    uint256 cursorBoostCount = IERC1155(address(cursor)).balanceOf(_to, 0);
+    uint256 cursorBoostMultiplier = 1;
+    return _spice + (cursorBoostCount * cursorBoostMultiplier);
   }
 
   function rebake(Spice calldata _spice, bytes calldata _signature) external {
