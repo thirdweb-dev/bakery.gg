@@ -121,7 +121,7 @@ contract Bakery is Ownable, EIP712 {
 
     // character reward + boost
     (uint256[] memory balances, uint256 nonZeroBalanceCount) = characterReward(msg.sender);
-    uint256[] memory boosts = characterBoost(msg.sender, balances, nonZeroBalanceCount);
+    uint256[] memory boostBalances = characterBoost(msg.sender, balances, nonZeroBalanceCount);
 
     // i = token id (character)
     // j = upgrade start index
@@ -131,7 +131,7 @@ contract Bakery is Ownable, EIP712 {
         continue;
       }
       // TODO: fix boost multiplier
-      totalReward += (rewardBlockCount * characterRewardPerBlock[i]) * balances[i] * (1 + boosts[j] + boosts[j + 1] + boosts[j + 2] + boosts[j + 3]);
+      totalReward += (rewardBlockCount * characterRewardPerBlock[i]) * balances[i] * (1 + boostBalances[j] + boostBalances[j + 1] + boostBalances[j + 2] + boostBalances[j + 3]);
       j += 1;
     }
 
