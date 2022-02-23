@@ -27,11 +27,11 @@ export function useBakery() {
     if (!chainId) {
       return null;
     }
-    if (!signer.data) {
+    if (!signer) {
       return null;
     }
-    return Bakery__factory.connect(CONTRACT_ADDRESSES[chainId], signer.data);
-  }, [chainId, signer.data]);
+    return Bakery__factory.connect(CONTRACT_ADDRESSES[chainId], signer);
+  }, [chainId, signer]);
 
   useEffect(() => {
     async function update() {
@@ -61,15 +61,15 @@ export function useBakery() {
   }, [contract, signerAddress, chainId]);
 
   const isExceedMaxBakeLimit = useMemo(async () => {
-    if (!signer?.data || !maxNumberOfBlockReward || !bakeStartBlock) {
+    if (!signer || !maxNumberOfBlockReward || !bakeStartBlock) {
       return false;
     }
-    const currentBlockNumber = await signer.data?.provider?.getBlockNumber();
+    const currentBlockNumber = await signer.provider?.getBlockNumber();
     if (!currentBlockNumber) {
       return false;
     }
     return currentBlockNumber - bakeStartBlock > maxNumberOfBlockReward;
-  }, [signer.data, maxNumberOfBlockReward, bakeStartBlock]);
+  }, [signer, maxNumberOfBlockReward, bakeStartBlock]);
 
   return {
     contract,

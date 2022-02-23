@@ -1,10 +1,11 @@
 import { ThirdwebProvider } from "@thirdweb-dev/react";
-import { ChainId, IpfsStorage, SUPPORTED_CHAIN_ID } from "@thirdweb-dev/sdk";
+import { ChainId, IpfsStorage } from "@thirdweb-dev/sdk";
 import { BigNumber } from "ethers";
 import React, { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { createWebStoragePersistor } from "react-query/createWebStoragePersistor-experimental";
 import { persistQueryClient } from "react-query/persistQueryClient-experimental";
+import { SUPPORTED_CHAIN_ID } from "../utils/network";
 
 const __CACHE_BUSTER = "tw_v2.0.0-nightly.2";
 
@@ -37,7 +38,7 @@ export const StorageSingleton = new IpfsStorage(
   process.env.NEXT_PUBLIC_IPFS_GATEWAY_URL,
 );
 
-export const alchemyUrlMap: Record<SUPPORTED_CHAIN_ID, string> = {
+export const alchemyUrlMap: Record<number, string> = {
   [ChainId.Mainnet]: `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
   [ChainId.Rinkeby]: `https://eth-rinkeby.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
   [ChainId.Goerli]: `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,

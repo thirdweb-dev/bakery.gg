@@ -26,7 +26,7 @@ export const alchemyUrlMap: Record<SUPPORTED_CHAIN_ID, string> = {
 export type SUPPORTED_CHAIN_ID = ChainId.Mumbai | ChainId.Polygon;
 
 export const SUPPORTED_CHAIN_IDS: SUPPORTED_CHAIN_ID[] = [
-  /*   ChainId.Polygon, */
+  ChainId.Polygon,
   ChainId.Mumbai,
 ];
 
@@ -42,7 +42,7 @@ export const SupportedNetworkToChainIdMap: Record<
   ValueOf<typeof SupportedChainIdToNetworkMap>,
   SUPPORTED_CHAIN_ID
 > = {
-  /*   polygon: ChainId.Polygon, */
+  polygon: ChainId.Polygon,
   mumbai: ChainId.Mumbai,
 } as const;
 
