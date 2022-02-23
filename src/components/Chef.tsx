@@ -4,22 +4,22 @@ import Image from "next/image";
 import { MouseEventHandler } from "react";
 import { useEditionDropActiveClaimCondition } from "../hooks/useEditionDropQueries";
 
-interface ChefProps {
-  chef: EditionMetadata;
+interface BakerProps {
+  baker: EditionMetadata;
   mintQuantity: number;
   balance?: string;
   onClick: MouseEventHandler<HTMLDivElement>;
 }
 
-export const Chef: React.FC<ChefProps> = ({
-  chef,
+export const Baker: React.FC<BakerProps> = ({
+  baker,
   balance,
   onClick,
   mintQuantity,
 }) => {
   const activeClaimPhase = useEditionDropActiveClaimCondition(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
-    chef.metadata.id.toString(),
+    baker.metadata.id.toString(),
   );
 
   return (
@@ -31,11 +31,11 @@ export const Chef: React.FC<ChefProps> = ({
       position="relative"
     >
       <Box position="absolute" left={-2} bottom={-2}>
-        <Image src={chef.metadata.image as string} width={60} height={60} />
+        <Image src={baker.metadata.image as string} width={60} height={60} />
       </Box>
       <Flex justifyContent="space-between" alignItems="center" w="100%" ml={16}>
         <Box>
-          <Text fontSize={20}>{chef.metadata.name}</Text>
+          <Text fontSize={20}>{baker.metadata.name}</Text>
           <Text fontSize={16}>
             🍪{" "}
             {Math.floor(

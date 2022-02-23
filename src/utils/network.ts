@@ -15,7 +15,7 @@ export enum ChainId {
   Fantom = 250,
   FantomTestnet = 4002,
   Avalanche = 43114,
-  AvalancheFujiTestnet = 43113,
+  AvalanBakerujiTestnet = 43113,
 }
 
 export const alchemyUrlMap: Record<SUPPORTED_CHAIN_ID, string> = {

@@ -47,7 +47,7 @@ export const alchemyUrlMap: Record<number, string> = {
   [ChainId.Polygon]: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
   [ChainId.Mumbai]: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
   [ChainId.FantomTestnet]: "https://rpc.ftm.tools",
-  [ChainId.AvalancheFujiTestnet]: "https://api.avax.network/ext/bc/C/rpc",
+  [ChainId.AvalanBakerujiTestnet]: "https://api.avax.network/ext/bc/C/rpc",
 };
 
 export interface ProviderProps {

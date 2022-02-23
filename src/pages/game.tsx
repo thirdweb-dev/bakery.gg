@@ -16,26 +16,26 @@ import {
   useEditionDropOwned,
   useMintMutation,
 } from "../hooks/useEditionDropQueries";
-import { Chef } from "../components/Chef";
+import { Baker } from "../components/Baker";
 
 const GamePage = () => {
   const [score, setScore] = useState(0);
   const [mintQuantity, setMintQuantity] = useState(1);
   const [cps, setCps] = useState(0);
   const [cpc, setCpc] = useState(1);
-  const chefs = useEditionDropList(
+  const bakers = useEditionDropList(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
   const owned = useEditionDropOwned(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
 
-  const ownedChefs = useMemo(
-    () => owned?.data?.map((chef) => chef.metadata.id.toString()),
+  const ownedBakers = useMemo(
+    () => owned?.data?.map((baker) => baker.metadata.id.toString()),
     [owned],
   );
 
-  console.log(ownedChefs);
+  console.log(ownedBakers);
 
   console.log(owned.data);
 
@@ -71,7 +71,7 @@ const GamePage = () => {
           <SimpleGrid>
             {lands?.data
               ?.filter((land) =>
-                ownedChefs?.includes(
+                ownedBakers?.includes(
                   (Number(land.metadata.id.toString()) + 1).toString(),
                 ),
               )
@@ -131,23 +131,23 @@ const GamePage = () => {
             </Button>
           </ButtonGroup>
           <SimpleGrid mt={6}>
-            {chefs?.data?.map((chef) => (
-              <Chef
-                key={chef.metadata.id.toString()}
+            {bakers?.data?.map((baker) => (
+              <Baker
+                key={baker.metadata.id.toString()}
                 balance={owned?.data
                   ?.find(
                     (nft) =>
                       nft.metadata.id.toString() ===
-                      chef.metadata.id.toString(),
+                      baker.metadata.id.toString(),
                   )
                   ?.supply.toString()}
                 onClick={() =>
                   mintMutation.mutate({
-                    tokenId: chef.metadata.id,
+                    tokenId: baker.metadata.id,
                     quantity: mintQuantity,
                   })
                 }
-                chef={chef}
+                baker={baker}
                 mintQuantity={mintQuantity}
               />
             ))}
