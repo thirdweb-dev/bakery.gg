@@ -13,8 +13,10 @@ import Image from "next/image";
 import { ConnectWallet } from "../components/ConnectWallet";
 import {
   useEditionDropList,
+  useEditionDropOwned,
   useMintMutation,
 } from "../hooks/useEditionDropQueries";
+import { Chef } from "../components/Chef";
 
 const GamePage = () => {
   const [score, setScore] = useState(0);
@@ -24,6 +26,12 @@ const GamePage = () => {
   const chefs = useEditionDropList(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
+  const owned = useEditionDropOwned(
+    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+  );
+
+  console.log(owned.data);
+
   const lands = useEditionDropList(
     "0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b",
   );
@@ -43,7 +51,7 @@ const GamePage = () => {
         <Flex flexDir="column" textAlign="center">
           <ConnectWallet />
           <Heading as="h3" size="2xl" mt={5}>
-            {score} cookies
+            {Math.floor(score)} cookies
           </Heading>
           <Box onClick={() => setScore(score + cpc)} my={3}>
             <Image src="/assets/goldcookie.png" width={250} height={250} />
@@ -111,35 +119,24 @@ const GamePage = () => {
           </ButtonGroup>
           <SimpleGrid mt={6}>
             {chefs?.data?.map((chef) => (
-              <Flex
+              <Chef
                 key={chef.metadata.id.toString()}
-                border="1px solid white"
-                p={4}
+                balance={owned?.data
+                  ?.find(
+                    (nft) =>
+                      nft.metadata.id.toString() ===
+                      chef.metadata.id.toString(),
+                  )
+                  ?.supply.toString()}
                 onClick={() =>
                   mintMutation.mutate({
                     tokenId: chef.metadata.id,
                     quantity: mintQuantity,
                   })
                 }
-                cursor="pointer"
-              >
-                <Image
-                  src={chef.metadata.image as string}
-                  width={100}
-                  height={100}
-                />
-                <Flex
-                  justifyContent="space-between"
-                  alignItems="center"
-                  w="100%"
-                >
-                  <Stack ml={3} justifyContent="center">
-                    <Text fontSize={20}>{chef.metadata.name}</Text>
-                    <Text fontSize={20}>🍪 100</Text>
-                  </Stack>
-                  <Text fontSize={40}>12</Text>
-                </Flex>
-              </Flex>
+                chef={chef}
+                mintQuantity={mintQuantity}
+              />
             ))}
           </SimpleGrid>
         </Stack>

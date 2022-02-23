@@ -24,6 +24,36 @@ export function useEditionDropList(contractAddress?: string) {
   );
 }
 
+export function useEditionDropOwned(contractAddress?: string) {
+  const editionDrop = useEditionDrop(contractAddress);
+  const address = useAddress();
+  return useQueryWithNetwork(
+    editionDropKeys.owned(contractAddress),
+    async () => {
+      return await editionDrop?.getOwned(address || "");
+    },
+    {
+      enabled: !!editionDrop && !!contractAddress && !!address,
+    },
+  );
+}
+
+export function useEditionDropActiveClaimCondition(
+  contractAddress?: string,
+  tokenId?: string,
+) {
+  const editionDrop = useEditionDrop(contractAddress);
+  return useQueryWithNetwork(
+    editionDropKeys.activeClaimCondition(contractAddress, tokenId),
+    async () => {
+      return await editionDrop?.claimConditions.getActive(tokenId as string);
+    },
+    {
+      enabled: !!editionDrop && !!contractAddress && tokenId !== undefined,
+    },
+  );
+}
+
 export function useMintMutation(contractAddress?: string) {
   const address = useAddress();
   const editionDrop = useEditionDrop(contractAddress);
@@ -35,7 +65,6 @@ export function useMintMutation(contractAddress?: string) {
       if (!address || !editionDrop) {
         throw new Error("No address or Edition Drop");
       }
-      console.log({ address, editionDrop });
       return editionDrop.claim(data.tokenId, data.quantity);
     },
     {
@@ -47,6 +76,10 @@ export function useMintMutation(contractAddress?: string) {
           duration: 5000,
           isClosable: true,
         });
+        return invalidate([
+          editionDropKeys.list(contractAddress),
+          editionDropKeys.detail(contractAddress),
+        ]);
       },
       onError: (err) => {
         toast({
@@ -59,4 +92,12 @@ export function useMintMutation(contractAddress?: string) {
       },
     },
   );
+}
+function invalidate(
+  arg0: (
+    | readonly ["edition-drop", "list", string]
+    | readonly ["edition-drop", "detail", string]
+  )[],
+): void | Promise<unknown> {
+  throw new Error("Function not implemented.");
 }
