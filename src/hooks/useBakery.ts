@@ -10,7 +10,7 @@ const BLOCK_TIME_SECONDS: Record<number, number> = {
   [ChainId.Polygon]: 2,
 };
 const CONTRACT_ADDRESSES: Record<number, string> = {
-  [ChainId.Mumbai]: "0xe9388ee324cc32648d5c481df15285f144126892",
+  [ChainId.Mumbai]: "0xf3c741aeba537595904f3fecfd3763814d0527d6",
 };
 
 export function useBakery() {
