@@ -15,30 +15,17 @@ import {
   useCharacterList,
   useMintMutation,
 } from "../hooks/useEditionDropQueries";
-import { EditionMetadata } from "@thirdweb-dev/sdk";
 
 const GamePage = () => {
   const [score, setScore] = useState(0);
   const [cps, setCps] = useState(0);
   const [cpc, setCpc] = useState(1);
-  const [characters, setCharacters] = useState<EditionMetadata[]>([]);
-
+  const characters = useCharacterList(
+    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+  );
   const mintMutation = useMintMutation(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
-
-  const characterDrop = useEditionDrop(
-    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
-  );
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const allCharacters = await characterDrop?.getAll();
-      setCharacters(allCharacters as EditionMetadata[]);
-      console.log(allCharacters);
-    };
-    fetchData();
-  }, [cps, characterDrop]);
 
   useEffect(() => {
     const timeout = setInterval(() => setScore((s) => s + cps), 1000);
@@ -62,7 +49,7 @@ const GamePage = () => {
         </Flex>
         <Flex>hello</Flex>
         <SimpleGrid mt={6}>
-          {characters?.map((character) => (
+          {characters?.data?.map((character) => (
             <Flex
               key={character.metadata.id.toString()}
               border="1px solid white"

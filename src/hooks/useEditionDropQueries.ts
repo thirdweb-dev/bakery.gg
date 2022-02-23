@@ -14,12 +14,12 @@ interface EditionDropInput {
 }
 
 export function useCharacterList(contractAddress?: string) {
-  const dropContract = useEditionDrop(contractAddress);
+  const editionDrop = useEditionDrop(contractAddress);
   return useQueryWithNetwork(
     characterKeys.list(contractAddress),
-    () => dropContract?.getAll(),
+    () => editionDrop?.getAll(),
     {
-      enabled: !!dropContract && !!contractAddress,
+      enabled: !!editionDrop && !!contractAddress,
     },
   );
 }
