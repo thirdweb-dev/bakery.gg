@@ -130,7 +130,8 @@ contract Bakery is Ownable, EIP712 {
       if (balances[i] == 0) {
         continue;
       }
-      totalReward += balances[i] * (rewardBlockCount * characterRewardPerBlock[i]) * (boosts[j] + boosts[j + 1] + boosts[j + 2] + boosts[j + 3]);
+      // TODO: fix boost multiplier
+      totalReward += (rewardBlockCount * characterRewardPerBlock[i]) * balances[i] * (1 + boosts[j] + boosts[j + 1] + boosts[j + 2] + boosts[j + 3]);
       j += 1;
     }
 
