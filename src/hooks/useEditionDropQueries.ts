@@ -1,35 +1,48 @@
 import invariant from "tiny-invariant";
-import { useAddress, useBundleDropModule } from "@thirdweb-dev/react";
+import { useAddress, useEditionDrop } from "@thirdweb-dev/react";
 import { useMutation } from "react-query";
 import { queryClient } from "../pages/_app";
 import { useToast } from "@chakra-ui/react";
 import { BigNumberish } from "ethers";
 import { parseError } from "../utils/parseError";
+import { useQueryWithNetwork } from "./useQueryWithNetwork";
+import { characterKeys } from "../utils/cacheKeys";
 
-interface BundleDropMintMutation {
+interface EditionDropInput {
   tokenId: BigNumberish;
   quantity: BigNumberish;
 }
 
-export function useMintMutation() {
-  const address = useAddress();
-  const editionDrop = useBundleDropModule(
-    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+export function useCharacterList(contractAddress?: string) {
+  const dropContract = useEditionDrop(contractAddress);
+  return useQueryWithNetwork(
+    characterKeys.list(contractAddress),
+    () => dropContract?.getAll(),
+    {
+      enabled: !!dropContract && !!contractAddress,
+    },
   );
+}
+
+export function useMintMutation(contractAddress?: string) {
+  const address = useAddress();
+  const editionDrop = useEditionDrop(contractAddress);
+
   const toast = useToast();
 
   return useMutation(
-    (data: BundleDropMintMutation) => {
+    (data: EditionDropInput) => {
       if (!address || !editionDrop) {
         throw new Error("No address or Edition Drop");
       }
+      console.log({ address, editionDrop });
       return editionDrop.claim(data.tokenId, data.quantity);
     },
     {
       onSuccess: () => {
         queryClient.invalidateQueries();
         toast({
-          title: "Successfuly claimed.",
+          title: "Successfuly minted.",
           status: "success",
           duration: 5000,
           isClosable: true,

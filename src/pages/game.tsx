@@ -9,95 +9,82 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-
-interface PurchasedCharacter {
-  id: string;
-  quantity: number;
-}
-
-interface Character {
-  id: string;
-  name: string;
-  cps: number;
-  cost: number;
-}
-
-const characters: Character[] = [
-  {
-    id: "0",
-    name: "Cookie",
-    cps: 1,
-    cost: 10,
-  },
-  {
-    id: "1",
-    name: "Cookie 2",
-    cps: 10,
-    cost: 100,
-  },
-];
+import { ConnectWallet } from "../components/ConnectWallet";
+import { useEditionDrop } from "@thirdweb-dev/react";
+import {
+  useCharacterList,
+  useMintMutation,
+} from "../hooks/useEditionDropQueries";
+import { EditionMetadata } from "@thirdweb-dev/sdk";
 
 const GamePage = () => {
   const [score, setScore] = useState(0);
   const [cps, setCps] = useState(0);
-  const [incAmount, setIncAmount] = useState(1);
-  const [purchasedUpgrades, setPurchasedUpgrades] = useState([]);
-  const [purchasedCharacters, setPurchasedCharacters] = useState<
-    PurchasedCharacter[]
-  >([]);
+  const [cpc, setCpc] = useState(1);
+  const [characters, setCharacters] = useState<EditionMetadata[]>([]);
+
+  const mintMutation = useMintMutation(
+    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+  );
+
+  const characterDrop = useEditionDrop(
+    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const allCharacters = await characterDrop?.getAll();
+      setCharacters(allCharacters as EditionMetadata[]);
+      console.log(allCharacters);
+    };
+    fetchData();
+  }, [cps, characterDrop]);
 
   useEffect(() => {
     const timeout = setInterval(() => setScore((s) => s + cps), 1000);
     return () => clearInterval(timeout);
   }, [cps]);
 
-  const buyCharacter = (character: Character) => {
-    if (score >= character.cost) {
-      setScore((s) => s - character.cost);
-      setCps((c) => c + character.cps);
-      setPurchasedCharacters((p) =>
-        p.map((c) =>
-          c.id === character.id ? { ...c, quantity: c.quantity + 1 } : c,
-        ),
-      );
-      console.log(purchasedCharacters);
-    }
-  };
-
   return (
     <Flex pt={12} justifyContent="center">
       <Flex>
+        <ConnectWallet />
         <Flex flexDir="column" textAlign="center">
-          <Heading as="h3" size="2xl" mb={3}>
-            {score}
+          <Heading as="h3" size="2xl">
+            {score} cookies
           </Heading>
-          <Box onClick={() => setScore(score + incAmount)}>
+          <Box onClick={() => setScore(score + cpc)} my={3}>
             <Image src="/assets/goldcookie.png" width={300} height={300} />
           </Box>
-        </Flex>
-        <Flex>
-          <Heading as="h3" size="2xl">
-            {cps}
+          <Heading as="h5" size="lg" onClick={() => setCps(cps + 1)}>
+            {cps} cookies per second
           </Heading>
-          <Box onClick={() => setCps(cps + 1)}>
-            <Image src="/assets/cps.png" width={300} height={300} />
-          </Box>
         </Flex>
+        <Flex></Flex>
         <SimpleGrid mt={6} gap={12}>
-          {characters.map((character) => (
+          {characters?.map((character) => (
             <Flex
-              key={character.id}
+              key={character.metadata.id.toString()}
               border="1px solid white"
               p={4}
               borderRadius="2xl"
-              onClick={() => buyCharacter(character)}
+              onClick={() =>
+                mintMutation.mutate({
+                  tokenId: character.metadata.id,
+                  quantity: 1,
+                })
+              }
               cursor="pointer"
             >
-              <Image src="/assets/goldcookie.png" width={100} height={100} />
+              <Image
+                src={character.metadata.image as string}
+                width={100}
+                height={100}
+              />
               <Stack ml={3} justifyContent="center">
-                <Text>Name: {character.name}</Text>
-                <Text>Cookies per second: {character.cps}</Text>
-                <Text>Cost: {character.cost}</Text>
+                <Text>Name: {character.metadata.name}</Text>
+                <Text>Cookies per second: {0.1}</Text>
+                <Text>Cost: 100</Text>
               </Stack>
             </Flex>
           ))}

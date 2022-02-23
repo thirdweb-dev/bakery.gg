@@ -4,13 +4,16 @@ import {
   defaultL2Chains,
   ThirdwebProvider,
 } from "@thirdweb-dev/react";
+import { BigNumberish } from "ethers";
 import { DefaultSeo } from "next-seo";
 import { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { WalletLinkConnector } from "wagmi/connectors/walletLink";
+import { Providers } from "../components/Provider";
 import theme from "../theme";
+import { ChainId } from "../utils/network";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,11 +27,6 @@ export const queryClient = new QueryClient({
 });
 
 export const alchemyUrlMap: Record<number, string> = {
-  1: `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
-  4: `https://eth-rinkeby.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
-  5: `https://eth-goerli.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
-  250: "https://rpc.ftm.tools",
-  43114: "https://api.avax.network/ext/bc/C/rpc",
   137: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
   80001: `https://polygon-mumbai.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_KEY}`,
 };
@@ -68,45 +66,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           cardType: "summary_large_image",
         }}
       />
-      <QueryClientProvider client={queryClient}>
-        <ThirdwebProvider
-          desiredChainId={137}
-          dAppName="bakery.gg"
-          advanced={{
-            queryClient,
-            supportedChains,
-            wagmiOptions: {
-              connectors: ({ chainId }) => [
-                new InjectedConnector({
-                  chains: supportedChains,
-                  options: { shimDisconnect: true },
-                }),
-                new WalletConnectConnector({
-                  options: {
-                    chainId,
-                    rpc: alchemyUrlMap,
-                    qrcode: true,
-                  },
-                  chains: supportedChains,
-                }),
-                new WalletLinkConnector({
-                  chains: supportedChains,
-                  options: {
-                    appName: "bakery.gg",
-                    appLogoUrl: "https://bakery.gg/favicon.ico",
-                    darkMode: true,
-                    jsonRpcUrl: process.env.NEXT_PUBLIC_RPC_URL,
-                  },
-                }),
-              ],
-            },
-          }}
-        >
-          <ChakraProvider resetCSS theme={theme}>
-            <Component {...pageProps} />
-          </ChakraProvider>
-        </ThirdwebProvider>
-      </QueryClientProvider>
+      <Providers chainId={ChainId.Mumbai}>
+        <ChakraProvider resetCSS theme={theme}>
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </Providers>
     </>
   );
 }

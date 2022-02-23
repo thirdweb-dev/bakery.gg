@@ -1,17 +1,11 @@
 import { Center, Container, Heading, VStack } from "@chakra-ui/react";
-import { useAddress } from "@thirdweb-dev/react";
 
-import { ConnectWallet } from "../components/ConnectWallet";
 import Image from "next/image";
 
 const LandingPage = () => {
-  const address = useAddress();
-
   return (
     <Center alignItems="flex-start" maxH="100vh" as="main" py={8}>
       <Container maxW="container.xl" px={8}>
-        {/*         <ConnectWallet /> */}
-
         <Center as={VStack}>
           <Heading as="h1" size="2xl" mb={4} textAlign="center">
             Welcome to The Bakery
@@ -20,7 +14,7 @@ const LandingPage = () => {
             as="h3"
             size="md"
             mb={4}
-            bgGradient="linear(to-b, #88FFEA, #E038BB)"
+            bgGradient="linear(to-b, #88FFEA, #FF0080)"
             bgClip="text"
           >
             Coming Soon

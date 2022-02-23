@@ -8,14 +8,14 @@
     "db": "docker-compose up -d"
   },
   "dependencies": {
-    "@3rdweb/sdk": "^1.41.1",
     "@chakra-ui/icons": "^1.1.7",
     "@chakra-ui/react": "^1.8.5",
     "@chakra-ui/theme-tools": "^1.3.6",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
     "@thirdweb-dev/chain-icons": "^1.0.2",
-    "@thirdweb-dev/react": "^1.0.0-alpha.3",
+    "@thirdweb-dev/react": "^2.0.0-nightly.5",
+    "@thirdweb-dev/sdk": "^2.0.0-nightly.19",
     "bee-queue": "^1.4.0",
     "color": "^4.2.1",
     "ethers": "^5.5.4",
