@@ -10,7 +10,7 @@ const BLOCK_TIME_SECONDS: Record<number, number> = {
   [ChainId.Polygon]: 2,
 };
 const CONTRACT_ADDRESSES: Record<number, string> = {
-  [ChainId.Mumbai]: "0xf3c741aeba537595904f3fecfd3763814d0527d6",
+  [ChainId.Mumbai]: "0xe5ab92564b9161e27bc96866dcdd5ba4ca9021c6",
 };
 
 export function useBakery() {
@@ -41,8 +41,7 @@ export function useBakery() {
 
       const rewardPerBlock =
         (await contract?.rewardPerBlock()) ?? BigNumber.from(0);
-
-      setCookiePerSecond(rewardPerBlock.div(BLOCK_TIME_SECONDS[chainId]));
+      const rewardPerSec = rewardPerBlock.div(BLOCK_TIME_SECONDS[chainId]);
 
       const rewardPerSpice =
         (await contract?.rewardPerSpice()) ?? BigNumber.from(0);
@@ -58,11 +57,26 @@ export function useBakery() {
 
         const spiceBoost =
           (await contract?.spiceBoost(signerAddress)) ?? BigNumber.from(0);
+
+        const [boostRewardPerBlock] = (await contract?.bakerReward(
+          signerAddress,
+        )) ?? [[]];
+        const boostRewardPerSec = boostRewardPerBlock.map((r) =>
+          r.div(BLOCK_TIME_SECONDS[chainId]),
+        );
+        const totalBoostRewardPerSec = boostRewardPerSec.reduce(
+          (acc, cur) => acc.add(cur),
+          BigNumber.from(0),
+        );
+
         setCookiePerClick(
           BigNumber.from(spiceBoost).mul(rewardPerSpice).add(rewardPerSpice),
         );
+        console.log(rewardPerSec.toString(), totalBoostRewardPerSec.toString());
+        setCookiePerSecond(rewardPerSec.add(totalBoostRewardPerSec));
       } else {
         setCookiePerClick(rewardPerSpice);
+        setCookiePerSecond(rewardPerSec);
       }
     }
     update();

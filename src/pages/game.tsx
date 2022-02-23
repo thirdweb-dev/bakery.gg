@@ -52,16 +52,20 @@ const GamePage = () => {
 
   const onCookieClick = useCallback(
     (_score) => {
-      setScore(_score.add(cookiePerClick));
+      if (isBaking) {
+        setScore(_score.add(cookiePerClick));
+      }
     },
-    [cookiePerClick],
+    [isBaking, cookiePerClick],
   );
 
   const onCookieIncrement = useCallback(
     (value) => {
-      setScore(score.add(value));
+      if (isBaking) {
+        setScore(score.add(value));
+      }
     },
-    [score],
+    [isBaking, score],
   );
 
   useEffect(() => {

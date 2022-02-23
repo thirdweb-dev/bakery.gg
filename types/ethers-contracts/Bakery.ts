@@ -40,8 +40,9 @@ export interface BakeryInterface extends utils.Interface {
     "MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD()": FunctionFragment;
     "bake(address,uint256)": FunctionFragment;
     "baker()": FunctionFragment;
+    "bakerBoost(address,uint256[],uint256)": FunctionFragment;
+    "bakerBoostMultiplier(uint256)": FunctionFragment;
     "bakerReward(address)": FunctionFragment;
-    "characterBoost(address,uint256[],uint256)": FunctionFragment;
     "cookie()": FunctionFragment;
     "earlyaccess()": FunctionFragment;
     "land()": FunctionFragment;
@@ -72,11 +73,15 @@ export interface BakeryInterface extends utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "baker", values?: undefined): string;
-  encodeFunctionData(functionFragment: "bakerReward", values: [string]): string;
   encodeFunctionData(
-    functionFragment: "characterBoost",
+    functionFragment: "bakerBoost",
     values: [string, BigNumberish[], BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "bakerBoostMultiplier",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "bakerReward", values: [string]): string;
   encodeFunctionData(functionFragment: "cookie", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "earlyaccess",
@@ -124,12 +129,13 @@ export interface BakeryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "bake", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "baker", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "bakerBoost", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "bakerReward",
+    functionFragment: "bakerBoostMultiplier",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "characterBoost",
+    functionFragment: "bakerReward",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "cookie", data: BytesLike): Result;
@@ -222,17 +228,22 @@ export interface Bakery extends BaseContract {
 
     baker(overrides?: CallOverrides): Promise<[string]>;
 
-    bakerReward(
-      _to: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber[], BigNumber]>;
-
-    characterBoost(
+    bakerBoost(
       _to: string,
       _tokenBalances: BigNumberish[],
       nonZeroBalanceCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber[]]>;
+
+    bakerBoostMultiplier(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    bakerReward(
+      _to: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber[], BigNumber[], BigNumber[]]>;
 
     cookie(overrides?: CallOverrides): Promise<[string]>;
 
@@ -304,17 +315,22 @@ export interface Bakery extends BaseContract {
 
   baker(overrides?: CallOverrides): Promise<string>;
 
-  bakerReward(
-    _to: string,
-    overrides?: CallOverrides
-  ): Promise<[BigNumber[], BigNumber]>;
-
-  characterBoost(
+  bakerBoost(
     _to: string,
     _tokenBalances: BigNumberish[],
     nonZeroBalanceCount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber[]>;
+
+  bakerBoostMultiplier(
+    tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  bakerReward(
+    _to: string,
+    overrides?: CallOverrides
+  ): Promise<[BigNumber[], BigNumber[], BigNumber[]]>;
 
   cookie(overrides?: CallOverrides): Promise<string>;
 
@@ -388,17 +404,22 @@ export interface Bakery extends BaseContract {
 
     baker(overrides?: CallOverrides): Promise<string>;
 
-    bakerReward(
-      _to: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber[], BigNumber]>;
-
-    characterBoost(
+    bakerBoost(
       _to: string,
       _tokenBalances: BigNumberish[],
       nonZeroBalanceCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber[]>;
+
+    bakerBoostMultiplier(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    bakerReward(
+      _to: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber[], BigNumber[], BigNumber[]]>;
 
     cookie(overrides?: CallOverrides): Promise<string>;
 
@@ -480,14 +501,19 @@ export interface Bakery extends BaseContract {
 
     baker(overrides?: CallOverrides): Promise<BigNumber>;
 
-    bakerReward(_to: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    characterBoost(
+    bakerBoost(
       _to: string,
       _tokenBalances: BigNumberish[],
       nonZeroBalanceCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    bakerBoostMultiplier(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    bakerReward(_to: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     cookie(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -552,15 +578,20 @@ export interface Bakery extends BaseContract {
 
     baker(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    bakerReward(
-      _to: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    characterBoost(
+    bakerBoost(
       _to: string,
       _tokenBalances: BigNumberish[],
       nonZeroBalanceCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    bakerBoostMultiplier(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    bakerReward(
+      _to: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
