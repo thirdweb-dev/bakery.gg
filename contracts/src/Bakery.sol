@@ -122,12 +122,14 @@ contract Bakery is Ownable, EIP712 {
     // character reward + boost
     (uint256[] memory balances, uint256 nonZeroBalanceCount) = characterReward(msg.sender);
     uint256[] memory boosts = characterBoost(msg.sender, balances, nonZeroBalanceCount);
+
+    // i = token id (character)
+    // j = upgrade start index
     uint256 j = 0;
     for (uint256 i = 0; i < balances.length; i++) {
       if (balances[i] == 0) {
         continue;
       }
-
       totalReward += balances[i] * (rewardBlockCount * characterRewardPerBlock[i]) * (boosts[j] + boosts[j + 1] + boosts[j + 2] + boosts[j + 3]);
       j += 1;
     }
