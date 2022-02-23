@@ -122,34 +122,26 @@ contract Bakery is Ownable, EIP712 {
     }
 
     // baker reward + boost
-    (uint256[] memory balances, uint256 nonZeroBalanceCount) = bakerReward(msg.sender);
-    uint256[] memory boostBalances = characterBoost(msg.sender, balances, nonZeroBalanceCount);
+    (uint256[] memory boostRewardPerBlock,,) = bakerReward(msg.sender);
 
-    // i = token id (baker)
-    // j = upgrade start index
-    uint256 j = 0;
-    for (uint256 i = 0; i < balances.length; i++) {
-      if (balances[i] == 0) {
-        continue;
-      }
-      uint256 multiplierBps = 0;
-      if (boostBalances[j] > 0) {
-        multiplierBps += 2500; // 1.25x
-      }
-      if (boostBalances[j+1] > 0) {
-        multiplierBps += 5000; // 1.5x
-      }
-      if (boostBalances[j+2] > 0) {
-        multiplierBps += 7500; // 1.75x
-      }
-      if (boostBalances[j+3] > 0) {
-        multiplierBps += 10000; // 2x
-      }
-      totalReward += (rewardBlockCount * characterRewardPerBlock[i]) * balances[i] * ((multiplierBps + 10000) / 10000);
-      j += 1;
+    for (uint256 i = 0; i < boostRewardPerBlock.length; i++) {
+      totalReward += rewardBlockCount * boostRewardPerBlock[i];
     }
 
     cookie.mint(msg.sender, totalReward);
+  }
+
+  function bakerBoostMultiplier(uint256 tokenId) public pure returns (uint256) {
+    uint256 mod = tokenId % 4;
+    if (mod == 0) {
+      return 2500; // 1.25x
+    } else if (mod == 1) {
+      return 5000; // 1.5x
+    } else if (mod == 2) {
+      return 7500; // 1.75x
+    } else {
+      return 10000; // 2x
+    }
   }
 
   function rewardPerBlock() public pure returns (uint256) {
@@ -164,14 +156,12 @@ contract Bakery is Ownable, EIP712 {
     if (address(baker) == address(0)) {
       return 0;
     }
-    uint256 boostCount = IERC1155(address(baker)).balanceOf(_to, 0);
-    uint256 boostMultiplier = 1;
-    return boostCount * boostMultiplier;
+    return IERC1155(address(baker)).balanceOf(_to, 0);
   }
 
-  function bakerReward(address _to) public view returns (uint256[] memory, uint256) {
+  function bakerReward(address _to) public view returns (uint256[] memory, uint256[] memory, uint256[] memory) {
     if (address(baker) == address(0)) {
-      return (new uint256[](TOTAL_BAKER_COUNT), 0);
+      return (new uint256[](TOTAL_BAKER_COUNT), new uint256[](TOTAL_BAKER_COUNT), new uint256[](TOTAL_BAKER_COUNT * 4));
     }
 
     address[] memory to = new address[](TOTAL_BAKER_COUNT);
@@ -189,11 +179,40 @@ contract Bakery is Ownable, EIP712 {
         nonZeroBalanceCount += 1;
       }
     }
-    return (balances, nonZeroBalanceCount);
+
+    uint256[] memory boostBalances = bakerBoost(msg.sender, balances, nonZeroBalanceCount);
+    uint256[] memory boostRewardPerBlock = new uint256[](TOTAL_BAKER_COUNT);
+    uint256 j = 0;
+    for (uint256 i = 0; i < balances.length; i++) {
+      if (balances[i] == 0) {
+        continue;
+      }
+      uint256 multiplierBps = 0;
+      if (boostBalances[j] > 0) {
+        multiplierBps += bakerBoostMultiplier(0); // 1.25x
+      }
+      if (boostBalances[j+1] > 0) {
+        multiplierBps += bakerBoostMultiplier(1); // 1.5x
+      }
+      if (boostBalances[j+2] > 0) {
+        multiplierBps += bakerBoostMultiplier(2); // 1.75x
+      }
+      if (boostBalances[j+3] > 0) {
+        multiplierBps += bakerBoostMultiplier(3); // 2x
+      }
+      boostRewardPerBlock[i] = characterRewardPerBlock[i] * balances[i] * ((multiplierBps + 10000) / 10000);
+      j += 1;
+    }
+
+    return (boostRewardPerBlock, balances, boostBalances);
   }
 
   /// @dev only fetch boost for characters that are not zero
-  function characterBoost(address _to, uint256[] memory _tokenBalances, uint256 nonZeroBalanceCount) public view returns (uint256[] memory) {
+  function bakerBoost(address _to, uint256[] memory _tokenBalances, uint256 nonZeroBalanceCount) public view returns (uint256[] memory) {
+    if (nonZeroBalanceCount == 0) {
+      return new uint256[](0);
+    }
+
     uint256 len = nonZeroBalanceCount * 4;
 
     if (address(upgrade) == address(0) || address(baker) == address(0)) {
