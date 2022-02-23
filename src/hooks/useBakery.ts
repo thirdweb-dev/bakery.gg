@@ -68,11 +68,11 @@ export function useBakery() {
     update();
   }, [contract, signerAddress, chainId]);
 
-  const isExceedMaxBakeLimit = useMemo(async () => {
+  const isExceedMaxBakeLimit = useMemo(() => {
     if (!signer || !maxNumberOfBlockReward || !bakeStartBlock) {
       return false;
     }
-    const currentBlockNumber = await signer.provider?.getBlockNumber();
+    const currentBlockNumber = 0; // await signer.provider?.getBlockNumber();
     if (!currentBlockNumber) {
       return false;
     }

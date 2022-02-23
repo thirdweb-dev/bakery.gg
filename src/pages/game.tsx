@@ -23,25 +23,31 @@ import { BigNumber, ethers } from "ethers";
 const GamePage = () => {
   const [score, setScore] = useState(BigNumber.from(0));
   const [mintQuantity, setMintQuantity] = useState(1);
-  const { cookiePerClick, cookiePerSecond } = useBakery();
+  const {
+    contract: bakeryContract,
+    cookiePerClick,
+    cookiePerSecond,
+    isBaking,
+    isExceedMaxBakeLimit,
+  } = useBakery();
+
   const bakers = useEditionDropList(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
   const owned = useEditionDropOwned(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
-
-  const ownedBakers = useMemo(
-    () => owned?.data?.map((baker) => baker.metadata.id.toString()),
-    [owned],
-  );
-
   const lands = useEditionDropList(
     "0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b",
   );
 
   const mintMutation = useMintMutation(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+  );
+
+  const ownedBakers = useMemo(
+    () => owned?.data?.map((baker) => baker.metadata.id.toString()),
+    [owned],
   );
 
   const onCookieClick = useCallback(
@@ -77,6 +83,35 @@ const GamePage = () => {
           <Heading as="h5" size="lg">
             {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
           </Heading>
+
+          {isBaking ? (
+            <Button
+              onClick={() =>
+                bakeryContract?.rebake(
+                  {
+                    to: ethers.constants.AddressZero,
+                    amount: 0,
+                    expiryTime: 0,
+                    salt: 0,
+                  },
+                  "0x",
+                )
+              }
+            >
+              Unbake
+            </Button>
+          ) : (
+            <Button
+              onClick={() =>
+                bakeryContract?.bake(ethers.constants.AddressZero, 0)
+              }
+            >
+              Bake
+            </Button>
+          )}
+          {isExceedMaxBakeLimit ? (
+            <Text>Your cookies are burning up! Please take them out!</Text>
+          ) : null}
         </Flex>
         <Flex flexGrow={1}>
           <SimpleGrid>

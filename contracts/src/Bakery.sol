@@ -153,12 +153,10 @@ contract Bakery is Ownable, EIP712 {
   }
 
   function rewardPerBlock() public pure returns (uint256) {
-    // TODO
-    return 1 ether;
+    return 1 ether * EST_BLOCK_TIME_SECONDS;
   }
 
   function rewardPerSpice() public pure returns (uint256) {
-    // TODO
     return 1 ether;
   }
 
@@ -225,7 +223,7 @@ contract Bakery is Ownable, EIP712 {
 
   function rebake(Spice calldata _spice, bytes calldata _signature) external {
     Oven memory oven = ovens[msg.sender];
-    if (_signature.length > 0) {
+    if (_spice.amount > 0) {
       spice(_spice, _signature);
     }
     unbake();
