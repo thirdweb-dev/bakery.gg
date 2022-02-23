@@ -40,6 +40,7 @@ export interface BakeryInterface extends utils.Interface {
     "MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD()": FunctionFragment;
     "bake(address,uint256)": FunctionFragment;
     "character()": FunctionFragment;
+    "cursor()": FunctionFragment;
     "earlyaccess()": FunctionFragment;
     "land()": FunctionFragment;
     "ovens(address)": FunctionFragment;
@@ -47,10 +48,11 @@ export interface BakeryInterface extends utils.Interface {
     "rebake((address,uint256,uint256,uint256),bytes)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "reward()": FunctionFragment;
-    "rewardMultiplierBps(address,uint256)": FunctionFragment;
     "rewardPerBlock()": FunctionFragment;
+    "rewardPerSpice()": FunctionFragment;
     "salt(uint256)": FunctionFragment;
     "spice((address,uint256,uint256,uint256),bytes)": FunctionFragment;
+    "totalBoostedSpice(address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "unbake()": FunctionFragment;
     "upgrade()": FunctionFragment;
@@ -69,6 +71,7 @@ export interface BakeryInterface extends utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "character", values?: undefined): string;
+  encodeFunctionData(functionFragment: "cursor", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "earlyaccess",
     values?: undefined
@@ -86,17 +89,21 @@ export interface BakeryInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "reward", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "rewardMultiplierBps",
-    values: [string, BigNumberish]
+    functionFragment: "rewardPerBlock",
+    values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "rewardPerBlock",
+    functionFragment: "rewardPerSpice",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "salt", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "spice",
     values: [Bakery.SpiceStruct, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalBoostedSpice",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
@@ -115,6 +122,7 @@ export interface BakeryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "bake", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "character", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "cursor", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "earlyaccess",
     data: BytesLike
@@ -129,15 +137,19 @@ export interface BakeryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "reward", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "rewardMultiplierBps",
+    functionFragment: "rewardPerBlock",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "rewardPerBlock",
+    functionFragment: "rewardPerSpice",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "salt", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "spice", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalBoostedSpice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
@@ -204,6 +216,8 @@ export interface Bakery extends BaseContract {
 
     character(overrides?: CallOverrides): Promise<[string]>;
 
+    cursor(overrides?: CallOverrides): Promise<[string]>;
+
     earlyaccess(overrides?: CallOverrides): Promise<[string]>;
 
     land(overrides?: CallOverrides): Promise<[string]>;
@@ -234,13 +248,9 @@ export interface Bakery extends BaseContract {
 
     reward(overrides?: CallOverrides): Promise<[string]>;
 
-    rewardMultiplierBps(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     rewardPerBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    rewardPerSpice(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     salt(arg0: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
@@ -249,6 +259,12 @@ export interface Bakery extends BaseContract {
       _signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    totalBoostedSpice(
+      _to: string,
+      _spice: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     transferOwnership(
       newOwner: string,
@@ -275,6 +291,8 @@ export interface Bakery extends BaseContract {
   ): Promise<ContractTransaction>;
 
   character(overrides?: CallOverrides): Promise<string>;
+
+  cursor(overrides?: CallOverrides): Promise<string>;
 
   earlyaccess(overrides?: CallOverrides): Promise<string>;
 
@@ -306,13 +324,9 @@ export interface Bakery extends BaseContract {
 
   reward(overrides?: CallOverrides): Promise<string>;
 
-  rewardMultiplierBps(
-    arg0: string,
-    arg1: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   rewardPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+  rewardPerSpice(overrides?: CallOverrides): Promise<BigNumber>;
 
   salt(arg0: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
@@ -321,6 +335,12 @@ export interface Bakery extends BaseContract {
     _signature: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  totalBoostedSpice(
+    _to: string,
+    _spice: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   transferOwnership(
     newOwner: string,
@@ -350,6 +370,8 @@ export interface Bakery extends BaseContract {
 
     character(overrides?: CallOverrides): Promise<string>;
 
+    cursor(overrides?: CallOverrides): Promise<string>;
+
     earlyaccess(overrides?: CallOverrides): Promise<string>;
 
     land(overrides?: CallOverrides): Promise<string>;
@@ -378,13 +400,9 @@ export interface Bakery extends BaseContract {
 
     reward(overrides?: CallOverrides): Promise<string>;
 
-    rewardMultiplierBps(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     rewardPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    rewardPerSpice(overrides?: CallOverrides): Promise<BigNumber>;
 
     salt(arg0: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
@@ -393,6 +411,12 @@ export interface Bakery extends BaseContract {
       _signature: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    totalBoostedSpice(
+      _to: string,
+      _spice: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
@@ -432,6 +456,8 @@ export interface Bakery extends BaseContract {
 
     character(overrides?: CallOverrides): Promise<BigNumber>;
 
+    cursor(overrides?: CallOverrides): Promise<BigNumber>;
+
     earlyaccess(overrides?: CallOverrides): Promise<BigNumber>;
 
     land(overrides?: CallOverrides): Promise<BigNumber>;
@@ -452,13 +478,9 @@ export interface Bakery extends BaseContract {
 
     reward(overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewardMultiplierBps(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     rewardPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
+
+    rewardPerSpice(overrides?: CallOverrides): Promise<BigNumber>;
 
     salt(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -466,6 +488,12 @@ export interface Bakery extends BaseContract {
       _spice: Bakery.SpiceStruct,
       _signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    totalBoostedSpice(
+      _to: string,
+      _spice: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     transferOwnership(
@@ -497,6 +525,8 @@ export interface Bakery extends BaseContract {
 
     character(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    cursor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     earlyaccess(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     land(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -520,13 +550,9 @@ export interface Bakery extends BaseContract {
 
     reward(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    rewardMultiplierBps(
-      arg0: string,
-      arg1: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     rewardPerBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    rewardPerSpice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     salt(
       arg0: BigNumberish,
@@ -537,6 +563,12 @@ export interface Bakery extends BaseContract {
       _spice: Bakery.SpiceStruct,
       _signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    totalBoostedSpice(
+      _to: string,
+      _spice: BigNumberish,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     transferOwnership(

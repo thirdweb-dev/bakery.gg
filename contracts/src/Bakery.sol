@@ -40,6 +40,7 @@ contract Bakery is Ownable, EIP712 {
   ITokenERC20 immutable public reward = ITokenERC20(0xeF960235b91E653327d82337e9329Ff7c85c917E);
   // thirdweb community early access token (not transferable)
   ITokenERC1155 immutable public earlyaccess = ITokenERC1155(0xa9e893cC12026A2F6bD826FdB295EAc9c18A7E88);
+  ITokenERC1155 immutable public cursor = ITokenERC1155(0x0000000000000000000000000000000000000000);
   ITokenERC1155 immutable public character = ITokenERC1155(0x0000000000000000000000000000000000000000);
   ITokenERC1155 immutable public upgrade = ITokenERC1155(0x0000000000000000000000000000000000000000);
   ITokenERC1155 immutable public land = ITokenERC1155(0x0000000000000000000000000000000000000000);
@@ -52,10 +53,26 @@ contract Bakery is Ownable, EIP712 {
   mapping (address => Oven) public ovens;
   mapping (uint256 => bool) public salt;
 
-  // token => tokenId => multiplier bps
-  mapping (address => mapping(uint256 => uint256)) public rewardMultiplierBps;
+  // early access: tokenId => multiplier bps
+  mapping (uint256 => uint256) private earlyAccessMultiplierBps;
+  mapping (uint256 => uint256) private characterRewardPerBlock;
 
   constructor() Ownable() EIP712("Bakery", "1") {
+    earlyAccessMultiplierBps[0] = 300; // purple => 1.3x
+    earlyAccessMultiplierBps[1] = 200; // blue => 1.2x
+    earlyAccessMultiplierBps[2] = 100; // silver => 1.1x
+    earlyAccessMultiplierBps[3] = 500; // gold => 1.5x
+    earlyAccessMultiplierBps[4] = 500; // cookie => 1.5x
+
+    characterRewardPerBlock[0] = 0.1 ether; // foxes (cps: 0.1)
+    characterRewardPerBlock[1] = 1 ether; // mfers (1)
+    characterRewardPerBlock[2] = 8 ether; // crypto (8)
+    characterRewardPerBlock[3] = 47 ether; // cool cats (47)
+    characterRewardPerBlock[4] = 260 ether; // crypto toadz (260)
+    characterRewardPerBlock[5] = 1400 ether; // azuki (1400)
+    characterRewardPerBlock[6] = 7800 ether; // clone x (7800)
+    characterRewardPerBlock[7] = 44000 ether; // bored ape (44000)
+    characterRewardPerBlock[8] = 260000 ether; // crypto punk (260000)
   }
 
   function bake(address token, uint256 tokenId) public {
@@ -84,16 +101,26 @@ contract Bakery is Ownable, EIP712 {
       revert StillCooking();
     }
 
-    // TODO cap max for rewards
     if (rewardBlockCount > MAX_NUMBER_OF_BLOCK_FOR_REWARD) {
       rewardBlockCount = MAX_NUMBER_OF_BLOCK_FOR_REWARD;
     }
 
     delete ovens[msg.sender];
 
+    uint256 totalReward = 0;
+
+    // base reward
     uint256 accuredReward = rewardBlockCount * rewardPerBlock();
-    uint256 multiplerBps = rewardMultiplierBps[oven.token][oven.tokenId];
-    uint256 totalReward = accuredReward * (multiplerBps + 10000) / 10000;
+    uint256 eaMultiplierBps = oven.token == address(earlyaccess) ? earlyAccessMultiplierBps[oven.tokenId] : 0;
+    totalReward += accuredReward * (eaMultiplierBps + 10000) / 10000;
+
+    // spice reward
+    if (oven.accumulatedSpiceAmount > 0) {
+      totalReward += (oven.accumulatedSpiceAmount + spiceBoost(msg.sender)) * rewardPerSpice();
+    }
+
+    // character reward (TODO boost)
+    totalReward += (rewardBlockCount + characterRewardPerBlock(msg.sender));
 
     reward.mint(msg.sender, totalReward);
   }
@@ -101,6 +128,64 @@ contract Bakery is Ownable, EIP712 {
   function rewardPerBlock() public pure returns (uint256) {
     // TODO
     return 0.2 ether;
+  }
+
+  function rewardPerSpice() public pure returns (uint256) {
+    // TODO
+    return 0.1 ether;
+  }
+
+  function spiceBoost(address _to) public view returns (uint256) {
+    if (address(cursor) == address(0)) {
+      return 0;
+    }
+    uint256 cursorBoostCount = IERC1155(address(cursor)).balanceOf(_to, 0);
+    uint256 cursorBoostMultiplier = 1;
+    return cursorBoostCount * cursorBoostMultiplier;
+  }
+
+  function characterRewardPerBlock(address _to) public view returns (uint256) {
+    if (address(character) == address(0)) {
+      return 0;
+    }
+
+    address[] memory to = new address[](9);
+    uint256[] memory tokenIds = new uint256[](9);
+    for (uint256 i = 0; i < 9; i++) {
+      to[i] = _to;
+      tokenIds[i] = i;
+    }
+
+    uint256[] memory balances = IERC1155(address(character)).balanceOfBatch(to, tokenIds);
+
+    uint256 totalRewards = 0;
+    for (uint256 i = 0; i < 9; i++) {
+       totalRewards = balances[i] * characterRewardPerBlock[i];
+    }
+    return totalRewards;
+  }
+
+  function characterBoost(address _to) public view returns (uint256) {
+    if (address(upgrade) == address(0) || address(character) == address(0)) {
+      return 0;
+    }
+
+    address[] memory to = new address[](9);
+    uint256[] memory tokenIds = new uint256[](9);
+    for (uint256 i = 0; i < 9; i++) {
+      to[i] = _to;
+      tokenIds[i] = i;
+    }
+
+    uint256[] memory balances = IERC1155(address(character)).balanceOfBatch(to, tokenIds);
+    uint256[] memory upgradeBalances = IERC1155(address(upgrade)).balanceOfBatch(to, tokenIds);
+
+    uint256 characterBoostCount = 0;
+    for (uint256 i = 0; i < 9; i++) {
+      balances[i] = balances[i] * characterRewardPerBlock[i];
+    }
+
+    return 0;
   }
 
   function rebake(Spice calldata _spice, bytes calldata _signature) external {

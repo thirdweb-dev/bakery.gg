@@ -10,7 +10,7 @@ const BLOCK_TIME_SECONDS: Record<number, number> = {
   [ChainId.Polygon]: 2,
 };
 const CONTRACT_ADDRESSES: Record<number, string> = {
-  [ChainId.Mumbai]: "0x65f018eff3dfaeea7c2e34dec949e9e14815c27c",
+  [ChainId.Mumbai]: "0x6518587111610bc49ee9b321f7b6f3e7299b8ff0",
 };
 
 export function useBakery() {
@@ -43,8 +43,9 @@ export function useBakery() {
         (await contract?.rewardPerBlock()) ?? BigNumber.from(0);
 
       setCookiePerSecond(rewardPerBlock.div(BLOCK_TIME_SECONDS[chainId]));
-      // TODO get cookie per click
-      setCookiePerClick(BigNumber.from(1));
+      setCookiePerClick(
+        (await contract?.rewardPerSpice()) ?? BigNumber.from(0),
+      );
 
       // eslint-disable-next-line
       const maxReward = await contract?.MAX_NUMBER_OF_BLOCK_FOR_REWARD();
