@@ -1,4 +1,4 @@
-import { Flex, Stack, Text } from "@chakra-ui/react";
+import { Flex, Box, Text } from "@chakra-ui/react";
 import { EditionMetadata } from "@thirdweb-dev/sdk";
 import Image from "next/image";
 import { MouseEventHandler } from "react";
@@ -23,12 +23,20 @@ export const Chef: React.FC<ChefProps> = ({
   );
 
   return (
-    <Flex border="1px solid white" p={4} onClick={onClick} cursor="pointer">
-      <Image src={chef.metadata.image as string} width={100} height={100} />
-      <Flex justifyContent="space-between" alignItems="center" w="100%">
-        <Stack ml={3} justifyContent="center">
+    <Flex
+      border="1px solid white"
+      onClick={onClick}
+      cursor="pointer"
+      overflow="hidden"
+      position="relative"
+    >
+      <Box position="absolute" left={-2} bottom={-2}>
+        <Image src={chef.metadata.image as string} width={60} height={60} />
+      </Box>
+      <Flex justifyContent="space-between" alignItems="center" w="100%" ml={16}>
+        <Box>
           <Text fontSize={20}>{chef.metadata.name}</Text>
-          <Text fontSize={20}>
+          <Text fontSize={16}>
             🍪{" "}
             {Math.floor(
               parseInt(
@@ -36,8 +44,10 @@ export const Chef: React.FC<ChefProps> = ({
               ) * mintQuantity,
             )}
           </Text>
-        </Stack>
-        <Text fontSize={40}>{balance}</Text>
+        </Box>
+        <Text fontSize={40} mr={4}>
+          {balance}
+        </Text>
       </Flex>
     </Flex>
   );

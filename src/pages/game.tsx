@@ -8,7 +8,7 @@ import {
   ButtonGroup,
   Button,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ConnectWallet } from "../components/ConnectWallet";
 import {
@@ -29,6 +29,13 @@ const GamePage = () => {
   const owned = useEditionDropOwned(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
+
+  const ownedChefs = useMemo(
+    () => owned?.data?.map((chef) => chef.metadata.id.toString()),
+    [owned],
+  );
+
+  console.log(ownedChefs);
 
   console.log(owned.data);
 
@@ -60,17 +67,23 @@ const GamePage = () => {
             {cps} cookies per second
           </Heading>
         </Flex>
-        <Flex>
+        <Flex flexGrow={1}>
           <SimpleGrid>
-            {lands?.data?.map((land) => (
-              <Box key={land.metadata.id.toString()}>
-                <Image
-                  src={land.metadata.image as string}
-                  width={500}
-                  height={100}
-                />
-              </Box>
-            ))}
+            {lands?.data
+              ?.filter((land) =>
+                ownedChefs?.includes(
+                  (Number(land.metadata.id.toString()) + 1).toString(),
+                ),
+              )
+              ?.map((land) => (
+                <Box key={land.metadata.id.toString()}>
+                  <Image
+                    src={land.metadata.image as string}
+                    width={500}
+                    height={100}
+                  />
+                </Box>
+              ))}
           </SimpleGrid>
         </Flex>
 
