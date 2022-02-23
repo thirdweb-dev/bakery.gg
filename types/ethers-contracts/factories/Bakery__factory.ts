@@ -57,7 +57,7 @@ const _abi = [
   },
   {
     type: "function",
-    name: "character",
+    name: "baker",
     inputs: [],
     outputs: [
       {
@@ -70,11 +70,64 @@ const _abi = [
   },
   {
     type: "function",
-    name: "cursor",
+    name: "bakerReward",
+    inputs: [
+      {
+        internalType: "address",
+        name: "_to",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "characterBoost",
+    inputs: [
+      {
+        internalType: "address",
+        name: "_to",
+        type: "address",
+      },
+      {
+        internalType: "uint256[]",
+        name: "_tokenBalances",
+        type: "uint256[]",
+      },
+      {
+        internalType: "uint256",
+        name: "nonZeroBalanceCount",
+        type: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "cookie",
     inputs: [],
     outputs: [
       {
-        internalType: "contract ITokenERC1155",
+        internalType: "contract ITokenERC20",
         name: "",
         type: "address",
       },
@@ -203,19 +256,6 @@ const _abi = [
   },
   {
     type: "function",
-    name: "reward",
-    inputs: [],
-    outputs: [
-      {
-        internalType: "contract ITokenERC20",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "rewardPerBlock",
     inputs: [],
     outputs: [
@@ -301,17 +341,12 @@ const _abi = [
   },
   {
     type: "function",
-    name: "totalBoostedSpice",
+    name: "spiceBoost",
     inputs: [
       {
         internalType: "address",
         name: "_to",
         type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "_spice",
-        type: "uint256",
       },
     ],
     outputs: [
