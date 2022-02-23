@@ -29,18 +29,24 @@ export const dropKeys = {
     ] as const,
 };
 
-export const characterKeys = {
-  all: ["characters"] as const,
-  lists: () => [...dropKeys.all, "list"] as const,
-  list: (address = AddressZero) => [...dropKeys.lists(), address] as const,
-  details: () => [...dropKeys.all, "detail"] as const,
-  detail: (address = AddressZero) => [...dropKeys.details(), address] as const,
+export const editionDropKeys = {
+  all: ["edition-drop"] as const,
+  lists: () => [...editionDropKeys.all, "list"] as const,
+  list: (address = AddressZero) =>
+    [...editionDropKeys.lists(), address] as const,
+  details: () => [...editionDropKeys.all, "detail"] as const,
+  detail: (address = AddressZero) =>
+    [...editionDropKeys.details(), address] as const,
   activeClaimCondition: (address = AddressZero, tokenId = "-1") =>
-    [...dropKeys.detail(address), "activeClaimCondition", { tokenId }] as const,
+    [
+      ...editionDropKeys.detail(address),
+      "activeClaimCondition",
+      { tokenId },
+    ] as const,
   claimPhases: (address = AddressZero, tokenId = "-1") =>
-    [...dropKeys.detail(address), "claimPhases", { tokenId }] as const,
+    [...editionDropKeys.detail(address), "claimPhases", { tokenId }] as const,
   owned: (address = AddressZero, ownerAddress = AddressZero) =>
-    [...dropKeys.detail(address), "owned", { ownerAddress }] as const,
+    [...editionDropKeys.detail(address), "owned", { ownerAddress }] as const,
   balanceOf: (
     address = AddressZero,
     userAddress = AddressZero,

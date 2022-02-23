@@ -6,17 +6,17 @@ import { useToast } from "@chakra-ui/react";
 import { BigNumberish } from "ethers";
 import { parseError } from "../utils/parseError";
 import { useQueryWithNetwork } from "./useQueryWithNetwork";
-import { characterKeys } from "../utils/cacheKeys";
+import { editionDropKeys } from "../utils/cacheKeys";
 
 interface EditionDropInput {
   tokenId: BigNumberish;
   quantity: BigNumberish;
 }
 
-export function useCharacterList(contractAddress?: string) {
+export function useEditionDropList(contractAddress?: string) {
   const editionDrop = useEditionDrop(contractAddress);
   return useQueryWithNetwork(
-    characterKeys.list(contractAddress),
+    editionDropKeys.list(contractAddress),
     () => editionDrop?.getAll(),
     {
       enabled: !!editionDrop && !!contractAddress,
