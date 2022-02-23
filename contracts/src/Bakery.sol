@@ -119,8 +119,18 @@ contract Bakery is Ownable, EIP712 {
       totalReward += (oven.accumulatedSpiceAmount + spiceBoost(msg.sender)) * rewardPerSpice();
     }
 
-    // character reward (TODO boost)
-    totalReward += (rewardBlockCount + characterRewardPerBlock(msg.sender));
+    // character reward + boost
+    (uint256[] memory balances, uint256 nonZeroBalanceCount) = characterReward(msg.sender);
+    uint256[] memory boosts = characterBoost(msg.sender, balances, nonZeroBalanceCount);
+    uint256 j = 0;
+    for (uint256 i = 0; i < balances.length; i++) {
+      if (balances[i] == 0) {
+        continue;
+      }
+
+      totalReward += balances[i] * (rewardBlockCount * characterRewardPerBlock[i]) * (boosts[j] + boosts[j + 1] + boosts[j + 2] + boosts[j + 3]);
+      j += 1;
+    }
 
     reward.mint(msg.sender, totalReward);
   }
@@ -144,9 +154,9 @@ contract Bakery is Ownable, EIP712 {
     return cursorBoostCount * cursorBoostMultiplier;
   }
 
-  function characterRewardPerBlock(address _to) public view returns (uint256) {
+  function characterReward(address _to) public view returns (uint256[] memory, uint256) {
     if (address(character) == address(0)) {
-      return 0;
+      return (new uint256[](9), 0);
     }
 
     address[] memory to = new address[](9);
@@ -158,34 +168,42 @@ contract Bakery is Ownable, EIP712 {
 
     uint256[] memory balances = IERC1155(address(character)).balanceOfBatch(to, tokenIds);
 
-    uint256 totalRewards = 0;
+    uint256 nonZeroBalanceCount = 0;
     for (uint256 i = 0; i < 9; i++) {
-       totalRewards = balances[i] * characterRewardPerBlock[i];
+      if (balances[i] > 0) {
+        nonZeroBalanceCount += 1;
+      }
     }
-    return totalRewards;
+    return (balances, nonZeroBalanceCount);
   }
 
-  function characterBoost(address _to) public view returns (uint256) {
+  /// @dev only fetch boost for characters that are not zero
+  function characterBoost(address _to, uint256[] memory _tokenBalances, uint256 nonZeroBalanceCount) public view returns (uint256[] memory) {
+    uint256 len = nonZeroBalanceCount * 4;
+
     if (address(upgrade) == address(0) || address(character) == address(0)) {
-      return 0;
+      return new uint256[](len);
     }
 
-    address[] memory to = new address[](9);
-    uint256[] memory tokenIds = new uint256[](9);
-    for (uint256 i = 0; i < 9; i++) {
-      to[i] = _to;
-      tokenIds[i] = i;
+    address[] memory to = new address[](len);
+    uint256[] memory tokenIds = new uint256[](len);
+    uint256 j = 0;
+    for (uint256 i = 0; i < _tokenBalances.length; i += 4) {
+      if (_tokenBalances[i] == 0) {
+        continue;
+      }
+      to[j] = _to;
+      to[j+1] = _to;
+      to[j+2] = _to;
+      to[j+3] = _to;
+      tokenIds[j] = i;
+      tokenIds[j+1] = i + 1;
+      tokenIds[j+2] = i + 2;
+      tokenIds[j+3] = i + 3;
+      j += 4;
     }
 
-    uint256[] memory balances = IERC1155(address(character)).balanceOfBatch(to, tokenIds);
-    uint256[] memory upgradeBalances = IERC1155(address(upgrade)).balanceOfBatch(to, tokenIds);
-
-    uint256 characterBoostCount = 0;
-    for (uint256 i = 0; i < 9; i++) {
-      balances[i] = balances[i] * characterRewardPerBlock[i];
-    }
-
-    return 0;
+    return IERC1155(address(upgrade)).balanceOfBatch(to, tokenIds);
   }
 
   function rebake(Spice calldata _spice, bytes calldata _signature) external {
