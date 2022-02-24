@@ -12,6 +12,7 @@ const BLOCK_TIME_SECONDS: Record<number, number> = {
 
 interface Contracts {
   token: string;
+  bakery: string;
   bakers: string;
   upgrades: string;
   lands: string;
@@ -19,16 +20,18 @@ interface Contracts {
 
 export const CONTRACT_ADDRESSES: Record<number, Contracts> = {
   [ChainId.Mumbai]: {
-    token: "0xed3a439dF07bEb26E5A0de651b00A8bB47793dA2",
+    bakery: "0xed3a439dF07bEb26E5A0de651b00A8bB47793dA2",
     bakers: "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
     upgrades: "0xA2E5C89a804b67c6694433e3aFf4f404e6C9443c",
     lands: "0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b",
+    token: "0xeF960235b91E653327d82337e9329Ff7c85c917E",
   },
   [ChainId.Polygon]: {
     token: "",
     bakers: "",
     upgrades: "",
     lands: "",
+    token: "",
   },
 };
 
@@ -50,7 +53,7 @@ export function useBakery() {
     if (!signer) {
       return null;
     }
-    return Bakery__factory.connect(CONTRACT_ADDRESSES[chainId].token, signer);
+    return Bakery__factory.connect(CONTRACT_ADDRESSES[chainId].bakery, signer);
   }, [chainId, signer]);
 
   useEffect(() => {

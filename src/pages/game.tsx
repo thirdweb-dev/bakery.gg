@@ -20,8 +20,6 @@ import { Baker } from "../components/Baker";
 import { Land } from "../components/Land";
 import { CONTRACT_ADDRESSES, useBakery } from "../hooks/useBakery";
 import { BigNumber, ethers } from "ethers";
-import { useWeb3 } from "../hooks/useWeb3";
-import { ChainId } from "../utils/network";
 
 const GamePage = () => {
   const [score, setScore] = useState(BigNumber.from(0));
@@ -35,9 +33,7 @@ const GamePage = () => {
   const bakers = useEditionDropList(CONTRACT_ADDRESSES[80001].bakers);
   const lands = useEditionDropList(CONTRACT_ADDRESSES[80001].lands);
   const upgrades = useEditionDropList(CONTRACT_ADDRESSES[80001].upgrades);
-
   const owned = useEditionDropOwned(CONTRACT_ADDRESSES[80001].bakers);
-
   const mintBakerMutation = useMintMutation(CONTRACT_ADDRESSES[80001].bakers);
 
   const mintUpgradeMutation = useMintMutation(
