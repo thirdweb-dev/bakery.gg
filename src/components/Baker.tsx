@@ -4,6 +4,7 @@ import Image from "next/image";
 import { MouseEventHandler } from "react";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
 import { useEditionDropActiveClaimCondition } from "../hooks/useEditionDropQueries";
+import { ChainId } from "../utils/network";
 
 interface BakerProps {
   baker: EditionMetadata;
@@ -19,7 +20,7 @@ export const Baker: React.FC<BakerProps> = ({
   mintQuantity,
 }) => {
   const activeClaimPhase = useEditionDropActiveClaimCondition(
-    CONTRACT_ADDRESSES[80001].bakers,
+    CONTRACT_ADDRESSES[ChainId.Mumbai].bakers,
     baker.metadata.id.toString(),
   );
 

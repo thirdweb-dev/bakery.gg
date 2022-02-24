@@ -23,6 +23,7 @@ import { BigNumber, ethers } from "ethers";
 import NumberCounter from "react-smooth-number-counter";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
 import { useAddress } from "@thirdweb-dev/react";
+import { ChainId } from "../utils/network";
 
 const GamePage = () => {
   const signerAddress = useAddress();
@@ -35,13 +36,17 @@ const GamePage = () => {
     cookiePerSecond,
     isBaking,
   } = useBakery();
-  const bakers = useEditionDropList(CONTRACT_ADDRESSES[80001].bakers);
-  const lands = useEditionDropList(CONTRACT_ADDRESSES[80001].lands);
-  const upgrades = useEditionDropList(CONTRACT_ADDRESSES[80001].upgrades);
-  const owned = useEditionDropOwned(CONTRACT_ADDRESSES[80001].bakers);
-  const mintBakerMutation = useMintMutation(CONTRACT_ADDRESSES[80001].bakers);
+  const bakers = useEditionDropList(CONTRACT_ADDRESSES[ChainId.Mumbai].bakers);
+  const lands = useEditionDropList(CONTRACT_ADDRESSES[ChainId.Mumbai].lands);
+  const upgrades = useEditionDropList(
+    CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
+  );
+  const owned = useEditionDropOwned(CONTRACT_ADDRESSES[ChainId.Mumbai].bakers);
+  const mintBakerMutation = useMintMutation(
+    CONTRACT_ADDRESSES[ChainId.Mumbai].bakers,
+  );
   const mintUpgradeMutation = useMintMutation(
-    CONTRACT_ADDRESSES[80001].upgrades,
+    CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
   );
   const [clickCount, setClickCount] = useState<number>(0);
 
