@@ -42,6 +42,7 @@ const GamePage = () => {
     cookiePerClick,
     cookiePerSecond,
     isBaking,
+    refresh: bakeryRefresh,
   } = useBakery();
   const bakers = useEditionDropList(CONTRACT_ADDRESSES[ChainId.Mumbai].bakers);
   const lands = useEditionDropList(CONTRACT_ADDRESSES[ChainId.Mumbai].lands);
@@ -97,6 +98,7 @@ const GamePage = () => {
         .then((tx) => tx && tx.wait())
         .then(() => {
           setClickCount(0);
+          bakeryRefresh();
           // TODO: loading state
           // TODO: update bakery
         });
