@@ -218,7 +218,7 @@ const GamePage = () => {
                         nft.metadata.id.toString() ===
                         baker.metadata.id.toString(),
                     )
-                    ?.supply.toString()}
+                    ?.quantityOwned.toString()}
                   onClick={() =>
                     mintBakerMutation.mutate({
                       tokenId: baker.metadata.id,

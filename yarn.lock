@@ -2768,19 +2768,18 @@
   resolved "https://registry.yarnpkg.com/@thirdweb-dev/contracts/-/contracts-2.0.1-47.tgz#73d8ed9c8f403e88e4bb53df6fae7bf853a0321f"
   integrity sha512-4zEBN9RbCBXG39dayD9gV0MWg9HDbGmphnqHsM/8rNblm9bFvroJ6W/uG0e/7q588/Q+oByauKPPNoTb9F9NCg==
 
-"@thirdweb-dev/react@^2.0.0-nightly.5":
-  version "2.0.0-nightly.5"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/react/-/react-2.0.0-nightly.5.tgz#4c1a2109fd93c7dc2aff487c842cecb2b53bf18c"
-  integrity sha512-ljwOFVH/7iNK7pZ7c58j5pe1iWsR11TyLCChc8Hyy7wESC7fGjTGLI1D2AtFTFcv2o1d4v5y/z/n1P2SnmaTjA==
+"@thirdweb-dev/react@^2.0.0-nightly.6":
+  version "2.0.0-nightly.6"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/react/-/react-2.0.0-nightly.6.tgz#b770b9b887948ab9aa874412bd0d02adae0a670e"
+  integrity sha512-XN4x0XPN/RZPTIGtLy61sKTE8ehyUwM+yeEf8/DGo3S1k+tsTqvmrxBPJ6VfQESNMMq2btRwwcn+1SS2aDUF5w==
   dependencies:
-    "@thirdweb-dev/sdk" "^2.0.0-nightly.19"
     tiny-invariant "^1.2.0"
     wagmi "^0.2.12"
 
-"@thirdweb-dev/sdk@^2.0.0-nightly.19":
-  version "2.0.0-nightly.19"
-  resolved "https://registry.yarnpkg.com/@thirdweb-dev/sdk/-/sdk-2.0.0-nightly.19.tgz#5a277acc6b5582a9225133fa1e9c1314802d061e"
-  integrity sha512-Yqnn0C4Y/mXPK9PNs8GwjRCrxDmKfaFHnRcTNkernxuEu7Rn+zl1Fib2AXr255h2IPx+zz8oEMpJZPH0EXPNwQ==
+"@thirdweb-dev/sdk@2.0.0-nightly.25":
+  version "2.0.0-nightly.25"
+  resolved "https://registry.yarnpkg.com/@thirdweb-dev/sdk/-/sdk-2.0.0-nightly.25.tgz#b6a3d16e73c16a6aed2c67635bcf683fde25db11"
+  integrity sha512-fvzldwpyBJV0iEsJkJTUlB/8h4AmsNKg+C3MzUUrOsNTQLCDQ3nB4B91lu84h+j1Pn8kpb7jcIWr9djh67iDaw==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/bytes" "^5.4.0"
@@ -2790,11 +2789,11 @@
     "@ethersproject/units" "^5.5.0"
     "@thirdweb-dev/contracts" "2.0.1-47"
     "@web-std/file" "^3.0.0"
+    cross-fetch "^3.1.5"
     deep-equal "^2.0.5"
     eventemitter2 "^6.4.5"
     form-data "^4.0.0"
     fs-extra "^10.0.0"
-    isomorphic-fetch "^3.0.0"
     keccak256 "^1.0.6"
     nanoid "^3.1.31"
     tiny-invariant "^1.2.0"
@@ -5340,7 +5339,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-cross-fetch@^3.1.4:
+cross-fetch@^3.1.4, cross-fetch@^3.1.5:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.5.tgz#e1389f44d9e7ba767907f7af8454787952ab534f"
   integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==
@@ -8459,14 +8458,6 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
-
-isomorphic-fetch@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-3.0.0.tgz#0267b005049046d2421207215d45d6a262b8b8b4"
-  integrity sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==
-  dependencies:
-    node-fetch "^2.6.1"
-    whatwg-fetch "^3.4.1"
 
 istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0:
   version "3.2.0"
