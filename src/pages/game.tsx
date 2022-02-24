@@ -37,8 +37,6 @@ const GamePage = () => {
   const owned = useEditionDropOwned(CONTRACT_ADDRESSES[80001].bakers);
   const mintBakerMutation = useMintMutation(CONTRACT_ADDRESSES[80001].bakers);
 
-  console.log(upgrades.data);
-
   const mintUpgradeMutation = useMintMutation(
     CONTRACT_ADDRESSES[80001].upgrades,
   );
@@ -120,7 +118,7 @@ const GamePage = () => {
           )}
         </Flex>
         <Flex flexGrow={1}>
-          <Stack>
+          <Stack spacing={0}>
             {lands?.data
               ?.filter((land) =>
                 ownedBakers?.includes(
