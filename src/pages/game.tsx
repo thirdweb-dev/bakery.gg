@@ -28,6 +28,7 @@ import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { ChainId } from "../utils/network";
 import { Card } from "../components/Card";
 import { useActiveChainId } from "../hooks/useActiveChainId";
+import { Upgrade } from "../components/Upgrade";
 
 const GamePage = () => {
   const signerAddress = useAddress();
@@ -265,25 +266,10 @@ const GamePage = () => {
                       ),
                   )
                   ?.map((upgrade) => (
-                    <Box
+                    <Upgrade
                       key={upgrade.metadata.id.toString()}
-                      onClick={() =>
-                        mintUpgradeMutation.mutate({
-                          tokenId: upgrade.metadata.id,
-                          quantity: 1,
-                        })
-                      }
-                    >
-                      <Tooltip label={upgrade.metadata.name}>
-                        <Box boxSize={20}>
-                          <Image
-                            src={upgrade.metadata.image as string}
-                            width={72}
-                            height={72}
-                          />
-                        </Box>
-                      </Tooltip>
-                    </Box>
+                      upgrade={upgrade}
+                    />
                   ))
                   .slice(0, 6)}
               </SimpleGrid>

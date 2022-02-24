@@ -26,7 +26,7 @@ export const Baker: React.FC<BakerProps> = ({
   );
 
   return (
-    <Card p={1}>
+    <Card p={1} _hover={{ bgColor: "gray.200" }}>
       <Flex onClick={onClick} cursor="pointer" overflow="hidden">
         <Box>
           <Image src={baker.metadata.image as string} width={60} height={60} />
