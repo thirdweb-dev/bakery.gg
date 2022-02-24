@@ -1,4 +1,4 @@
-import { useAddress, useEditionDrop } from "@thirdweb-dev/react";
+import { useAddress, useEditionDrop, useToken } from "@thirdweb-dev/react";
 import { useToast } from "@chakra-ui/react";
 import { BigNumberish } from "ethers";
 import { parseError } from "../utils/parseError";
