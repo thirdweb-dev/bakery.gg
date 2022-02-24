@@ -1,5 +1,5 @@
 import { useSigner, useAddress } from "@thirdweb-dev/react";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useEffect, useMemo, useState } from "react";
 import { Bakery__factory } from "../../types/ethers-contracts";
 import { ChainId } from "../utils/network";
@@ -10,7 +10,7 @@ const BLOCK_TIME_SECONDS: Record<number, number> = {
   [ChainId.Polygon]: 2,
 };
 const CONTRACT_ADDRESSES: Record<number, string> = {
-  [ChainId.Mumbai]: "0xe9388ee324cc32648d5c481df15285f144126892",
+  [ChainId.Mumbai]: "0xe5ab92564b9161e27bc96866dcdd5ba4ca9021c6",
 };
 
 export function useBakery() {
@@ -41,11 +41,10 @@ export function useBakery() {
 
       const rewardPerBlock =
         (await contract?.rewardPerBlock()) ?? BigNumber.from(0);
+      const rewardPerSec = rewardPerBlock.div(BLOCK_TIME_SECONDS[chainId]);
 
-      setCookiePerSecond(rewardPerBlock.div(BLOCK_TIME_SECONDS[chainId]));
-      setCookiePerClick(
-        (await contract?.rewardPerSpice()) ?? BigNumber.from(0),
-      );
+      const rewardPerSpice =
+        (await contract?.rewardPerSpice()) ?? BigNumber.from(0);
 
       // eslint-disable-next-line
       const maxReward = await contract?.MAX_NUMBER_OF_BLOCK_FOR_REWARD();
@@ -55,16 +54,39 @@ export function useBakery() {
         const oven = await contract?.ovens(signerAddress);
         setIsBaking(oven?.startBlock.gt(0) ?? false);
         setBakeStartBlock(oven?.startBlock.toNumber() ?? 0);
+
+        const spiceBoost =
+          (await contract?.spiceBoost(signerAddress)) ?? BigNumber.from(0);
+
+        const [boostRewardPerBlock] = (await contract?.bakerReward(
+          signerAddress,
+        )) ?? [[]];
+        const boostRewardPerSec = boostRewardPerBlock.map((r) =>
+          r.div(BLOCK_TIME_SECONDS[chainId]),
+        );
+        const totalBoostRewardPerSec = boostRewardPerSec.reduce(
+          (acc, cur) => acc.add(cur),
+          BigNumber.from(0),
+        );
+
+        setCookiePerClick(
+          BigNumber.from(spiceBoost).mul(rewardPerSpice).add(rewardPerSpice),
+        );
+        console.log(rewardPerSec.toString(), totalBoostRewardPerSec.toString());
+        setCookiePerSecond(rewardPerSec.add(totalBoostRewardPerSec));
+      } else {
+        setCookiePerClick(rewardPerSpice);
+        setCookiePerSecond(rewardPerSec);
       }
     }
     update();
   }, [contract, signerAddress, chainId]);
 
-  const isExceedMaxBakeLimit = useMemo(async () => {
+  const isExceedMaxBakeLimit = useMemo(() => {
     if (!signer || !maxNumberOfBlockReward || !bakeStartBlock) {
       return false;
     }
-    const currentBlockNumber = await signer.provider?.getBlockNumber();
+    const currentBlockNumber = 0; // await signer.provider?.getBlockNumber();
     if (!currentBlockNumber) {
       return false;
     }

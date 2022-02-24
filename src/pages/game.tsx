@@ -8,7 +8,7 @@ import {
   ButtonGroup,
   Button,
 } from "@chakra-ui/react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ConnectWallet } from "../components/ConnectWallet";
 import {
@@ -18,28 +18,26 @@ import {
 } from "../hooks/useEditionDropQueries";
 import { Baker } from "../components/Baker";
 import { Land } from "../components/Land";
+import { useBakery } from "../hooks/useBakery";
+import { BigNumber, ethers } from "ethers";
 
 const GamePage = () => {
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(BigNumber.from(0));
   const [mintQuantity, setMintQuantity] = useState(1);
-  const [cps, setCps] = useState(0);
-  const [cpc, setCpc] = useState(1);
+  const {
+    contract: bakeryContract,
+    cookiePerClick,
+    cookiePerSecond,
+    isBaking,
+    isExceedMaxBakeLimit,
+  } = useBakery();
+
   const bakers = useEditionDropList(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
   const owned = useEditionDropOwned(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
-
-  const ownedBakers = useMemo(
-    () => owned?.data?.map((baker) => baker.metadata.id.toString()),
-    [owned],
-  );
-
-  console.log(ownedBakers);
-
-  console.log(owned.data);
-
   const lands = useEditionDropList(
     "0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b",
   );
@@ -48,10 +46,33 @@ const GamePage = () => {
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
 
+  const ownedBakers = useMemo(
+    () => owned?.data?.map((baker) => baker.metadata.id.toString()),
+    [owned],
+  );
+
+  const onCookieClick = useCallback(
+    (_score) => {
+      if (isBaking) {
+        setScore(_score.add(cookiePerClick));
+      }
+    },
+    [isBaking, cookiePerClick],
+  );
+
+  const onCookieIncrement = useCallback(
+    (value) => {
+      if (isBaking) {
+        setScore(score.add(value));
+      }
+    },
+    [isBaking, score],
+  );
+
   useEffect(() => {
-    const timeout = setInterval(() => setScore((s) => s + cps / 10), 100);
+    const timeout = setInterval(() => onCookieIncrement(cookiePerSecond), 1000);
     return () => clearInterval(timeout);
-  }, [cps]);
+  }, [cookiePerSecond, onCookieIncrement]);
 
   return (
     <Flex pt={12} justifyContent="center">
@@ -59,14 +80,43 @@ const GamePage = () => {
         <Flex flexDir="column" textAlign="center">
           <ConnectWallet />
           <Heading as="h3" size="2xl" mt={5}>
-            {Math.floor(score)} cookies
+            {ethers.utils.formatUnits(score)} cookies
           </Heading>
-          <Box onClick={() => setScore(score + cpc)} my={3}>
+          <Box onClick={() => onCookieClick(score)} my={3}>
             <Image src="/assets/goldcookie.png" width={250} height={250} />
           </Box>
-          <Heading as="h5" size="lg" onClick={() => setCps(cps + 1)}>
-            {cps} cookies per second
+          <Heading as="h5" size="lg">
+            {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
           </Heading>
+
+          {isBaking ? (
+            <Button
+              onClick={() =>
+                bakeryContract?.rebake(
+                  {
+                    to: ethers.constants.AddressZero,
+                    amount: 0,
+                    expiryTime: 0,
+                    salt: 0,
+                  },
+                  "0x",
+                )
+              }
+            >
+              Unbake
+            </Button>
+          ) : (
+            <Button
+              onClick={() =>
+                bakeryContract?.bake(ethers.constants.AddressZero, 0)
+              }
+            >
+              Bake
+            </Button>
+          )}
+          {isExceedMaxBakeLimit ? (
+            <Text>Your cookies are burning up! Please take them out!</Text>
+          ) : null}
         </Flex>
         <Flex flexGrow={1}>
           <Stack>
