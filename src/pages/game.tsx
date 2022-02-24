@@ -20,8 +20,7 @@ import { Baker } from "../components/Baker";
 import { Land } from "../components/Land";
 import { CONTRACT_ADDRESSES, useBakery } from "../hooks/useBakery";
 import { BigNumber, ethers } from "ethers";
-import { useWeb3 } from "../hooks/useWeb3";
-import { ChainId } from "../utils/network";
+import SmoothNumber from "react-number-animator";
 
 const GamePage = () => {
   const [score, setScore] = useState(BigNumber.from(0));
@@ -81,7 +80,10 @@ const GamePage = () => {
         <Flex flexDir="column" textAlign="center">
           <ConnectWallet />
           <Heading as="h3" size="2xl" mt={5}>
-            {Math.floor(parseInt(ethers.utils.formatUnits(score)))} cookies
+            <SmoothNumber
+              value={Math.floor(parseInt(ethers.utils.formatUnits(score)))}
+            />{" "}
+            cookies
           </Heading>
           <Box onClick={() => onCookieClick(score)} my={3}>
             <Image src="/assets/goldcookie.png" width={250} height={250} />
