@@ -1,5 +1,5 @@
 import { useSigner, useAddress } from "@thirdweb-dev/react";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { useEffect, useMemo, useState } from "react";
 import { Bakery__factory } from "../../types/ethers-contracts";
 import { ChainId } from "../utils/network";
@@ -86,7 +86,8 @@ export function useBakery() {
     if (!signer || !maxNumberOfBlockReward || !bakeStartBlock) {
       return false;
     }
-    const currentBlockNumber = 0; // await signer.provider?.getBlockNumber();
+    const currentBlockNumber = 0;
+    // await signer.provider?.getBlockNumber();
     if (!currentBlockNumber) {
       return false;
     }

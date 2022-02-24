@@ -70,7 +70,10 @@ const GamePage = () => {
   );
 
   useEffect(() => {
-    const timeout = setInterval(() => onCookieIncrement(cookiePerSecond), 1000);
+    const timeout = setInterval(
+      () => onCookieIncrement(cookiePerSecond.div(10)),
+      100,
+    );
     return () => clearInterval(timeout);
   }, [cookiePerSecond, onCookieIncrement]);
 
@@ -80,7 +83,7 @@ const GamePage = () => {
         <Flex flexDir="column" textAlign="center">
           <ConnectWallet />
           <Heading as="h3" size="2xl" mt={5}>
-            {ethers.utils.formatUnits(score)} cookies
+            {Math.floor(parseInt(ethers.utils.formatUnits(score)))} cookies
           </Heading>
           <Box onClick={() => onCookieClick(score)} my={3}>
             <Image src="/assets/goldcookie.png" width={250} height={250} />
