@@ -41,7 +41,12 @@ const GamePage = () => {
   const upgrades = useEditionDropList(
     CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
   );
-  const owned = useEditionDropOwned(CONTRACT_ADDRESSES[ChainId.Mumbai].bakers);
+  const ownedBakers = useEditionDropOwned(
+    CONTRACT_ADDRESSES[ChainId.Mumbai].bakers,
+  );
+  const ownedUpgrades = useEditionDropOwned(
+    CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
+  );
   const mintBakerMutation = useMintMutation(
     CONTRACT_ADDRESSES[ChainId.Mumbai].bakers,
   );
@@ -50,9 +55,14 @@ const GamePage = () => {
   );
   const [clickCount, setClickCount] = useState<number>(0);
 
-  const ownedBakers = useMemo(
-    () => owned?.data?.map((baker) => baker.metadata.id.toString()),
-    [owned],
+  const ownedBakersIds = useMemo(
+    () => ownedBakers?.data?.map((baker) => baker.metadata.id.toString()),
+    [ownedBakers],
+  );
+
+  const ownedUpgradesIds = useMemo(
+    () => ownedUpgrades?.data?.map((upgrade) => upgrade.metadata.id.toString()),
+    [ownedUpgrades],
   );
 
   const onCookieClick = useCallback(
@@ -146,7 +156,7 @@ const GamePage = () => {
           <Stack spacing={0}>
             {lands?.data
               ?.filter((land) =>
-                ownedBakers?.includes(
+                ownedBakersIds?.includes(
                   (Number(land.metadata.id.toString()) + 1).toString(),
                 ),
               )
@@ -215,8 +225,12 @@ const GamePage = () => {
                     "Baker ID"
                   ] as string;
 
-                  return ownedBakers?.includes(bakerId);
+                  return ownedBakersIds?.includes(bakerId);
                 })
+                ?.filter(
+                  (upgrade) =>
+                    !ownedUpgradesIds?.includes(upgrade.metadata.id.toString()),
+                )
                 ?.map((upgrade) => (
                   <Box
                     key={upgrade.metadata.id.toString()}
@@ -244,7 +258,7 @@ const GamePage = () => {
               {bakers?.data?.map((baker) => (
                 <Baker
                   key={baker.metadata.id.toString()}
-                  balance={owned?.data
+                  balance={ownedBakers?.data
                     ?.find(
                       (nft) =>
                         nft.metadata.id.toString() ===
