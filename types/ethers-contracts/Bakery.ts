@@ -38,6 +38,8 @@ export interface BakeryInterface extends utils.Interface {
   functions: {
     "MAX_NUMBER_OF_BLOCK_FOR_REWARD()": FunctionFragment;
     "MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD()": FunctionFragment;
+    "REWARD_PER_BLOCK()": FunctionFragment;
+    "REWARD_PER_SPICE()": FunctionFragment;
     "bake(address,uint256)": FunctionFragment;
     "baker()": FunctionFragment;
     "bakerBoost(address,uint256[],uint256)": FunctionFragment;
@@ -50,11 +52,11 @@ export interface BakeryInterface extends utils.Interface {
     "owner()": FunctionFragment;
     "rebake((address,uint256,uint256,uint256),bytes)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "rewardPerBlock()": FunctionFragment;
-    "rewardPerSpice()": FunctionFragment;
-    "salt(uint256)": FunctionFragment;
+    "rewardPerSpice(address)": FunctionFragment;
+    "salts(uint256)": FunctionFragment;
     "spice((address,uint256,uint256,uint256),bytes)": FunctionFragment;
     "spiceBoost(address)": FunctionFragment;
+    "totalReward(address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "unbake()": FunctionFragment;
     "upgrade()": FunctionFragment;
@@ -66,6 +68,14 @@ export interface BakeryInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "REWARD_PER_BLOCK",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "REWARD_PER_SPICE",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -99,19 +109,19 @@ export interface BakeryInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "rewardPerBlock",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
     functionFragment: "rewardPerSpice",
-    values?: undefined
+    values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "salt", values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "salts", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "spice",
     values: [Bakery.SpiceStruct, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "spiceBoost", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "totalReward",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [string]
@@ -125,6 +135,14 @@ export interface BakeryInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "REWARD_PER_BLOCK",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "REWARD_PER_SPICE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "bake", data: BytesLike): Result;
@@ -152,16 +170,16 @@ export interface BakeryInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "rewardPerBlock",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "rewardPerSpice",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "salt", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "salts", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "spice", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "spiceBoost", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalReward",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
@@ -220,6 +238,10 @@ export interface Bakery extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    REWARD_PER_BLOCK(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    REWARD_PER_SPICE(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     bake(
       token: string,
       tokenId: BigNumberish,
@@ -275,11 +297,12 @@ export interface Bakery extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    rewardPerBlock(overrides?: CallOverrides): Promise<[BigNumber]>;
+    rewardPerSpice(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
-    rewardPerSpice(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    salt(arg0: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
+    salts(arg0: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
     spice(
       _spice: Bakery.SpiceStruct,
@@ -288,6 +311,12 @@ export interface Bakery extends BaseContract {
     ): Promise<ContractTransaction>;
 
     spiceBoost(_to: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    totalReward(
+      to: string,
+      blockCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
 
     transferOwnership(
       newOwner: string,
@@ -306,6 +335,10 @@ export interface Bakery extends BaseContract {
   MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD(
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  REWARD_PER_BLOCK(overrides?: CallOverrides): Promise<BigNumber>;
+
+  REWARD_PER_SPICE(overrides?: CallOverrides): Promise<BigNumber>;
 
   bake(
     token: string,
@@ -362,11 +395,9 @@ export interface Bakery extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  rewardPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
+  rewardPerSpice(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  rewardPerSpice(overrides?: CallOverrides): Promise<BigNumber>;
-
-  salt(arg0: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+  salts(arg0: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
   spice(
     _spice: Bakery.SpiceStruct,
@@ -375,6 +406,12 @@ export interface Bakery extends BaseContract {
   ): Promise<ContractTransaction>;
 
   spiceBoost(_to: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  totalReward(
+    to: string,
+    blockCount: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   transferOwnership(
     newOwner: string,
@@ -395,6 +432,10 @@ export interface Bakery extends BaseContract {
     MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    REWARD_PER_BLOCK(overrides?: CallOverrides): Promise<BigNumber>;
+
+    REWARD_PER_SPICE(overrides?: CallOverrides): Promise<BigNumber>;
 
     bake(
       token: string,
@@ -449,11 +490,9 @@ export interface Bakery extends BaseContract {
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
-    rewardPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
+    rewardPerSpice(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewardPerSpice(overrides?: CallOverrides): Promise<BigNumber>;
-
-    salt(arg0: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+    salts(arg0: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
     spice(
       _spice: Bakery.SpiceStruct,
@@ -462,6 +501,12 @@ export interface Bakery extends BaseContract {
     ): Promise<void>;
 
     spiceBoost(_to: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalReward(
+      to: string,
+      blockCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
@@ -492,6 +537,10 @@ export interface Bakery extends BaseContract {
     MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    REWARD_PER_BLOCK(overrides?: CallOverrides): Promise<BigNumber>;
+
+    REWARD_PER_SPICE(overrides?: CallOverrides): Promise<BigNumber>;
 
     bake(
       token: string,
@@ -535,11 +584,9 @@ export interface Bakery extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    rewardPerBlock(overrides?: CallOverrides): Promise<BigNumber>;
+    rewardPerSpice(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    rewardPerSpice(overrides?: CallOverrides): Promise<BigNumber>;
-
-    salt(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
+    salts(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     spice(
       _spice: Bakery.SpiceStruct,
@@ -548,6 +595,12 @@ export interface Bakery extends BaseContract {
     ): Promise<BigNumber>;
 
     spiceBoost(_to: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalReward(
+      to: string,
+      blockCount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: string,
@@ -569,6 +622,10 @@ export interface Bakery extends BaseContract {
     MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    REWARD_PER_BLOCK(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    REWARD_PER_SPICE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     bake(
       token: string,
@@ -618,11 +675,12 @@ export interface Bakery extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    rewardPerBlock(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    rewardPerSpice(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    rewardPerSpice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    salt(
+    salts(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -635,6 +693,12 @@ export interface Bakery extends BaseContract {
 
     spiceBoost(
       _to: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    totalReward(
+      to: string,
+      blockCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
