@@ -2,6 +2,7 @@ import {
   Heading,
   Box,
   Flex,
+  Text,
   Stack,
   SimpleGrid,
   ButtonGroup,
@@ -32,6 +33,7 @@ const GamePage = () => {
   const signer = useSigner();
   const [score, setScore] = useState(BigNumber.from(0));
   const [blockNumber, setBlockNumber] = useState(0);
+  const [isCookieBurned, setIsCookieBurned] = useState(false);
   const [mintQuantity, setMintQuantity] = useState(1);
   const {
     contract: bakeryContract,
@@ -41,6 +43,7 @@ const GamePage = () => {
     cookiePerClick,
     cookiePerSecond,
     isBaking,
+    refresh: bakeryRefresh,
   } = useBakery();
   const bakers = useEditionDropList(CONTRACT_ADDRESSES[ChainId.Mumbai].bakers);
   const lands = useEditionDropList(CONTRACT_ADDRESSES[ChainId.Mumbai].lands);
@@ -93,14 +96,29 @@ const GamePage = () => {
         .then((response) =>
           bakeryContract?.rebake(response.payload, response.signature),
         )
-        .then((tx) => tx && tx.wait())
+        .then((tx) => tx?.wait())
         .then(() => {
           setClickCount(0);
-          // TODO: loading state
-          // TODO: update bakery
+          bakeryRefresh();
+        });
+    } else {
+      bakeryContract
+        ?.rebake(
+          { to: ethers.constants.AddressZero, amount: 0, startBlock: 0 },
+          "0x",
+        )
+        .then((tx) => tx?.wait())
+        .then(() => {
+          bakeryRefresh();
         });
     }
-  }, [bakeryContract, signerAddress, clickCount, bakeStartBlock]);
+  }, [
+    bakeryRefresh,
+    bakeryContract,
+    signerAddress,
+    clickCount,
+    bakeStartBlock,
+  ]);
 
   const onCookieClick = useCallback(
     (_score) => {
@@ -114,11 +132,11 @@ const GamePage = () => {
 
   const onCookieIncrement = useCallback(
     (value) => {
-      if (isBaking) {
+      if (isBaking && !isCookieBurned) {
         setScore(score.add(value));
       }
     },
-    [isBaking, score],
+    [isBaking, score, isCookieBurned],
   );
 
   useEffect(() => {
@@ -140,6 +158,7 @@ const GamePage = () => {
         );
         const estByBlock = cookiePerSecond.mul(blocks);
         estScore = estScore.add(estByBlock);
+        setIsCookieBurned(blocks === maxNumberOfBlockReward);
       }
       setScore(estScore);
       setInitBalance(true);
@@ -193,6 +212,9 @@ const GamePage = () => {
                 Start Baking
               </Button>
             )}
+            {isCookieBurned ? (
+              <Text>Cookie burned! Please start the next batch</Text>
+            ) : null}
           </Flex>
         </Card>
         <Card>
