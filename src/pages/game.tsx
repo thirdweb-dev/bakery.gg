@@ -193,6 +193,22 @@ const GamePage = () => {
         <Card>
           <Flex flexDir="column" textAlign="center">
             <ConnectWallet />
+            <Box mt={1} w="full">
+              {isBaking ? (
+                <Button onClick={() => onRebakeClick()} w="full">
+                  {clickCount > 0 ? `Rebake (${clickCount})` : "Rebake"}
+                </Button>
+              ) : (
+                <Button
+                  w="full"
+                  onClick={() =>
+                    bakeryContract?.bake(ethers.constants.AddressZero, 0)
+                  }
+                >
+                  Start Baking
+                </Button>
+              )}
+            </Box>
             <Heading as="h3" size="2xl" mt={5}>
               <NumberCounter
                 value={Math.floor(parseInt(ethers.utils.formatUnits(score)))}
@@ -206,19 +222,6 @@ const GamePage = () => {
             <Heading as="h5" size="lg">
               {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
             </Heading>
-            {isBaking ? (
-              <Button onClick={() => onRebakeClick()}>
-                {clickCount > 0 ? `Rebake (${clickCount})` : "Rebake"}
-              </Button>
-            ) : (
-              <Button
-                onClick={() =>
-                  bakeryContract?.bake(ethers.constants.AddressZero, 0)
-                }
-              >
-                Start Baking
-              </Button>
-            )}
             {isCookieBurned ? (
               <Text>Cookie burned! Please start the next batch</Text>
             ) : null}
