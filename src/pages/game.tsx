@@ -34,9 +34,7 @@ const GamePage = () => {
   const bakers = useEditionDropList(CONTRACT_ADDRESSES[80001].bakers);
   const lands = useEditionDropList(CONTRACT_ADDRESSES[80001].lands);
   const upgrades = useEditionDropList(CONTRACT_ADDRESSES[80001].upgrades);
-
   const owned = useEditionDropOwned(CONTRACT_ADDRESSES[80001].bakers);
-
   const mintBakerMutation = useMintMutation(CONTRACT_ADDRESSES[80001].bakers);
 
   const mintUpgradeMutation = useMintMutation(
