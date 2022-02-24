@@ -5,7 +5,10 @@ import { queryClient } from "../pages/_app";
 import { useToast } from "@chakra-ui/react";
 import { BigNumberish } from "ethers";
 import { parseError } from "../utils/parseError";
-import { useQueryWithNetwork } from "./useQueryWithNetwork";
+import {
+  useMutationWithInvalidate,
+  useQueryWithNetwork,
+} from "./useQueryWithNetwork";
 import { editionDropKeys } from "../utils/cacheKeys";
 
 interface EditionDropInput {
@@ -60,7 +63,7 @@ export function useMintMutation(contractAddress?: string) {
 
   const toast = useToast();
 
-  return useMutation(
+  return useMutationWithInvalidate(
     (data: EditionDropInput) => {
       if (!address || !editionDrop) {
         throw new Error("No address or Edition Drop");
@@ -68,7 +71,7 @@ export function useMintMutation(contractAddress?: string) {
       return editionDrop.claim(data.tokenId, data.quantity);
     },
     {
-      onSuccess: () => {
+      onSuccess: (_data, _variables, _options, invalidate) => {
         queryClient.invalidateQueries();
         toast({
           title: "Successfuly minted.",
@@ -92,12 +95,4 @@ export function useMintMutation(contractAddress?: string) {
       },
     },
   );
-}
-function invalidate(
-  arg0: (
-    | readonly ["edition-drop", "list", string]
-    | readonly ["edition-drop", "detail", string]
-  )[],
-): void | Promise<unknown> {
-  throw new Error("Function not implemented.");
 }
