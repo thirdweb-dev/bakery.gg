@@ -40,11 +40,13 @@ export function useBakery() {
       }
 
       const rewardPerBlock =
-        (await contract?.rewardPerBlock()) ?? BigNumber.from(0);
+        // eslint-disable-next-line
+        (await contract?.REWARD_PER_BLOCK()) ?? BigNumber.from(0);
       const rewardPerSec = rewardPerBlock.div(BLOCK_TIME_SECONDS[chainId]);
 
       const rewardPerSpice =
-        (await contract?.rewardPerSpice()) ?? BigNumber.from(0);
+        // eslint-disable-next-line
+        (await contract?.REWARD_PER_SPICE()) ?? BigNumber.from(0);
 
       // eslint-disable-next-line
       const maxReward = await contract?.MAX_NUMBER_OF_BLOCK_FOR_REWARD();
