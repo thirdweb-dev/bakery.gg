@@ -134,7 +134,6 @@ const theme = extendTheme({
     black: "#16161D",
     discord: createShades("#314db5"),
     opensea: createShades("#3191e8"),
-    eventbrite: createShades("#ff8000"),
   },
   fonts,
   breakpoints,

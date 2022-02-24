@@ -25,6 +25,7 @@ import NumberCounter from "react-smooth-number-counter";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { ChainId } from "../utils/network";
+import { Card } from "../components/Card";
 
 const GamePage = () => {
   const signerAddress = useAddress();
@@ -161,141 +162,149 @@ const GamePage = () => {
   }, [initBalance, onCookieIncrement, cookiePerSecond]);
 
   return (
-    <Flex pt={12} justifyContent="center">
+    <Flex pt={12} justifyContent="center" p={5} color="black">
       <SimpleGrid columns={3} gap={4}>
-        <Flex flexDir="column" textAlign="center">
-          <ConnectWallet />
-          <Heading as="h3" size="2xl" mt={5}>
-            <NumberCounter
-              value={Math.floor(parseInt(ethers.utils.formatUnits(score)))}
-              transition={0}
-            />
-            cookies
-          </Heading>
-          <Box onClick={() => onCookieClick(score)} my={3}>
-            <Image src="/assets/goldcookie.png" width={250} height={250} />
-          </Box>
-          <Heading as="h5" size="lg">
-            {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
-          </Heading>
-
-          {isBaking ? (
-            <Button onClick={() => onRebakeClick()}>
-              {clickCount > 0 ? `Rebake (${clickCount})` : "Rebake"}
-            </Button>
-          ) : (
-            <Button
-              onClick={() =>
-                bakeryContract?.bake(ethers.constants.AddressZero, 0)
-              }
-            >
-              Start Baking
-            </Button>
-          )}
-        </Flex>
-        <Flex flexGrow={1}>
-          <Stack spacing={0}>
-            {lands?.data
-              ?.filter((land) =>
-                ownedBakersIds?.includes(
-                  (Number(land.metadata.id.toString()) + 1).toString(),
-                ),
-              )
-              ?.map((land) => (
-                <Land
-                  key={land.metadata.id.toString()}
-                  land={land}
-                  baker={bakers?.data?.find(
-                    (baker) =>
-                      (Number(land.metadata.id.toString()) + 1).toString() ===
-                      baker.metadata.id.toString(),
-                  )}
-                />
-              ))}
-          </Stack>
-        </Flex>
+        <Card>
+          <Flex flexDir="column" textAlign="center">
+            <ConnectWallet />
+            <Heading as="h3" size="2xl" mt={5}>
+              <NumberCounter
+                value={Math.floor(parseInt(ethers.utils.formatUnits(score)))}
+                transition={0}
+              />
+              cookies
+            </Heading>
+            <Box onClick={() => onCookieClick(score)} my={3}>
+              <Image src="/assets/goldcookie.png" width={250} height={250} />
+            </Box>
+            <Heading as="h5" size="lg">
+              {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
+            </Heading>
+            {isBaking ? (
+              <Button onClick={() => onRebakeClick()}>
+                {clickCount > 0 ? `Rebake (${clickCount})` : "Rebake"}
+              </Button>
+            ) : (
+              <Button
+                onClick={() =>
+                  bakeryContract?.bake(ethers.constants.AddressZero, 0)
+                }
+              >
+                Start Baking
+              </Button>
+            )}
+          </Flex>
+        </Card>
+        <Card>
+          <Flex flexGrow={1}>
+            <Stack spacing={2}>
+              {lands?.data
+                ?.filter((land) =>
+                  ownedBakersIds?.includes(
+                    (Number(land.metadata.id.toString()) + 1).toString(),
+                  ),
+                )
+                ?.map((land) => (
+                  <Land
+                    key={land.metadata.id.toString()}
+                    land={land}
+                    baker={bakers?.data?.find(
+                      (baker) =>
+                        (Number(land.metadata.id.toString()) + 1).toString() ===
+                        baker.metadata.id.toString(),
+                    )}
+                  />
+                ))}
+            </Stack>
+          </Flex>
+        </Card>
 
         <Stack>
-          <ButtonGroup isAttached size="md" variant="outline">
-            <Button
-              color="black"
-              bg="white"
-              _hover={{
-                bg: "gray.200",
-              }}
-              pointerEvents="none"
-            >
-              Mint quantity:
-            </Button>
-            <Button
-              color="black"
-              bg={mintQuantity === 1 ? "gray.200" : "white"}
-              _hover={{
-                bg: "gray.200",
-              }}
-              onClick={() => setMintQuantity(1)}
-            >
-              1
-            </Button>
-            <Button
-              color="black"
-              bg={mintQuantity === 10 ? "gray.200" : "white"}
-              _hover={{
-                bg: "gray.200",
-              }}
-              onClick={() => setMintQuantity(10)}
-            >
-              10
-            </Button>
-            <Button
-              color="black"
-              bg={mintQuantity === 100 ? "gray.200" : "white"}
-              _hover={{
-                bg: "gray.200",
-              }}
-              onClick={() => setMintQuantity(100)}
-            >
-              100
-            </Button>
-          </ButtonGroup>
-          <Stack>
-            <SimpleGrid mt={6} columns={6}>
-              {upgrades.data
-                ?.filter((upgrade) => {
-                  const bakerId: string = upgrade?.metadata?.properties?.[
-                    "Baker ID"
-                  ] as string;
-
-                  return ownedBakersIds?.includes(bakerId);
-                })
-                ?.filter(
-                  (upgrade) =>
-                    !ownedUpgradesIds?.includes(upgrade.metadata.id.toString()),
-                )
-                ?.map((upgrade) => (
-                  <Box
-                    key={upgrade.metadata.id.toString()}
-                    onClick={() =>
-                      mintUpgradeMutation.mutate({
-                        tokenId: upgrade.metadata.id,
-                        quantity: 1,
-                      })
-                    }
-                  >
-                    <Tooltip label={upgrade.metadata.name}>
-                      <Box boxSize={12}>
-                        <Image
-                          src={upgrade.metadata.image as string}
-                          width={50}
-                          height={50}
-                        />
-                      </Box>
-                    </Tooltip>
-                  </Box>
-                ))}
-            </SimpleGrid>
-
-            <SimpleGrid mt={6}>
+          <Stack spacing={1}>
+            <Card>
+              <SimpleGrid mt={6} columns={6}>
+                {upgrades.data
+                  ?.filter((upgrade) => {
+                    const bakerId: string = upgrade?.metadata?.properties?.[
+                      "Baker ID"
+                    ] as string;
+                    return ownedBakersIds?.includes(bakerId);
+                  })
+                  ?.filter(
+                    (upgrade) =>
+                      !ownedUpgradesIds?.includes(
+                        upgrade.metadata.id.toString(),
+                      ),
+                  )
+                  ?.map((upgrade) => (
+                    <Box
+                      key={upgrade.metadata.id.toString()}
+                      onClick={() =>
+                        mintUpgradeMutation.mutate({
+                          tokenId: upgrade.metadata.id,
+                          quantity: 1,
+                        })
+                      }
+                    >
+                      <Tooltip label={upgrade.metadata.name}>
+                        <Box boxSize={20}>
+                          <Image
+                            src={upgrade.metadata.image as string}
+                            width={72}
+                            height={72}
+                          />
+                        </Box>
+                      </Tooltip>
+                    </Box>
+                  ))
+                  .slice(0, 6)}
+              </SimpleGrid>
+            </Card>
+            <Card>
+              <ButtonGroup isAttached size="md" variant="outline">
+                <Button
+                  color="white"
+                  bg="black"
+                  _hover={{
+                    bg: "gray.200",
+                  }}
+                  pointerEvents="none"
+                >
+                  Mint quantity:
+                </Button>
+                <Button
+                  color="white"
+                  bg={mintQuantity === 1 ? "gray.800" : "black"}
+                  _hover={{
+                    bg: "gray.800",
+                  }}
+                  onClick={() => setMintQuantity(1)}
+                >
+                  1
+                </Button>
+                <Button
+                  color="white"
+                  bg={mintQuantity === 10 ? "gray.800" : "black"}
+                  _hover={{
+                    bg: "gray.800",
+                  }}
+                  onClick={() => setMintQuantity(10)}
+                >
+                  10
+                </Button>
+                <Button
+                  color="white"
+                  bg={mintQuantity === 100 ? "gray.800" : "black"}
+                  _hover={{
+                    bg: "gray.800",
+                  }}
+                  onClick={() => setMintQuantity(100)}
+                >
+                  100
+                </Button>
+              </ButtonGroup>
+            </Card>
+            <SimpleGrid mt={6} spacing={1}>
               {bakers?.data?.map((baker) => (
                 <Baker
                   key={baker.metadata.id.toString()}
