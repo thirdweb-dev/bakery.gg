@@ -13,13 +13,17 @@ import {
   Text,
   useClipboard,
 } from "@chakra-ui/react";
-import { useConnect, useDisconnect } from "@thirdweb-dev/react";
+import { useAddress, useConnect, useDisconnect } from "@thirdweb-dev/react";
+import { BigNumber, ethers } from "ethers";
 import React from "react";
 import { AiOutlineDisconnect } from "react-icons/ai";
 import { FiCheck, FiChevronDown } from "react-icons/fi";
 import { ImCopy } from "react-icons/im";
+import { CONTRACT_ADDRESSES } from "../constants/addresses";
+import { useTokenBalance } from "../hooks/useEditionDropQueries";
 import { useWeb3 } from "../hooks/useWeb3";
 import { shortenIfAddress } from "../utils/address";
+import { ChainId } from "../utils/network";
 
 const connectorIdToImageUrl: Record<string, string> = {
   injected: "https://thirdweb.com/logos/metamask-fox.svg",
@@ -27,11 +31,19 @@ const connectorIdToImageUrl: Record<string, string> = {
   walletLink: "https://thirdweb.com/logos/coinbase-wallet-logo.svg",
 };
 export const ConnectWallet: React.FC<ButtonProps> = (buttonProps) => {
+  const signerAddress = useAddress();
   const [connector, connect] = useConnect();
-  const { balance, address, chainId, getNetworkMetadata } = useWeb3();
+  const { address, chainId, getNetworkMetadata } = useWeb3();
   const disconnect = useDisconnect();
 
   const { hasCopied, onCopy } = useClipboard(address || "");
+
+  const balance = useTokenBalance(
+    signerAddress || ethers.constants.AddressZero,
+    CONTRACT_ADDRESSES[ChainId.Mumbai].cookies,
+  );
+
+  console.log(balance.data);
 
   if (address && chainId) {
     const SVG = getNetworkMetadata(chainId).icon;
@@ -49,9 +61,9 @@ export const ConnectWallet: React.FC<ButtonProps> = (buttonProps) => {
             <Flex gap={0.5} direction="column" textAlign="left">
               <Text fontSize="sm">
                 <Skeleton as="span" isLoaded={!balance.isLoading}>
-                  {balance.data?.formatted || "0.000"}
+                  {balance?.data?.displayValue}
                 </Skeleton>{" "}
-                {getNetworkMetadata(chainId).symbol}
+                COOKIES
               </Text>
               <Text fontSize="sm" color="gray.500">
                 {shortenIfAddress(address, true)} (

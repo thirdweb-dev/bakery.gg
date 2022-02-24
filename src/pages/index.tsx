@@ -58,10 +58,6 @@ const GamePage = () => {
     CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
   );
 
-  const balance = useTokenBalance(
-    signerAddress || ethers.constants.AddressZero,
-    CONTRACT_ADDRESSES[80001].cookies,
-  );
   const [clickCount, setClickCount] = useState<number>(0);
   const [initBalance, setInitBalance] = useState(false);
 
@@ -149,26 +145,24 @@ const GamePage = () => {
 
   useEffect(() => {
     async function update() {
-      let estScore =
-        BigNumber.from(balance?.data?.value || 0) ?? BigNumber.from(0);
+      let estScore = BigNumber.from(0);
       if (isBaking && bakeStartBlock > 0) {
         const blocks = Math.min(
           maxNumberOfBlockReward,
           blockNumber - bakeStartBlock,
         );
-        const estByBlock = cookiePerSecond.mul(blocks);
-        estScore = estScore.add(estByBlock);
+        estScore = cookiePerSecond.mul(blocks);
         setIsCookieBurned(blocks === maxNumberOfBlockReward);
       }
       setScore(estScore);
       setInitBalance(true);
     }
 
-    if (!initBalance && !bakeryLoading && !balance.isLoading && blockNumber) {
+    if (!initBalance && !bakeryLoading && blockNumber) {
       update();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockNumber, bakeryLoading, balance, onCookieIncrement]);
+  }, [blockNumber, bakeryLoading, onCookieIncrement]);
 
   useEffect(() => {
     if (!initBalance) {
