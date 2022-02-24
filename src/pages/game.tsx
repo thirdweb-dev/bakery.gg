@@ -20,7 +20,7 @@ import { Baker } from "../components/Baker";
 import { Land } from "../components/Land";
 import { CONTRACT_ADDRESSES, useBakery } from "../hooks/useBakery";
 import { BigNumber, ethers } from "ethers";
-import SmoothNumber from "react-number-animator";
+import NumberCounter from "react-smooth-number-counter";
 
 const GamePage = () => {
   const [score, setScore] = useState(BigNumber.from(0));
@@ -78,9 +78,10 @@ const GamePage = () => {
         <Flex flexDir="column" textAlign="center">
           <ConnectWallet />
           <Heading as="h3" size="2xl" mt={5}>
-            <SmoothNumber
+            <NumberCounter
               value={Math.floor(parseInt(ethers.utils.formatUnits(score)))}
-            />{" "}
+              transition={0}
+            />
             cookies
           </Heading>
           <Box onClick={() => onCookieClick(score)} my={3}>
