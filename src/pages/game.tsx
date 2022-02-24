@@ -95,15 +95,31 @@ const GamePage = () => {
         .then((response) =>
           bakeryContract?.rebake(response.payload, response.signature),
         )
-        .then((tx) => tx && tx.wait())
+        .then((tx) => tx?.wait())
         .then(() => {
           setClickCount(0);
           bakeryRefresh();
           // TODO: loading state
           // TODO: update bakery
         });
+    } else {
+      bakeryContract
+        ?.rebake(
+          { to: ethers.constants.AddressZero, amount: 0, startBlock: 0 },
+          "0x",
+        )
+        .then((tx) => tx?.wait())
+        .then(() => {
+          bakeryRefresh();
+        });
     }
-  }, [bakeryContract, signerAddress, clickCount, bakeStartBlock]);
+  }, [
+    bakeryRefresh,
+    bakeryContract,
+    signerAddress,
+    clickCount,
+    bakeStartBlock,
+  ]);
 
   const onCookieClick = useCallback(
     (_score) => {
