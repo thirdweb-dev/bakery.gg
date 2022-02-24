@@ -28,12 +28,11 @@ export const Baker: React.FC<BakerProps> = ({
       onClick={onClick}
       cursor="pointer"
       overflow="hidden"
-      position="relative"
     >
-      <Box position="absolute" left={-2} bottom={-2}>
+      <Box ml={-2} mb={-8}>
         <Image src={baker.metadata.image as string} width={60} height={60} />
       </Box>
-      <Flex justifyContent="space-between" alignItems="center" w="100%" ml={16}>
+      <Flex justifyContent="space-between" alignItems="center" w="100%" ml={2}>
         <Box>
           <Text fontSize={20}>{baker.metadata.name}</Text>
           <Text fontSize={16}>

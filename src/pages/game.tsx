@@ -17,6 +17,7 @@ import {
   useMintMutation,
 } from "../hooks/useEditionDropQueries";
 import { Baker } from "../components/Baker";
+import { Land } from "../components/Land";
 
 const GamePage = () => {
   const [score, setScore] = useState(0);
@@ -68,7 +69,7 @@ const GamePage = () => {
           </Heading>
         </Flex>
         <Flex flexGrow={1}>
-          <SimpleGrid>
+          <Stack>
             {lands?.data
               ?.filter((land) =>
                 ownedBakers?.includes(
@@ -76,15 +77,17 @@ const GamePage = () => {
                 ),
               )
               ?.map((land) => (
-                <Box key={land.metadata.id.toString()}>
-                  <Image
-                    src={land.metadata.image as string}
-                    width={500}
-                    height={100}
-                  />
-                </Box>
+                <Land
+                  key={land.metadata.id.toString()}
+                  land={land}
+                  baker={bakers?.data?.find(
+                    (baker) =>
+                      (Number(land.metadata.id.toString()) + 1).toString() ===
+                      baker.metadata.id.toString(),
+                  )}
+                />
               ))}
-          </SimpleGrid>
+          </Stack>
         </Flex>
 
         <Stack>
