@@ -58,12 +58,7 @@ const GamePage = () => {
   const ownedUpgrades = useEditionDropOwned(
     CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
   );
-  const mintBakerMutation = useMintMutation(
-    CONTRACT_ADDRESSES[ChainId.Mumbai].bakers,
-  );
-  const mintUpgradeMutation = useMintMutation(
-    CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
-  );
+
   const balance = useTokenBalance(
     signerAddress || ethers.constants.AddressZero,
     CONTRACT_ADDRESSES[80001].cookies,
@@ -256,7 +251,7 @@ const GamePage = () => {
         <Stack>
           <Stack spacing={1}>
             <Card>
-              <SimpleGrid mt={6} columns={6}>
+              <SimpleGrid columns={6} spacing={1}>
                 {upgrades.data
                   ?.filter((upgrade) => {
                     const bakerId: string = upgrade?.metadata?.properties?.[
@@ -337,12 +332,6 @@ const GamePage = () => {
                         baker.metadata.id.toString(),
                     )
                     ?.quantityOwned?.toString()}
-                  onClick={() =>
-                    mintBakerMutation.mutate({
-                      tokenId: baker.metadata.id,
-                      quantity: mintQuantity,
-                    })
-                  }
                   baker={baker}
                   mintQuantity={mintQuantity}
                 />

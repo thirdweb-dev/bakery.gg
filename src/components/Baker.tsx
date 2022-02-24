@@ -3,7 +3,10 @@ import { EditionMetadata } from "@thirdweb-dev/sdk";
 import Image from "next/image";
 import { MouseEventHandler } from "react";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
-import { useEditionDropActiveClaimCondition } from "../hooks/useEditionDropQueries";
+import {
+  useEditionDropActiveClaimCondition,
+  useMintMutation,
+} from "../hooks/useEditionDropQueries";
 import { ChainId } from "../utils/network";
 import { Card } from "./Card";
 
@@ -11,13 +14,11 @@ interface BakerProps {
   baker: EditionMetadata;
   mintQuantity: number;
   balance?: string;
-  onClick: MouseEventHandler<HTMLDivElement>;
 }
 
 export const Baker: React.FC<BakerProps> = ({
   baker,
   balance,
-  onClick,
   mintQuantity,
 }) => {
   const activeClaimPhase = useEditionDropActiveClaimCondition(
@@ -25,9 +26,22 @@ export const Baker: React.FC<BakerProps> = ({
     baker.metadata.id.toString(),
   );
 
+  const mintBakerMutation = useMintMutation(
+    CONTRACT_ADDRESSES[ChainId.Mumbai].bakers,
+  );
+
   return (
     <Card p={1} _hover={{ bgColor: "gray.200" }}>
-      <Flex onClick={onClick} cursor="pointer" overflow="hidden">
+      <Flex
+        onClick={() =>
+          mintBakerMutation.mutate({
+            tokenId: baker.metadata.id,
+            quantity: mintQuantity,
+          })
+        }
+        cursor="pointer"
+        overflow="hidden"
+      >
         <Box>
           <Image src={baker.metadata.image as string} width={60} height={60} />
         </Box>
