@@ -2,6 +2,7 @@ import {
   Heading,
   Box,
   Flex,
+  Text,
   Stack,
   SimpleGrid,
   ButtonGroup,
@@ -31,6 +32,7 @@ const GamePage = () => {
   const signer = useSigner();
   const [score, setScore] = useState(BigNumber.from(0));
   const [blockNumber, setBlockNumber] = useState(0);
+  const [isCookieBurned, setIsCookieBurned] = useState(false);
   const [mintQuantity, setMintQuantity] = useState(1);
   const {
     contract: bakeryContract,
@@ -113,11 +115,11 @@ const GamePage = () => {
 
   const onCookieIncrement = useCallback(
     (value) => {
-      if (isBaking) {
+      if (isBaking && !isCookieBurned) {
         setScore(score.add(value));
       }
     },
-    [isBaking, score],
+    [isBaking, score, isCookieBurned],
   );
 
   useEffect(() => {
@@ -139,6 +141,7 @@ const GamePage = () => {
         );
         const estByBlock = cookiePerSecond.mul(blocks);
         estScore = estScore.add(estByBlock);
+        setIsCookieBurned(blocks === maxNumberOfBlockReward);
       }
       setScore(estScore);
       setInitBalance(true);
@@ -192,6 +195,9 @@ const GamePage = () => {
               Start Baking
             </Button>
           )}
+          {isCookieBurned ? (
+            <Text>Cookie burned! Please start the next batch</Text>
+          ) : null}
         </Flex>
         <Flex flexGrow={1}>
           <Stack spacing={0}>
