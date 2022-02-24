@@ -205,6 +205,9 @@ const GamePage = () => {
             <Heading as="h5" size="lg">
               {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
             </Heading>
+            <Heading as="h5" size="lg">
+              {ethers.utils.formatUnits(cookiePerClick)} cookies per click
+            </Heading>
             {isBaking ? (
               <Button onClick={() => onRebakeClick()}>
                 {clickCount > 0 ? `Rebake (${clickCount})` : "Rebake"}
