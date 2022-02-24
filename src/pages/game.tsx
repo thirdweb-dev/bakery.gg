@@ -21,7 +21,6 @@ import { Land } from "../components/Land";
 import { useBakery } from "../hooks/useBakery";
 import { BigNumber, ethers } from "ethers";
 import NumberCounter from "react-smooth-number-counter";
-import { useDebounce } from "usehooks-ts";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
 import { useAddress } from "@thirdweb-dev/react";
 
