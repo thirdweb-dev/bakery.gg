@@ -37,6 +37,8 @@ const GamePage = () => {
   const owned = useEditionDropOwned(CONTRACT_ADDRESSES[80001].bakers);
   const mintBakerMutation = useMintMutation(CONTRACT_ADDRESSES[80001].bakers);
 
+  console.log(upgrades.data);
+
   const mintUpgradeMutation = useMintMutation(
     CONTRACT_ADDRESSES[80001].upgrades,
   );
@@ -184,13 +186,17 @@ const GamePage = () => {
           </ButtonGroup>
           <Stack>
             <SimpleGrid mt={6} columns={6}>
-              {upgrades?.data?.map((upgrade) => (
-                <Tooltip
-                  key={upgrade.metadata.id.toString()}
-                  label={upgrade.metadata.name}
-                >
+              {upgrades.data
+                ?.filter((upgrade) => {
+                  const bakerId: string = upgrade?.metadata?.properties?.[
+                    "Baker ID"
+                  ] as string;
+
+                  return ownedBakers?.includes(bakerId);
+                })
+                ?.map((upgrade) => (
                   <Box
-                    boxSize={12}
+                    key={upgrade.metadata.id.toString()}
                     onClick={() =>
                       mintUpgradeMutation.mutate({
                         tokenId: upgrade.metadata.id,
@@ -198,14 +204,17 @@ const GamePage = () => {
                       })
                     }
                   >
-                    <Image
-                      src={upgrade.metadata.image as string}
-                      width={50}
-                      height={50}
-                    />
+                    <Tooltip label={upgrade.metadata.name}>
+                      <Box boxSize={12}>
+                        <Image
+                          src={upgrade.metadata.image as string}
+                          width={50}
+                          height={50}
+                        />
+                      </Box>
+                    </Tooltip>
                   </Box>
-                </Tooltip>
-              ))}
+                ))}
             </SimpleGrid>
 
             <SimpleGrid mt={6}>

@@ -22,7 +22,7 @@ export const CONTRACT_ADDRESSES: Record<number, Contracts> = {
   [ChainId.Mumbai]: {
     bakery: "0xed3a439dF07bEb26E5A0de651b00A8bB47793dA2",
     bakers: "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
-    upgrades: "0xA2E5C89a804b67c6694433e3aFf4f404e6C9443c",
+    upgrades: "0x02B5904Eb879A6912B0b28e128f1328AA32b7823",
     lands: "0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b",
     token: "0xeF960235b91E653327d82337e9329Ff7c85c917E",
   },
