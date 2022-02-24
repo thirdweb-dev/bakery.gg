@@ -1,6 +1,4 @@
-import invariant from "tiny-invariant";
 import { useAddress, useEditionDrop } from "@thirdweb-dev/react";
-import { useMutation } from "react-query";
 import { queryClient } from "../pages/_app";
 import { useToast } from "@chakra-ui/react";
 import { BigNumberish } from "ethers";
@@ -72,7 +70,6 @@ export function useMintMutation(contractAddress?: string) {
     },
     {
       onSuccess: (_data, _variables, _options, invalidate) => {
-        queryClient.invalidateQueries();
         toast({
           title: "Successfuly minted.",
           status: "success",
