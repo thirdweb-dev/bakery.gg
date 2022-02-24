@@ -222,6 +222,9 @@ const GamePage = () => {
             <Heading as="h5" size="lg">
               {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
             </Heading>
+            <Heading as="h5" size="lg">
+              {ethers.utils.formatUnits(cookiePerClick)} cookies per click
+            </Heading>
             {isCookieBurned ? (
               <Text>Cookie burned! Please start the next batch</Text>
             ) : null}
