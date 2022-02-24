@@ -7,6 +7,18 @@ export const networkKeys = {
     [...networkKeys.all, chainId] as const,
 };
 
+export const tokenKeys = {
+  all: ["token"] as const,
+  details: () => [...tokenKeys.all, "detail"] as const,
+  detail: (address = AddressZero) => [...tokenKeys.details(), address] as const,
+  balanceOf: (address = AddressZero, userAddress = AddressZero) =>
+    [
+      ...tokenKeys.detail(address),
+      "balanceOf",
+      { address: userAddress },
+    ] as const,
+};
+
 export const dropKeys = {
   all: ["drop"] as const,
   lists: () => [...dropKeys.all, "list"] as const,

@@ -21,6 +21,7 @@ export function useBakery() {
   const [bakeEndBlock, setBakeEndBlock] = useState(0);
   const [maxNumberOfBlockReward, setMaxNumberOfBlockReward] = useState(0);
   const [isBaking, setIsBaking] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const contract = useMemo(() => {
     if (!chainId) {
@@ -70,6 +71,7 @@ export function useBakery() {
         setCookiePerClick(rewardPerSpice);
       }
       setCookiePerSecond(rewardPerSec);
+      setLoading(false);
     }
     update();
   }, [contract, signerAddress, chainId]);
@@ -82,5 +84,6 @@ export function useBakery() {
     bakeEndBlock,
     isBaking,
     maxNumberOfBlockReward,
+    loading,
   };
 }

@@ -6,11 +6,23 @@ import {
   useMutationWithInvalidate,
   useQueryWithNetwork,
 } from "./useQueryWithNetwork";
-import { editionDropKeys } from "../utils/cacheKeys";
+import { editionDropKeys, tokenKeys } from "../utils/cacheKeys";
 
 interface EditionDropInput {
   tokenId: BigNumberish;
   quantity: BigNumberish;
+}
+
+export function useTokenBalance(address: string, contractAddress?: string) {
+  const token = useToken(contractAddress);
+
+  return useQueryWithNetwork(
+    tokenKeys.balanceOf(contractAddress, address),
+    () => token?.balanceOf(address),
+    {
+      enabled: !!token && !!contractAddress && !!address,
+    },
+  );
 }
 
 export function useEditionDropList(contractAddress?: string) {

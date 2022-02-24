@@ -15,6 +15,7 @@ import {
   useEditionDropList,
   useEditionDropOwned,
   useMintMutation,
+  useTokenBalance,
 } from "../hooks/useEditionDropQueries";
 import { Baker } from "../components/Baker";
 import { Land } from "../components/Land";
@@ -22,15 +23,18 @@ import { useBakery } from "../hooks/useBakery";
 import { BigNumber, ethers } from "ethers";
 import NumberCounter from "react-smooth-number-counter";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { ChainId } from "../utils/network";
 
 const GamePage = () => {
   const signerAddress = useAddress();
+  const signer = useSigner();
   const [score, setScore] = useState(BigNumber.from(0));
+  const [blockNumber, setBlockNumber] = useState(0);
   const [mintQuantity, setMintQuantity] = useState(1);
   const {
     contract: bakeryContract,
+    loading: bakeryLoading,
     bakeStartBlock,
     cookiePerClick,
     cookiePerSecond,
@@ -53,7 +57,12 @@ const GamePage = () => {
   const mintUpgradeMutation = useMintMutation(
     CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
   );
+  const balance = useTokenBalance(
+    signerAddress || ethers.constants.AddressZero,
+    CONTRACT_ADDRESSES[80001].cookies,
+  );
   const [clickCount, setClickCount] = useState<number>(0);
+  const [initBalance, setInitBalance] = useState(false);
 
   const ownedBakersIds = useMemo(
     () => ownedBakers?.data?.map((baker) => baker.metadata.id.toString()),
@@ -63,16 +72,6 @@ const GamePage = () => {
   const ownedUpgradesIds = useMemo(
     () => ownedUpgrades?.data?.map((upgrade) => upgrade.metadata.id.toString()),
     [ownedUpgrades],
-  );
-
-  const onCookieClick = useCallback(
-    (_score) => {
-      if (isBaking) {
-        setClickCount(clickCount + 1);
-        setScore(_score.add(cookiePerClick));
-      }
-    },
-    [isBaking, clickCount, cookiePerClick],
   );
 
   const onRebakeClick = useCallback(() => {
@@ -95,15 +94,25 @@ const GamePage = () => {
         .then((tx) => tx && tx.wait())
         .then(() => {
           setClickCount(0);
-          setScore(ethers.BigNumber.from(0));
           // TODO: loading state
           // TODO: update bakery
         });
     }
   }, [bakeryContract, signerAddress, clickCount, bakeStartBlock]);
 
+  const onCookieClick = useCallback(
+    (_score) => {
+      if (isBaking) {
+        setClickCount(clickCount + 1);
+        setScore(_score.add(cookiePerClick));
+      }
+    },
+    [isBaking, clickCount, cookiePerClick],
+  );
+
   const onCookieIncrement = useCallback(
     (value) => {
+      console.log("onCookieIncrement", score.toString(), isBaking);
       if (isBaking) {
         setScore(score.add(value));
       }
@@ -112,12 +121,46 @@ const GamePage = () => {
   );
 
   useEffect(() => {
-    const timeout = setInterval(
-      () => onCookieIncrement(cookiePerSecond.div(10)),
-      100,
-    );
+    if (signer?.provider) {
+      signer.provider.getBlockNumber().then((bn) => {
+        setBlockNumber(bn);
+      });
+    }
+  }, [signer]);
+
+  useEffect(() => {
+    async function update() {
+      let estScore =
+        BigNumber.from(balance?.data?.value || 0) ?? BigNumber.from(0);
+      if (isBaking && bakeStartBlock > 0) {
+        const estByBlock = cookiePerSecond.mul(blockNumber - bakeStartBlock);
+        console.log(
+          bakeStartBlock,
+          estScore.toString(),
+          estByBlock.toString(),
+          blockNumber - bakeStartBlock,
+        );
+        estScore = estScore.add(estByBlock);
+      }
+      setScore(estScore);
+      setInitBalance(true);
+    }
+
+    if (!initBalance && !bakeryLoading && !balance.isLoading && blockNumber) {
+      update();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blockNumber, bakeryLoading, balance, onCookieIncrement]);
+
+  useEffect(() => {
+    if (!initBalance) {
+      return;
+    }
+    const timeout = setInterval(() => {
+      onCookieIncrement(cookiePerSecond.div(10));
+    }, 100);
     return () => clearInterval(timeout);
-  }, [cookiePerSecond, onCookieIncrement]);
+  }, [initBalance, onCookieIncrement, cookiePerSecond]);
 
   return (
     <Flex pt={12} justifyContent="center">
