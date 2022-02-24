@@ -27,7 +27,7 @@ export const CONTRACT_ADDRESSES: Record<number, Contracts> = {
     token: "0xeF960235b91E653327d82337e9329Ff7c85c917E",
   },
   [ChainId.Polygon]: {
-    token: "",
+    bakery: "",
     bakers: "",
     upgrades: "",
     lands: "",
