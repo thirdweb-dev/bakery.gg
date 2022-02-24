@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { EditionMetadata } from "@thirdweb-dev/sdk";
 import Image from "next/image";
 import { Card } from "./Card";

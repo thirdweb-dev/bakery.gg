@@ -14,7 +14,6 @@ import { ConnectWallet } from "../components/ConnectWallet";
 import {
   useEditionDropList,
   useEditionDropOwned,
-  useMintMutation,
   useTokenBalance,
 } from "../hooks/useEditionDropQueries";
 import { Baker } from "../components/Baker";

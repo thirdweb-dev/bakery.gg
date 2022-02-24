@@ -4,7 +4,6 @@ import Image from "next/image";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
 import { useMintMutation } from "../hooks/useEditionDropQueries";
 import { ChainId } from "../utils/network";
-import { Card } from "./Card";
 
 interface UpgradeProps {
   upgrade: EditionMetadata;

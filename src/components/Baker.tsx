@@ -1,7 +1,6 @@
 import { Flex, Box, Text } from "@chakra-ui/react";
 import { EditionMetadata } from "@thirdweb-dev/sdk";
 import Image from "next/image";
-import { MouseEventHandler } from "react";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
 import {
   useEditionDropActiveClaimCondition,
