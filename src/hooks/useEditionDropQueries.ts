@@ -7,6 +7,7 @@ import {
   useQueryWithNetwork,
 } from "./useQueryWithNetwork";
 import { editionDropKeys, tokenKeys } from "../utils/cacheKeys";
+import { useBakery } from "./useBakery";
 
 interface EditionDropInput {
   tokenId: BigNumberish;
@@ -70,6 +71,7 @@ export function useEditionDropActiveClaimCondition(
 export function useMintMutation(contractAddress?: string) {
   const address = useAddress();
   const editionDrop = useEditionDrop(contractAddress);
+  const { refresh } = useBakery();
 
   const toast = useToast();
 
@@ -88,6 +90,7 @@ export function useMintMutation(contractAddress?: string) {
           duration: 5000,
           isClosable: true,
         });
+        refresh();
         return invalidate([
           editionDropKeys.list(contractAddress),
           editionDropKeys.detail(contractAddress),

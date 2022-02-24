@@ -99,8 +99,6 @@ const GamePage = () => {
         .then(() => {
           setClickCount(0);
           bakeryRefresh();
-          // TODO: loading state
-          // TODO: update bakery
         });
     } else {
       bakeryContract
