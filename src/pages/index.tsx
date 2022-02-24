@@ -225,7 +225,7 @@ const GamePage = () => {
         </Card>
         <Card>
           <Flex flexGrow={1}>
-            <Stack spacing={2}>
+            <Stack spacing={2} w="full">
               {lands?.data
                 ?.filter((land) =>
                   ownedBakersIds?.includes(
@@ -236,7 +236,7 @@ const GamePage = () => {
                   <Land
                     key={land.metadata.id.toString()}
                     land={land}
-                    baker={bakers?.data?.find(
+                    baker={ownedBakers?.data?.find(
                       (baker) =>
                         (Number(land.metadata.id.toString()) + 1).toString() ===
                         baker.metadata.id.toString(),
