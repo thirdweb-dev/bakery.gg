@@ -7,6 +7,7 @@ import {
   SimpleGrid,
   ButtonGroup,
   Button,
+  Tooltip,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
@@ -35,15 +36,23 @@ const GamePage = () => {
   const bakers = useEditionDropList(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
   );
-  const owned = useEditionDropOwned(
-    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
-  );
   const lands = useEditionDropList(
     "0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b",
   );
+  const upgrades = useEditionDropList(
+    "0xA2E5C89a804b67c6694433e3aFf4f404e6C9443c",
+  );
 
-  const mintMutation = useMintMutation(
+  const owned = useEditionDropOwned(
     "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+  );
+
+  const mintBakerMutation = useMintMutation(
+    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+  );
+
+  const mintUpgradeMutation = useMintMutation(
+    "0xA2E5C89a804b67c6694433e3aFf4f404e6C9443c",
   );
 
   const ownedBakers = useMemo(
@@ -186,28 +195,55 @@ const GamePage = () => {
               100
             </Button>
           </ButtonGroup>
-          <SimpleGrid mt={6}>
-            {bakers?.data?.map((baker) => (
-              <Baker
-                key={baker.metadata.id.toString()}
-                balance={owned?.data
-                  ?.find(
-                    (nft) =>
-                      nft.metadata.id.toString() ===
-                      baker.metadata.id.toString(),
-                  )
-                  ?.supply.toString()}
-                onClick={() =>
-                  mintMutation.mutate({
-                    tokenId: baker.metadata.id,
-                    quantity: mintQuantity,
-                  })
-                }
-                baker={baker}
-                mintQuantity={mintQuantity}
-              />
-            ))}
-          </SimpleGrid>
+          <Stack>
+            <SimpleGrid mt={6} columns={6}>
+              {upgrades?.data?.map((upgrade) => (
+                <Tooltip
+                  key={upgrade.metadata.id.toString()}
+                  label={upgrade.metadata.name}
+                >
+                  <Box
+                    boxSize={12}
+                    onClick={() =>
+                      mintUpgradeMutation.mutate({
+                        tokenId: upgrade.metadata.id,
+                        quantity: 1,
+                      })
+                    }
+                  >
+                    <Image
+                      src={upgrade.metadata.image as string}
+                      width={50}
+                      height={50}
+                    />
+                  </Box>
+                </Tooltip>
+              ))}
+            </SimpleGrid>
+
+            <SimpleGrid mt={6}>
+              {bakers?.data?.map((baker) => (
+                <Baker
+                  key={baker.metadata.id.toString()}
+                  balance={owned?.data
+                    ?.find(
+                      (nft) =>
+                        nft.metadata.id.toString() ===
+                        baker.metadata.id.toString(),
+                    )
+                    ?.supply.toString()}
+                  onClick={() =>
+                    mintBakerMutation.mutate({
+                      tokenId: baker.metadata.id,
+                      quantity: mintQuantity,
+                    })
+                  }
+                  baker={baker}
+                  mintQuantity={mintQuantity}
+                />
+              ))}
+            </SimpleGrid>
+          </Stack>
         </Stack>
       </SimpleGrid>
     </Flex>

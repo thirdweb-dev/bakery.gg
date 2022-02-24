@@ -72,7 +72,6 @@ export function useBakery() {
         setCookiePerClick(
           BigNumber.from(spiceBoost).mul(rewardPerSpice).add(rewardPerSpice),
         );
-        console.log(rewardPerSec.toString(), totalBoostRewardPerSec.toString());
         setCookiePerSecond(rewardPerSec.add(totalBoostRewardPerSec));
       } else {
         setCookiePerClick(rewardPerSpice);
