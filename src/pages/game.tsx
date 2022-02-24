@@ -2,7 +2,6 @@ import {
   Heading,
   Box,
   Flex,
-  Text,
   Stack,
   SimpleGrid,
   ButtonGroup,
@@ -19,8 +18,10 @@ import {
 } from "../hooks/useEditionDropQueries";
 import { Baker } from "../components/Baker";
 import { Land } from "../components/Land";
-import { useBakery } from "../hooks/useBakery";
+import { CONTRACT_ADDRESSES, useBakery } from "../hooks/useBakery";
 import { BigNumber, ethers } from "ethers";
+import { useWeb3 } from "../hooks/useWeb3";
+import { ChainId } from "../utils/network";
 
 const GamePage = () => {
   const [score, setScore] = useState(BigNumber.from(0));
@@ -31,27 +32,16 @@ const GamePage = () => {
     cookiePerSecond,
     isBaking,
   } = useBakery();
+  const bakers = useEditionDropList(CONTRACT_ADDRESSES[80001].bakers);
+  const lands = useEditionDropList(CONTRACT_ADDRESSES[80001].lands);
+  const upgrades = useEditionDropList(CONTRACT_ADDRESSES[80001].upgrades);
 
-  const bakers = useEditionDropList(
-    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
-  );
-  const lands = useEditionDropList(
-    "0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b",
-  );
-  const upgrades = useEditionDropList(
-    "0xA2E5C89a804b67c6694433e3aFf4f404e6C9443c",
-  );
+  const owned = useEditionDropOwned(CONTRACT_ADDRESSES[80001].bakers);
 
-  const owned = useEditionDropOwned(
-    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
-  );
-
-  const mintBakerMutation = useMintMutation(
-    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
-  );
+  const mintBakerMutation = useMintMutation(CONTRACT_ADDRESSES[80001].bakers);
 
   const mintUpgradeMutation = useMintMutation(
-    "0xA2E5C89a804b67c6694433e3aFf4f404e6C9443c",
+    CONTRACT_ADDRESSES[80001].upgrades,
   );
 
   const ownedBakers = useMemo(

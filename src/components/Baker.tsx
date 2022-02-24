@@ -2,6 +2,7 @@ import { Flex, Box, Text } from "@chakra-ui/react";
 import { EditionMetadata } from "@thirdweb-dev/sdk";
 import Image from "next/image";
 import { MouseEventHandler } from "react";
+import { CONTRACT_ADDRESSES } from "../hooks/useBakery";
 import { useEditionDropActiveClaimCondition } from "../hooks/useEditionDropQueries";
 
 interface BakerProps {
@@ -18,7 +19,7 @@ export const Baker: React.FC<BakerProps> = ({
   mintQuantity,
 }) => {
   const activeClaimPhase = useEditionDropActiveClaimCondition(
-    "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+    CONTRACT_ADDRESSES[80001].bakers,
     baker.metadata.id.toString(),
   );
 

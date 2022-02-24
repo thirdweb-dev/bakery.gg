@@ -9,8 +9,27 @@ const BLOCK_TIME_SECONDS: Record<number, number> = {
   [ChainId.Mumbai]: 2,
   [ChainId.Polygon]: 2,
 };
-const CONTRACT_ADDRESSES: Record<number, string> = {
-  [ChainId.Mumbai]: "0xed3a439dF07bEb26E5A0de651b00A8bB47793dA2",
+
+interface Contracts {
+  token: string;
+  bakers: string;
+  upgrades: string;
+  lands: string;
+}
+
+export const CONTRACT_ADDRESSES: Record<number, Contracts> = {
+  [ChainId.Mumbai]: {
+    token: "0xed3a439dF07bEb26E5A0de651b00A8bB47793dA2",
+    bakers: "0xaaC61B51873f226257725a49D68a28E38bbE3BA0",
+    upgrades: "0xA2E5C89a804b67c6694433e3aFf4f404e6C9443c",
+    lands: "0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b",
+  },
+  [ChainId.Polygon]: {
+    token: "",
+    bakers: "",
+    upgrades: "",
+    lands: "",
+  },
 };
 
 export function useBakery() {
@@ -31,7 +50,7 @@ export function useBakery() {
     if (!signer) {
       return null;
     }
-    return Bakery__factory.connect(CONTRACT_ADDRESSES[chainId], signer);
+    return Bakery__factory.connect(CONTRACT_ADDRESSES[chainId].token, signer);
   }, [chainId, signer]);
 
   useEffect(() => {
