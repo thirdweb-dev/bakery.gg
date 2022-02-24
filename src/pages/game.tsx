@@ -288,11 +288,11 @@ const GamePage = () => {
                   .slice(0, 6)}
               </SimpleGrid>
             </Card>
-            <Card>
-              <ButtonGroup isAttached size="md" variant="outline">
+            <Card p={0} overflow="hidden">
+              <ButtonGroup isAttached size="lg" variant="outline" w="100%">
                 <Button
-                  color="white"
-                  bg="black"
+                  color="black"
+                  bg="white"
                   _hover={{
                     bg: "gray.200",
                   }}
@@ -301,32 +301,35 @@ const GamePage = () => {
                   Mint quantity:
                 </Button>
                 <Button
-                  color="white"
-                  bg={mintQuantity === 1 ? "gray.800" : "black"}
+                  color="black"
+                  bg={mintQuantity === 1 ? "gray.200" : "white"}
                   _hover={{
-                    bg: "gray.800",
+                    bg: "gray.200",
                   }}
                   onClick={() => setMintQuantity(1)}
+                  flexGrow={1}
                 >
                   1
                 </Button>
                 <Button
-                  color="white"
-                  bg={mintQuantity === 10 ? "gray.800" : "black"}
+                  color="black"
+                  bg={mintQuantity === 10 ? "gray.200" : "white"}
                   _hover={{
-                    bg: "gray.800",
+                    bg: "gray.200",
                   }}
                   onClick={() => setMintQuantity(10)}
+                  flexGrow={1}
                 >
                   10
                 </Button>
                 <Button
-                  color="white"
-                  bg={mintQuantity === 100 ? "gray.800" : "black"}
+                  color="black"
+                  bg={mintQuantity === 100 ? "gray.200" : "white"}
                   _hover={{
-                    bg: "gray.800",
+                    bg: "gray.200",
                   }}
                   onClick={() => setMintQuantity(100)}
+                  flexGrow={1}
                 >
                   100
                 </Button>
