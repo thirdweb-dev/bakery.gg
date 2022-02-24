@@ -30,7 +30,6 @@ const GamePage = () => {
     cookiePerClick,
     cookiePerSecond,
     isBaking,
-    isExceedMaxBakeLimit,
   } = useBakery();
 
   const bakers = useEditionDropList(
@@ -126,9 +125,6 @@ const GamePage = () => {
               Bake
             </Button>
           )}
-          {isExceedMaxBakeLimit ? (
-            <Text>Your cookies are burning up! Please take them out!</Text>
-          ) : null}
         </Flex>
         <Flex flexGrow={1}>
           <Stack>

@@ -14,6 +14,9 @@ contract Bakery is Ownable, EIP712 {
   uint256 private constant EST_BLOCK_TIME_SECONDS = 2;
   uint256 private constant TOTAL_BAKER_COUNT = 9;
 
+  uint256 public constant REWARD_PER_BLOCK = 1 ether * EST_BLOCK_TIME_SECONDS;
+  uint256 public constant REWARD_PER_SPICE = 1 ether;
+
   bytes32 private constant TYPEHASH = keccak256(
     "Spice(address to,uint256 amount,uint256 expiryTime,uint256 salt)"
   );
@@ -53,11 +56,11 @@ contract Bakery is Ownable, EIP712 {
 
   // wallet => oven
   mapping (address => Oven) public ovens;
-  mapping (uint256 => bool) public salt;
+  mapping (uint256 => bool) public salts;
 
   // early access: tokenId => multiplier bps
   mapping (uint256 => uint256) private earlyAccessMultiplierBps;
-  mapping (uint256 => uint256) private characterRewardPerBlock;
+  mapping (uint256 => uint256) private bakerRewardPerBlock;
 
   constructor() Ownable() EIP712("Bakery", "1") {
     earlyAccessMultiplierBps[0] = 3000; // purple => 1.3x
@@ -66,15 +69,15 @@ contract Bakery is Ownable, EIP712 {
     earlyAccessMultiplierBps[3] = 5000; // gold => 1.5x
     earlyAccessMultiplierBps[4] = 5000; // cookie => 1.5x
 
-    characterRewardPerBlock[0] = EST_BLOCK_TIME_SECONDS * 0.1 ether; // foxes (cps: 0.1)
-    characterRewardPerBlock[1] = EST_BLOCK_TIME_SECONDS * 1 ether; // mfers (1)
-    characterRewardPerBlock[2] = EST_BLOCK_TIME_SECONDS * 8 ether; // crypto (8)
-    characterRewardPerBlock[3] = EST_BLOCK_TIME_SECONDS * 47 ether; // cool cats (47)
-    characterRewardPerBlock[4] = EST_BLOCK_TIME_SECONDS * 260 ether; // crypto toadz (260)
-    characterRewardPerBlock[5] = EST_BLOCK_TIME_SECONDS * 1400 ether; // azuki (1400)
-    characterRewardPerBlock[6] = EST_BLOCK_TIME_SECONDS * 7800 ether; // clone x (7800)
-    characterRewardPerBlock[7] = EST_BLOCK_TIME_SECONDS * 44000 ether; // bored ape (44000)
-    characterRewardPerBlock[8] = EST_BLOCK_TIME_SECONDS * 260000 ether; // crypto punk (260000)
+    bakerRewardPerBlock[0] = EST_BLOCK_TIME_SECONDS * 0.1 ether; // foxes (cps: 0.1)
+    bakerRewardPerBlock[1] = EST_BLOCK_TIME_SECONDS * 1 ether; // mfers (1)
+    bakerRewardPerBlock[2] = EST_BLOCK_TIME_SECONDS * 8 ether; // crypto (8)
+    bakerRewardPerBlock[3] = EST_BLOCK_TIME_SECONDS * 47 ether; // cool cats (47)
+    bakerRewardPerBlock[4] = EST_BLOCK_TIME_SECONDS * 260 ether; // crypto toadz (260)
+    bakerRewardPerBlock[5] = EST_BLOCK_TIME_SECONDS * 1400 ether; // azuki (1400)
+    bakerRewardPerBlock[6] = EST_BLOCK_TIME_SECONDS * 7800 ether; // clone x (7800)
+    bakerRewardPerBlock[7] = EST_BLOCK_TIME_SECONDS * 44000 ether; // bored ape (44000)
+    bakerRewardPerBlock[8] = EST_BLOCK_TIME_SECONDS * 260000 ether; // crypto punk (260000)
   }
 
   function bake(address token, uint256 tokenId) public {
@@ -107,28 +110,40 @@ contract Bakery is Ownable, EIP712 {
       rewardBlockCount = MAX_NUMBER_OF_BLOCK_FOR_REWARD;
     }
 
+    uint256 reward = totalReward(msg.sender, rewardBlockCount);
+
     delete ovens[msg.sender];
 
-    uint256 totalReward = 0;
+    cookie.mint(msg.sender, reward);
+  }
+
+  function totalReward(address to, uint256 blockCount) public view returns (uint256) {
+    // we don't need to protect it since it's a view and there's no effect
+    uint256 reward = 0;
+    Oven memory oven = ovens[to];
 
     // base reward
-    uint256 accuredReward = rewardBlockCount * rewardPerBlock();
+    uint256 blockReward = blockCount * REWARD_PER_BLOCK;
     uint256 eaMultiplierBps = oven.token == address(earlyaccess) ? earlyAccessMultiplierBps[oven.tokenId] : 0;
-    totalReward += accuredReward * (eaMultiplierBps + 10000) / 10000;
+    reward += blockReward * (eaMultiplierBps + 10000) / 10000;
 
     // spice reward
     if (oven.accumulatedSpiceAmount > 0) {
-      totalReward += (oven.accumulatedSpiceAmount + spiceBoost(msg.sender)) * rewardPerSpice();
+      reward += (oven.accumulatedSpiceAmount + spiceBoost(to)) * REWARD_PER_SPICE;
     }
 
     // baker reward + boost
-    (uint256[] memory boostRewardPerBlock,,) = bakerReward(msg.sender);
+    (uint256[] memory boostRewardPerBlock,,) = bakerReward(to);
 
     for (uint256 i = 0; i < boostRewardPerBlock.length; i++) {
-      totalReward += rewardBlockCount * boostRewardPerBlock[i];
+      reward += blockCount * boostRewardPerBlock[i];
     }
 
-    cookie.mint(msg.sender, totalReward);
+    return reward;
+  }
+
+  function rewardPerSpice(address) public pure returns (uint256) {
+    return REWARD_PER_SPICE;
   }
 
   function bakerBoostMultiplier(uint256 tokenId) public pure returns (uint256) {
@@ -142,14 +157,6 @@ contract Bakery is Ownable, EIP712 {
     } else {
       return 10000; // 2x
     }
-  }
-
-  function rewardPerBlock() public pure returns (uint256) {
-    return 1 ether * EST_BLOCK_TIME_SECONDS;
-  }
-
-  function rewardPerSpice() public pure returns (uint256) {
-    return 1 ether;
   }
 
   function spiceBoost(address _to) public view returns (uint256) {
@@ -200,7 +207,7 @@ contract Bakery is Ownable, EIP712 {
       if (boostBalances[j+3] > 0) {
         multiplierBps += bakerBoostMultiplier(3); // 2x
       }
-      boostRewardPerBlock[i] = characterRewardPerBlock[i] * balances[i] * ((multiplierBps + 10000) / 10000);
+      boostRewardPerBlock[i] = bakerRewardPerBlock[i] * balances[i] * ((multiplierBps + 10000) / 10000);
       j += 1;
     }
 
@@ -263,11 +270,11 @@ contract Bakery is Ownable, EIP712 {
       revert ExpiredSignature();
     }
 
-    if (salt[_spice.salt]) {
+    if (salts[_spice.salt]) {
       revert UsedSignature();
     }
 
-    salt[_spice.salt] = true;
+    salts[_spice.salt] = true;
     ovens[msg.sender].accumulatedSpiceAmount += _spice.amount;
   }
 }

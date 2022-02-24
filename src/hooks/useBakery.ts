@@ -72,6 +72,7 @@ export function useBakery() {
         setCookiePerClick(
           BigNumber.from(spiceBoost).mul(rewardPerSpice).add(rewardPerSpice),
         );
+        console.log(rewardPerSec.toString(), totalBoostRewardPerSec.toString());
         setCookiePerSecond(rewardPerSec.add(totalBoostRewardPerSec));
       } else {
         setCookiePerClick(rewardPerSpice);
@@ -85,8 +86,8 @@ export function useBakery() {
     if (!signer || !maxNumberOfBlockReward || !bakeStartBlock) {
       return false;
     }
-    const currentBlockNumber = 0;
     // await signer.provider?.getBlockNumber();
+    const currentBlockNumber = 0;
     if (!currentBlockNumber) {
       return false;
     }

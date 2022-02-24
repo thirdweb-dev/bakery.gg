@@ -39,6 +39,32 @@ const _abi = [
   },
   {
     type: "function",
+    name: "REWARD_PER_BLOCK",
+    inputs: [],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "REWARD_PER_SPICE",
+    inputs: [],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "bake",
     inputs: [
       {
@@ -280,21 +306,14 @@ const _abi = [
   },
   {
     type: "function",
-    name: "rewardPerBlock",
-    inputs: [],
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "pure",
-  },
-  {
-    type: "function",
     name: "rewardPerSpice",
-    inputs: [],
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
     outputs: [
       {
         internalType: "uint256",
@@ -306,7 +325,7 @@ const _abi = [
   },
   {
     type: "function",
-    name: "salt",
+    name: "salts",
     inputs: [
       {
         internalType: "uint256",
@@ -371,6 +390,30 @@ const _abi = [
         internalType: "address",
         name: "_to",
         type: "address",
+      },
+    ],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "totalReward",
+    inputs: [
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "blockCount",
+        type: "uint256",
       },
     ],
     outputs: [
