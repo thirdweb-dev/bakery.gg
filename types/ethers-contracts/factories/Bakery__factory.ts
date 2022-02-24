@@ -13,7 +13,33 @@ const _abi = [
   },
   {
     type: "function",
+    name: "DEFAULT_ADMIN_ROLE",
+    inputs: [],
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "MAX_NUMBER_OF_BLOCK_FOR_REWARD",
+    inputs: [],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "MAX_SPICE_PER_BLOCK",
     inputs: [],
     outputs: [
       {
@@ -199,6 +225,67 @@ const _abi = [
   },
   {
     type: "function",
+    name: "getRoleAdmin",
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
+        type: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "grantRole",
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
+        type: "bytes32",
+      },
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "hasRole",
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
+        type: "bytes32",
+      },
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "land",
     inputs: [],
     outputs: [
@@ -246,19 +333,6 @@ const _abi = [
   },
   {
     type: "function",
-    name: "owner",
-    inputs: [],
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "rebake",
     inputs: [
       {
@@ -278,12 +352,7 @@ const _abi = [
           },
           {
             internalType: "uint256",
-            name: "expiryTime",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "salt",
+            name: "startBlock",
             type: "uint256",
           },
         ],
@@ -299,8 +368,37 @@ const _abi = [
   },
   {
     type: "function",
-    name: "renounceOwnership",
-    inputs: [],
+    name: "renounceRole",
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
+        type: "bytes32",
+      },
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "revokeRole",
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "role",
+        type: "bytes32",
+      },
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -328,9 +426,9 @@ const _abi = [
     name: "salts",
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "bytes32",
         name: "",
-        type: "uint256",
+        type: "bytes32",
       },
     ],
     outputs: [
@@ -341,46 +439,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "spice",
-    inputs: [
-      {
-        internalType: "struct Bakery.Spice",
-        name: "_spice",
-        type: "tuple",
-        components: [
-          {
-            internalType: "address",
-            name: "to",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "amount",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "expiryTime",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "salt",
-            type: "uint256",
-          },
-        ],
-      },
-      {
-        internalType: "bytes",
-        name: "_signature",
-        type: "bytes",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -397,6 +455,25 @@ const _abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "supportsInterface",
+    inputs: [
+      {
+        internalType: "bytes4",
+        name: "interfaceId",
+        type: "bytes4",
+      },
+    ],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -427,19 +504,6 @@ const _abi = [
   },
   {
     type: "function",
-    name: "transferOwnership",
-    inputs: [
-      {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     name: "unbake",
     inputs: [],
     outputs: [],
@@ -460,15 +524,64 @@ const _abi = [
   },
   {
     type: "event",
-    name: "OwnershipTransferred",
+    name: "RoleAdminChanged",
     inputs: [
       {
-        name: "previousOwner",
+        name: "role",
+        type: "bytes32",
+        indexed: true,
+      },
+      {
+        name: "previousAdminRole",
+        type: "bytes32",
+        indexed: true,
+      },
+      {
+        name: "newAdminRole",
+        type: "bytes32",
+        indexed: true,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "RoleGranted",
+    inputs: [
+      {
+        name: "role",
+        type: "bytes32",
+        indexed: true,
+      },
+      {
+        name: "account",
         type: "address",
         indexed: true,
       },
       {
-        name: "newOwner",
+        name: "sender",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "RoleRevoked",
+    inputs: [
+      {
+        name: "role",
+        type: "bytes32",
+        indexed: true,
+      },
+      {
+        name: "account",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "sender",
         type: "address",
         indexed: true,
       },
@@ -482,12 +595,12 @@ const _abi = [
   },
   {
     type: "error",
-    name: "ExpiredSignature",
+    name: "InsufficientToken",
     inputs: [],
   },
   {
     type: "error",
-    name: "InsufficientToken",
+    name: "InvalidSender",
     inputs: [],
   },
   {

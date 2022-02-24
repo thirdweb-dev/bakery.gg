@@ -1,31 +1,33 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/utils/cryptography/draft-EIP712.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@thirdweb/contracts/interfaces/token/ITokenERC20.sol";
 import "@thirdweb/contracts/interfaces/token/ITokenERC1155.sol";
 
-contract Bakery is Ownable, EIP712 {
+contract Bakery is AccessControl, EIP712 {
   using ECDSA for bytes32;
+
+  bytes32 private constant SPICE_ROLE = keccak256("SPICE_ROLE");
 
   uint256 private constant EST_BLOCK_TIME_SECONDS = 2;
   uint256 private constant TOTAL_BAKER_COUNT = 9;
 
   uint256 public constant REWARD_PER_BLOCK = 1 ether * EST_BLOCK_TIME_SECONDS;
   uint256 public constant REWARD_PER_SPICE = 1 ether;
+  uint256 public constant MAX_SPICE_PER_BLOCK = 15 * EST_BLOCK_TIME_SECONDS;
 
   bytes32 private constant TYPEHASH = keccak256(
-    "Spice(address to,uint256 amount,uint256 expiryTime,uint256 salt)"
+    "Spice(address to,uint256 amount,uint256 startBlock)"
   );
 
   struct Spice {
     address to;
     uint256 amount;
-    uint256 expiryTime;
-    uint256 salt;
+    uint256 startBlock;
   }
 
   struct Oven {
@@ -35,17 +37,18 @@ contract Bakery is Ownable, EIP712 {
     uint256 accumulatedSpiceAmount;
   }
 
+  // "0x8baa579f"
   error AlreadyBaking();
   error InsufficientToken();
   error NotBaking();
   error StillCooking();
   error InvalidSignature();
   error UsedSignature();
-  error ExpiredSignature();
+  error InvalidSender();
 
   ITokenERC20 immutable public cookie = ITokenERC20(0xeF960235b91E653327d82337e9329Ff7c85c917E);
   ITokenERC1155 immutable public baker = ITokenERC1155(0xaaC61B51873f226257725a49D68a28E38bbE3BA0);
-  ITokenERC1155 immutable public upgrade = ITokenERC1155(0x0000000000000000000000000000000000000000);
+  ITokenERC1155 immutable public upgrade = ITokenERC1155(0x02B5904Eb879A6912B0b28e128f1328AA32b7823);
   ITokenERC1155 immutable public land = ITokenERC1155(0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b);
   // thirdweb community early access token (not transferable)
   ITokenERC1155 immutable public earlyaccess = ITokenERC1155(0xa9e893cC12026A2F6bD826FdB295EAc9c18A7E88);
@@ -56,13 +59,13 @@ contract Bakery is Ownable, EIP712 {
 
   // wallet => oven
   mapping (address => Oven) public ovens;
-  mapping (uint256 => bool) public salts;
+  mapping (bytes32 => bool) public salts;
 
   // early access: tokenId => multiplier bps
   mapping (uint256 => uint256) private earlyAccessMultiplierBps;
   mapping (uint256 => uint256) private bakerRewardPerBlock;
 
-  constructor() Ownable() EIP712("Bakery", "1") {
+  constructor() AccessControl() EIP712("Bakery", "1") {
     earlyAccessMultiplierBps[0] = 3000; // purple => 1.3x
     earlyAccessMultiplierBps[1] = 2000; // blue => 1.2x
     earlyAccessMultiplierBps[2] = 1000; // silver => 1.1x
@@ -78,9 +81,16 @@ contract Bakery is Ownable, EIP712 {
     bakerRewardPerBlock[6] = EST_BLOCK_TIME_SECONDS * 7800 ether; // clone x (7800)
     bakerRewardPerBlock[7] = EST_BLOCK_TIME_SECONDS * 44000 ether; // bored ape (44000)
     bakerRewardPerBlock[8] = EST_BLOCK_TIME_SECONDS * 260000 ether; // crypto punk (260000)
+
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    _setupRole(SPICE_ROLE, msg.sender);
   }
 
   function bake(address token, uint256 tokenId) public {
+    if (msg.sender != tx.origin) {
+      revert InvalidSender();
+    }
+
     if (ovens[msg.sender].startBlock > 0) {
       revert AlreadyBaking();
     }
@@ -208,7 +218,7 @@ contract Bakery is Ownable, EIP712 {
         multiplierBps += bakerBoostMultiplier(3); // 2x
       }
       boostRewardPerBlock[i] = bakerRewardPerBlock[i] * balances[i] * ((multiplierBps + 10000) / 10000);
-      j += 1;
+      j += 4;
     }
 
     return (boostRewardPerBlock, balances, boostBalances);
@@ -229,7 +239,7 @@ contract Bakery is Ownable, EIP712 {
     address[] memory to = new address[](len);
     uint256[] memory tokenIds = new uint256[](len);
     uint256 j = 0;
-    for (uint256 i = 0; i < _tokenBalances.length; i += 4) {
+    for (uint256 i = 0; i < _tokenBalances.length; i += 1) {
       if (_tokenBalances[i] == 0) {
         continue;
       }
@@ -237,10 +247,10 @@ contract Bakery is Ownable, EIP712 {
       to[j+1] = _to;
       to[j+2] = _to;
       to[j+3] = _to;
-      tokenIds[j] = i;
-      tokenIds[j+1] = i + 1;
-      tokenIds[j+2] = i + 2;
-      tokenIds[j+3] = i + 3;
+      tokenIds[j] = i * 4;
+      tokenIds[j+1] = (i * 4) + 1;
+      tokenIds[j+2] = (i * 4) + 2;
+      tokenIds[j+3] = (i * 4) + 3;
       j += 4;
     }
 
@@ -256,25 +266,33 @@ contract Bakery is Ownable, EIP712 {
     bake(oven.token, oven.tokenId);
   }
 
-  function spice(Spice calldata _spice, bytes calldata _signature) public {
-    if (ovens[msg.sender].startBlock == 0) {
+  function spice(Spice calldata _spice, bytes calldata _signature) private {
+    uint256 startBlock = ovens[msg.sender].startBlock;
+    if (startBlock == 0) {
       revert NotBaking();
     }
 
-    address signer = _hashTypedDataV4(keccak256(abi.encode(TYPEHASH, _spice.to, _spice.amount, _spice.expiryTime, _spice.salt))).recover(_signature);
-    if (signer != owner() || _spice.to != msg.sender) {
+    address signer = _hashTypedDataV4(keccak256(abi.encode(TYPEHASH, _spice.to, _spice.amount, _spice.startBlock))).recover(_signature);
+    if (!hasRole(SPICE_ROLE, signer) || _spice.to != msg.sender) {
       revert InvalidSignature();
     }
 
-    if (block.timestamp > _spice.expiryTime) {
-      revert ExpiredSignature();
+    if (_spice.startBlock != startBlock) {
+      revert InvalidSignature();
     }
 
-    if (salts[_spice.salt]) {
+    bytes32 salt = keccak256(abi.encodePacked(_spice.to, _spice.startBlock));
+    if (salts[salt]) {
       revert UsedSignature();
     }
 
-    salts[_spice.salt] = true;
-    ovens[msg.sender].accumulatedSpiceAmount += _spice.amount;
+    uint256 diffBlock = block.number - startBlock;
+    uint256 spiceAmount = _spice.amount;
+    if (spiceAmount > diffBlock * MAX_SPICE_PER_BLOCK) {
+      spiceAmount = diffBlock * MAX_SPICE_PER_BLOCK;
+    }
+
+    salts[salt] = true;
+    ovens[msg.sender].accumulatedSpiceAmount += spiceAmount;
   }
 }

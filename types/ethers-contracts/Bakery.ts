@@ -21,22 +21,22 @@ export declare namespace Bakery {
   export type SpiceStruct = {
     to: string;
     amount: BigNumberish;
-    expiryTime: BigNumberish;
-    salt: BigNumberish;
+    startBlock: BigNumberish;
   };
 
-  export type SpiceStructOutput = [string, BigNumber, BigNumber, BigNumber] & {
+  export type SpiceStructOutput = [string, BigNumber, BigNumber] & {
     to: string;
     amount: BigNumber;
-    expiryTime: BigNumber;
-    salt: BigNumber;
+    startBlock: BigNumber;
   };
 }
 
 export interface BakeryInterface extends utils.Interface {
   contractName: "Bakery";
   functions: {
+    "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "MAX_NUMBER_OF_BLOCK_FOR_REWARD()": FunctionFragment;
+    "MAX_SPICE_PER_BLOCK()": FunctionFragment;
     "MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD()": FunctionFragment;
     "REWARD_PER_BLOCK()": FunctionFragment;
     "REWARD_PER_SPICE()": FunctionFragment;
@@ -47,23 +47,33 @@ export interface BakeryInterface extends utils.Interface {
     "bakerReward(address)": FunctionFragment;
     "cookie()": FunctionFragment;
     "earlyaccess()": FunctionFragment;
+    "getRoleAdmin(bytes32)": FunctionFragment;
+    "grantRole(bytes32,address)": FunctionFragment;
+    "hasRole(bytes32,address)": FunctionFragment;
     "land()": FunctionFragment;
     "ovens(address)": FunctionFragment;
-    "owner()": FunctionFragment;
-    "rebake((address,uint256,uint256,uint256),bytes)": FunctionFragment;
-    "renounceOwnership()": FunctionFragment;
+    "rebake((address,uint256,uint256),bytes)": FunctionFragment;
+    "renounceRole(bytes32,address)": FunctionFragment;
+    "revokeRole(bytes32,address)": FunctionFragment;
     "rewardPerSpice(address)": FunctionFragment;
-    "salts(uint256)": FunctionFragment;
-    "spice((address,uint256,uint256,uint256),bytes)": FunctionFragment;
+    "salts(bytes32)": FunctionFragment;
     "spiceBoost(address)": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
     "totalReward(address,uint256)": FunctionFragment;
-    "transferOwnership(address)": FunctionFragment;
     "unbake()": FunctionFragment;
     "upgrade()": FunctionFragment;
   };
 
   encodeFunctionData(
+    functionFragment: "DEFAULT_ADMIN_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "MAX_NUMBER_OF_BLOCK_FOR_REWARD",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "MAX_SPICE_PER_BLOCK",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -97,40 +107,59 @@ export interface BakeryInterface extends utils.Interface {
     functionFragment: "earlyaccess",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleAdmin",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "grantRole",
+    values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "hasRole",
+    values: [BytesLike, string]
+  ): string;
   encodeFunctionData(functionFragment: "land", values?: undefined): string;
   encodeFunctionData(functionFragment: "ovens", values: [string]): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "rebake",
     values: [Bakery.SpiceStruct, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
+    functionFragment: "renounceRole",
+    values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "revokeRole",
+    values: [BytesLike, string]
   ): string;
   encodeFunctionData(
     functionFragment: "rewardPerSpice",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "salts", values: [BigNumberish]): string;
-  encodeFunctionData(
-    functionFragment: "spice",
-    values: [Bakery.SpiceStruct, BytesLike]
-  ): string;
+  encodeFunctionData(functionFragment: "salts", values: [BytesLike]): string;
   encodeFunctionData(functionFragment: "spiceBoost", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "totalReward",
     values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "transferOwnership",
-    values: [string]
   ): string;
   encodeFunctionData(functionFragment: "unbake", values?: undefined): string;
   encodeFunctionData(functionFragment: "upgrade", values?: undefined): string;
 
   decodeFunctionResult(
+    functionFragment: "DEFAULT_ADMIN_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "MAX_NUMBER_OF_BLOCK_FOR_REWARD",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "MAX_SPICE_PER_BLOCK",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -161,46 +190,69 @@ export interface BakeryInterface extends utils.Interface {
     functionFragment: "earlyaccess",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "land", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "ovens", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "rebake", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "renounceOwnership",
+    functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "land", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "ovens", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "rebake", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceRole",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "rewardPerSpice",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "salts", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "spice", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "spiceBoost", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "totalReward",
+    functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "transferOwnership",
+    functionFragment: "totalReward",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unbake", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "upgrade", data: BytesLike): Result;
 
   events: {
-    "OwnershipTransferred(address,address)": EventFragment;
+    "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
+    "RoleGranted(bytes32,address,address)": EventFragment;
+    "RoleRevoked(bytes32,address,address)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
 }
 
-export type OwnershipTransferredEvent = TypedEvent<
-  [string, string],
-  { previousOwner: string; newOwner: string }
+export type RoleAdminChangedEvent = TypedEvent<
+  [string, string, string],
+  { role: string; previousAdminRole: string; newAdminRole: string }
 >;
 
-export type OwnershipTransferredEventFilter =
-  TypedEventFilter<OwnershipTransferredEvent>;
+export type RoleAdminChangedEventFilter =
+  TypedEventFilter<RoleAdminChangedEvent>;
+
+export type RoleGrantedEvent = TypedEvent<
+  [string, string, string],
+  { role: string; account: string; sender: string }
+>;
+
+export type RoleGrantedEventFilter = TypedEventFilter<RoleGrantedEvent>;
+
+export type RoleRevokedEvent = TypedEvent<
+  [string, string, string],
+  { role: string; account: string; sender: string }
+>;
+
+export type RoleRevokedEventFilter = TypedEventFilter<RoleRevokedEvent>;
 
 export interface Bakery extends BaseContract {
   contractName: "Bakery";
@@ -230,9 +282,13 @@ export interface Bakery extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
     MAX_NUMBER_OF_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    MAX_SPICE_PER_BLOCK(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
@@ -271,6 +327,20 @@ export interface Bakery extends BaseContract {
 
     earlyaccess(overrides?: CallOverrides): Promise<[string]>;
 
+    getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     land(overrides?: CallOverrides): Promise<[string]>;
 
     ovens(
@@ -285,15 +355,21 @@ export interface Bakery extends BaseContract {
       }
     >;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
     rebake(
       _spice: Bakery.SpiceStruct,
       _signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    renounceOwnership(
+    renounceRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -302,26 +378,20 @@ export interface Bakery extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
-    salts(arg0: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
-
-    spice(
-      _spice: Bakery.SpiceStruct,
-      _signature: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
+    salts(arg0: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
 
     spiceBoost(_to: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
     totalReward(
       to: string,
       blockCount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
 
     unbake(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -330,7 +400,11 @@ export interface Bakery extends BaseContract {
     upgrade(overrides?: CallOverrides): Promise<[string]>;
   };
 
+  DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
   MAX_NUMBER_OF_BLOCK_FOR_REWARD(overrides?: CallOverrides): Promise<BigNumber>;
+
+  MAX_SPICE_PER_BLOCK(overrides?: CallOverrides): Promise<BigNumber>;
 
   MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD(
     overrides?: CallOverrides
@@ -369,6 +443,20 @@ export interface Bakery extends BaseContract {
 
   earlyaccess(overrides?: CallOverrides): Promise<string>;
 
+  getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+  grantRole(
+    role: BytesLike,
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  hasRole(
+    role: BytesLike,
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   land(overrides?: CallOverrides): Promise<string>;
 
   ovens(
@@ -383,40 +471,40 @@ export interface Bakery extends BaseContract {
     }
   >;
 
-  owner(overrides?: CallOverrides): Promise<string>;
-
   rebake(
     _spice: Bakery.SpiceStruct,
     _signature: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  renounceOwnership(
+  renounceRole(
+    role: BytesLike,
+    account: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  revokeRole(
+    role: BytesLike,
+    account: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   rewardPerSpice(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  salts(arg0: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
-
-  spice(
-    _spice: Bakery.SpiceStruct,
-    _signature: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
+  salts(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   spiceBoost(_to: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  supportsInterface(
+    interfaceId: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   totalReward(
     to: string,
     blockCount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
-
-  transferOwnership(
-    newOwner: string,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
 
   unbake(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -425,9 +513,13 @@ export interface Bakery extends BaseContract {
   upgrade(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
+
     MAX_NUMBER_OF_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    MAX_SPICE_PER_BLOCK(overrides?: CallOverrides): Promise<BigNumber>;
 
     MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
@@ -466,6 +558,20 @@ export interface Bakery extends BaseContract {
 
     earlyaccess(overrides?: CallOverrides): Promise<string>;
 
+    getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     land(overrides?: CallOverrides): Promise<string>;
 
     ovens(
@@ -480,27 +586,34 @@ export interface Bakery extends BaseContract {
       }
     >;
 
-    owner(overrides?: CallOverrides): Promise<string>;
-
     rebake(
       _spice: Bakery.SpiceStruct,
       _signature: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    rewardPerSpice(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    salts(arg0: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
-
-    spice(
-      _spice: Bakery.SpiceStruct,
-      _signature: BytesLike,
+    renounceRole(
+      role: BytesLike,
+      account: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
+    revokeRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    rewardPerSpice(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    salts(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
+
     spiceBoost(_to: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     totalReward(
       to: string,
@@ -508,31 +621,54 @@ export interface Bakery extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    transferOwnership(
-      newOwner: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     unbake(overrides?: CallOverrides): Promise<void>;
 
     upgrade(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
-    "OwnershipTransferred(address,address)"(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): OwnershipTransferredEventFilter;
-    OwnershipTransferred(
-      previousOwner?: string | null,
-      newOwner?: string | null
-    ): OwnershipTransferredEventFilter;
+    "RoleAdminChanged(bytes32,bytes32,bytes32)"(
+      role?: BytesLike | null,
+      previousAdminRole?: BytesLike | null,
+      newAdminRole?: BytesLike | null
+    ): RoleAdminChangedEventFilter;
+    RoleAdminChanged(
+      role?: BytesLike | null,
+      previousAdminRole?: BytesLike | null,
+      newAdminRole?: BytesLike | null
+    ): RoleAdminChangedEventFilter;
+
+    "RoleGranted(bytes32,address,address)"(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): RoleGrantedEventFilter;
+    RoleGranted(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): RoleGrantedEventFilter;
+
+    "RoleRevoked(bytes32,address,address)"(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): RoleRevokedEventFilter;
+    RoleRevoked(
+      role?: BytesLike | null,
+      account?: string | null,
+      sender?: string | null
+    ): RoleRevokedEventFilter;
   };
 
   estimateGas: {
+    DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
     MAX_NUMBER_OF_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    MAX_SPICE_PER_BLOCK(overrides?: CallOverrides): Promise<BigNumber>;
 
     MIN_WAIT_BETWEEN_BLOCK_FOR_REWARD(
       overrides?: CallOverrides
@@ -568,11 +704,26 @@ export interface Bakery extends BaseContract {
 
     earlyaccess(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getRoleAdmin(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     land(overrides?: CallOverrides): Promise<BigNumber>;
 
     ovens(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     rebake(
       _spice: Bakery.SpiceStruct,
@@ -580,31 +731,33 @@ export interface Bakery extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    renounceOwnership(
+    renounceRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     rewardPerSpice(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    salts(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
-
-    spice(
-      _spice: Bakery.SpiceStruct,
-      _signature: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    salts(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     spiceBoost(_to: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     totalReward(
       to: string,
       blockCount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     unbake(
@@ -615,7 +768,15 @@ export interface Bakery extends BaseContract {
   };
 
   populateTransaction: {
+    DEFAULT_ADMIN_ROLE(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     MAX_NUMBER_OF_BLOCK_FOR_REWARD(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    MAX_SPICE_PER_BLOCK(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -656,6 +817,23 @@ export interface Bakery extends BaseContract {
 
     earlyaccess(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    getRoleAdmin(
+      role: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    grantRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    hasRole(
+      role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     land(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     ovens(
@@ -663,15 +841,21 @@ export interface Bakery extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     rebake(
       _spice: Bakery.SpiceStruct,
       _signature: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    renounceOwnership(
+    renounceRole(
+      role: BytesLike,
+      account: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    revokeRole(
+      role: BytesLike,
+      account: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -681,14 +865,8 @@ export interface Bakery extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     salts(
-      arg0: BigNumberish,
+      arg0: BytesLike,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    spice(
-      _spice: Bakery.SpiceStruct,
-      _signature: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     spiceBoost(
@@ -696,15 +874,15 @@ export interface Bakery extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    supportsInterface(
+      interfaceId: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     totalReward(
       to: string,
       blockCount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    transferOwnership(
-      newOwner: string,
-      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     unbake(

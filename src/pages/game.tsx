@@ -18,15 +18,20 @@ import {
 } from "../hooks/useEditionDropQueries";
 import { Baker } from "../components/Baker";
 import { Land } from "../components/Land";
-import { CONTRACT_ADDRESSES, useBakery } from "../hooks/useBakery";
+import { useBakery } from "../hooks/useBakery";
 import { BigNumber, ethers } from "ethers";
 import NumberCounter from "react-smooth-number-counter";
+import { useDebounce } from "usehooks-ts";
+import { CONTRACT_ADDRESSES } from "../constants/addresses";
+import { useAddress } from "@thirdweb-dev/react";
 
 const GamePage = () => {
+  const signerAddress = useAddress();
   const [score, setScore] = useState(BigNumber.from(0));
   const [mintQuantity, setMintQuantity] = useState(1);
   const {
     contract: bakeryContract,
+    bakeStartBlock,
     cookiePerClick,
     cookiePerSecond,
     isBaking,
@@ -36,10 +41,10 @@ const GamePage = () => {
   const upgrades = useEditionDropList(CONTRACT_ADDRESSES[80001].upgrades);
   const owned = useEditionDropOwned(CONTRACT_ADDRESSES[80001].bakers);
   const mintBakerMutation = useMintMutation(CONTRACT_ADDRESSES[80001].bakers);
-
   const mintUpgradeMutation = useMintMutation(
     CONTRACT_ADDRESSES[80001].upgrades,
   );
+  const [clickCount, setClickCount] = useState<number>(0);
 
   const ownedBakers = useMemo(
     () => owned?.data?.map((baker) => baker.metadata.id.toString()),
@@ -49,11 +54,39 @@ const GamePage = () => {
   const onCookieClick = useCallback(
     (_score) => {
       if (isBaking) {
+        setClickCount(clickCount + 1);
         setScore(_score.add(cookiePerClick));
       }
     },
-    [isBaking, cookiePerClick],
+    [isBaking, clickCount, cookiePerClick],
   );
+
+  const onRebakeClick = useCallback(() => {
+    if (signerAddress && clickCount) {
+      fetch("/api/click", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: signerAddress,
+          amount: clickCount,
+          startBlock: bakeStartBlock,
+        }),
+      })
+        .then((r) => r.json())
+        .then((response) =>
+          bakeryContract?.rebake(response.payload, response.signature),
+        )
+        .then((tx) => tx && tx.wait())
+        .then(() => {
+          setClickCount(0);
+          setScore(ethers.BigNumber.from(0));
+          // TODO: loading state
+          // TODO: update bakery
+        });
+    }
+  }, [bakeryContract, signerAddress, clickCount, bakeStartBlock]);
 
   const onCookieIncrement = useCallback(
     (value) => {
@@ -92,20 +125,8 @@ const GamePage = () => {
           </Heading>
 
           {isBaking ? (
-            <Button
-              onClick={() =>
-                bakeryContract?.rebake(
-                  {
-                    to: ethers.constants.AddressZero,
-                    amount: 0,
-                    expiryTime: 0,
-                    salt: 0,
-                  },
-                  "0x",
-                )
-              }
-            >
-              Unbake
+            <Button onClick={() => onRebakeClick()}>
+              {clickCount > 0 ? `Rebake (${clickCount})` : "Rebake"}
             </Button>
           ) : (
             <Button
@@ -113,7 +134,7 @@ const GamePage = () => {
                 bakeryContract?.bake(ethers.constants.AddressZero, 0)
               }
             >
-              Bake
+              Start Baking
             </Button>
           )}
         </Flex>
@@ -225,7 +246,7 @@ const GamePage = () => {
                         nft.metadata.id.toString() ===
                         baker.metadata.id.toString(),
                     )
-                    ?.quantityOwned.toString()}
+                    ?.quantityOwned?.toString()}
                   onClick={() =>
                     mintBakerMutation.mutate({
                       tokenId: baker.metadata.id,
