@@ -1,5 +1,5 @@
 import { useSigner, useAddress } from "@thirdweb-dev/react";
-import { BigNumber } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useEffect, useMemo, useState } from "react";
 import { Bakery__factory } from "../../types/ethers-contracts";
 import { ChainId } from "../utils/network";
@@ -10,7 +10,7 @@ const BLOCK_TIME_SECONDS: Record<number, number> = {
   [ChainId.Polygon]: 2,
 };
 const CONTRACT_ADDRESSES: Record<number, string> = {
-  [ChainId.Mumbai]: "0xe5ab92564b9161e27bc96866dcdd5ba4ca9021c6",
+  [ChainId.Mumbai]: "0xed3a439dF07bEb26E5A0de651b00A8bB47793dA2",
 };
 
 export function useBakery() {
@@ -20,6 +20,7 @@ export function useBakery() {
   const [cookiePerSecond, setCookiePerSecond] = useState(BigNumber.from(0));
   const [cookiePerClick, setCookiePerClick] = useState(BigNumber.from(0));
   const [bakeStartBlock, setBakeStartBlock] = useState(0);
+  const [bakeEndBlock, setBakeEndBlock] = useState(0);
   const [maxNumberOfBlockReward, setMaxNumberOfBlockReward] = useState(0);
   const [isBaking, setIsBaking] = useState(false);
 
@@ -39,14 +40,17 @@ export function useBakery() {
         return;
       }
 
-      const rewardPerBlock =
-        // eslint-disable-next-line
-        (await contract?.REWARD_PER_BLOCK()) ?? BigNumber.from(0);
-      const rewardPerSec = rewardPerBlock.div(BLOCK_TIME_SECONDS[chainId]);
+      const rewardPerSec = (
+        (await contract?.totalReward(
+          signerAddress || ethers.constants.AddressZero,
+          1,
+        )) ?? BigNumber.from(0)
+      ).div(BLOCK_TIME_SECONDS[chainId]);
 
       const rewardPerSpice =
-        // eslint-disable-next-line
-        (await contract?.REWARD_PER_SPICE()) ?? BigNumber.from(0);
+        (await contract?.rewardPerSpice(
+          signerAddress || ethers.constants.AddressZero,
+        )) ?? BigNumber.from(0);
 
       // eslint-disable-next-line
       const maxReward = await contract?.MAX_NUMBER_OF_BLOCK_FOR_REWARD();
@@ -56,52 +60,29 @@ export function useBakery() {
         const oven = await contract?.ovens(signerAddress);
         setIsBaking(oven?.startBlock.gt(0) ?? false);
         setBakeStartBlock(oven?.startBlock.toNumber() ?? 0);
+        setBakeEndBlock(oven?.startBlock.add(maxReward).toNumber() ?? 0);
 
         const spiceBoost =
           (await contract?.spiceBoost(signerAddress)) ?? BigNumber.from(0);
 
-        const [boostRewardPerBlock] = (await contract?.bakerReward(
-          signerAddress,
-        )) ?? [[]];
-        const boostRewardPerSec = boostRewardPerBlock.map((r) =>
-          r.div(BLOCK_TIME_SECONDS[chainId]),
-        );
-        const totalBoostRewardPerSec = boostRewardPerSec.reduce(
-          (acc, cur) => acc.add(cur),
-          BigNumber.from(0),
-        );
-
         setCookiePerClick(
           BigNumber.from(spiceBoost).mul(rewardPerSpice).add(rewardPerSpice),
         );
-        console.log(rewardPerSec.toString(), totalBoostRewardPerSec.toString());
-        setCookiePerSecond(rewardPerSec.add(totalBoostRewardPerSec));
       } else {
         setCookiePerClick(rewardPerSpice);
-        setCookiePerSecond(rewardPerSec);
       }
+      setCookiePerSecond(rewardPerSec);
     }
     update();
   }, [contract, signerAddress, chainId]);
-
-  const isExceedMaxBakeLimit = useMemo(() => {
-    if (!signer || !maxNumberOfBlockReward || !bakeStartBlock) {
-      return false;
-    }
-    // await signer.provider?.getBlockNumber();
-    const currentBlockNumber = 0;
-    if (!currentBlockNumber) {
-      return false;
-    }
-    return currentBlockNumber - bakeStartBlock > maxNumberOfBlockReward;
-  }, [signer, maxNumberOfBlockReward, bakeStartBlock]);
 
   return {
     contract,
     cookiePerClick,
     cookiePerSecond,
     bakeStartBlock,
+    bakeEndBlock,
     isBaking,
-    isExceedMaxBakeLimit,
+    maxNumberOfBlockReward,
   };
 }
