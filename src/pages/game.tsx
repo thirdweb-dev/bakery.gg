@@ -35,6 +35,7 @@ const GamePage = () => {
   const {
     contract: bakeryContract,
     loading: bakeryLoading,
+    maxNumberOfBlockReward,
     bakeStartBlock,
     cookiePerClick,
     cookiePerSecond,
@@ -112,7 +113,6 @@ const GamePage = () => {
 
   const onCookieIncrement = useCallback(
     (value) => {
-      console.log("onCookieIncrement", score.toString(), isBaking);
       if (isBaking) {
         setScore(score.add(value));
       }
@@ -133,13 +133,11 @@ const GamePage = () => {
       let estScore =
         BigNumber.from(balance?.data?.value || 0) ?? BigNumber.from(0);
       if (isBaking && bakeStartBlock > 0) {
-        const estByBlock = cookiePerSecond.mul(blockNumber - bakeStartBlock);
-        console.log(
-          bakeStartBlock,
-          estScore.toString(),
-          estByBlock.toString(),
+        const blocks = Math.min(
+          maxNumberOfBlockReward,
           blockNumber - bakeStartBlock,
         );
+        const estByBlock = cookiePerSecond.mul(blocks);
         estScore = estScore.add(estByBlock);
       }
       setScore(estScore);
