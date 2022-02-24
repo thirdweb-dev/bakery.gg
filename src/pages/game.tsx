@@ -27,10 +27,12 @@ import { CONTRACT_ADDRESSES } from "../constants/addresses";
 import { useAddress, useSigner } from "@thirdweb-dev/react";
 import { ChainId } from "../utils/network";
 import { Card } from "../components/Card";
+import { useActiveChainId } from "../hooks/useActiveChainId";
 
 const GamePage = () => {
   const signerAddress = useAddress();
   const signer = useSigner();
+  const chainId = useActiveChainId();
   const [score, setScore] = useState(BigNumber.from(0));
   const [blockNumber, setBlockNumber] = useState(0);
   const [isCookieBurned, setIsCookieBurned] = useState(false);
@@ -146,6 +148,10 @@ const GamePage = () => {
       });
     }
   }, [signer]);
+
+  useEffect(() => {
+    setInitBalance(false);
+  }, [signerAddress, chainId]);
 
   useEffect(() => {
     async function update() {
