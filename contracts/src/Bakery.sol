@@ -49,6 +49,7 @@ contract Bakery is AccessControl, EIP712 {
   ITokenERC20 immutable public cookie = ITokenERC20(0xeF960235b91E653327d82337e9329Ff7c85c917E);
   ITokenERC1155 immutable public baker = ITokenERC1155(0xF4A6BAda61996fEFDCf7a8027fdEA54B5086517e);
   ITokenERC1155 immutable public upgrade = ITokenERC1155(0x02B5904Eb879A6912B0b28e128f1328AA32b7823);
+  ITokenERC1155 immutable public cursor = ITokenERC1155(0x972d632598C9f133d18206b9C0eFc4b3494341C8);
   ITokenERC1155 immutable public land = ITokenERC1155(0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b);
   // thirdweb community early access token (not transferable)
   ITokenERC1155 immutable public earlyaccess = ITokenERC1155(0xa9e893cC12026A2F6bD826FdB295EAc9c18A7E88);
@@ -139,7 +140,7 @@ contract Bakery is AccessControl, EIP712 {
 
     // spice reward
     if (oven.accumulatedSpiceAmount > 0) {
-      reward += (oven.accumulatedSpiceAmount + spiceBoost(to)) * REWARD_PER_SPICE;
+      reward += oven.accumulatedSpiceAmount * spiceBoost(to) * REWARD_PER_SPICE;
     }
 
     // baker reward + boost
@@ -170,10 +171,32 @@ contract Bakery is AccessControl, EIP712 {
   }
 
   function spiceBoost(address _to) public view returns (uint256) {
-    if (address(baker) == address(0)) {
-      return 0;
+    if (address(cursor) == address(0)) {
+      return 1;
     }
-    return IERC1155(address(baker)).balanceOf(_to, 0);
+
+    address[] memory tos = new address[](4);
+    uint256[] memory tokenIds = new uint256[](4);
+    for (uint256 i = 0; i < 4; i++ ){
+      tos[i] = _to;
+      tokenIds[i] = i;
+    }
+
+    uint256[] memory balances = IERC1155(address(cursor)).balanceOfBatch(tos, tokenIds);
+    uint256 boost = 1;
+    if (balances[0] > 0) {
+      boost *= 2;
+    }
+    if (balances[1] > 0) {
+      boost *= 5;
+    }
+    if (balances[2] > 0) {
+      boost *= 10;
+    }
+    if (balances[3] > 0) {
+      boost *= 10;
+    }
+    return boost;
   }
 
   function bakerReward(address _to) public view returns (uint256[] memory, uint256[] memory, uint256[] memory) {

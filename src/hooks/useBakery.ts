@@ -61,11 +61,9 @@ export function useBakery() {
       setBakeEndBlock(oven?.startBlock.add(maxReward).toNumber() ?? 0);
 
       const spiceBoost =
-        (await contract?.spiceBoost(signerAddress)) ?? BigNumber.from(0);
+        (await contract?.spiceBoost(signerAddress)) ?? BigNumber.from(1);
 
-      setCookiePerClick(
-        BigNumber.from(spiceBoost).mul(rewardPerSpice).add(rewardPerSpice),
-      );
+      setCookiePerClick(BigNumber.from(spiceBoost).mul(rewardPerSpice));
     } else {
       setCookiePerClick(rewardPerSpice);
     }

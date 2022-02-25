@@ -1,5 +1,6 @@
 import { SUPPORTED_CHAIN_ID } from "./network";
 import { AddressZero } from "@ethersproject/constants";
+import { BigNumber } from "ethers";
 
 export const networkKeys = {
   all: ["network"] as const,
@@ -39,6 +40,16 @@ export const dropKeys = {
       "balanceOf",
       { address: userAddress },
     ] as const,
+};
+
+export const bakerMarketKeys = {
+  all: ["baker-market"] as const,
+  lists: () => [...bakerMarketKeys.all, "list"] as const,
+  list: (address = AddressZero) =>
+    [...bakerMarketKeys.lists(), address] as const,
+  details: () => [...bakerMarketKeys.all, "detail"] as const,
+  detail: (address = AddressZero) =>
+    [...bakerMarketKeys.details(), address] as const,
 };
 
 export const editionDropKeys = {

@@ -5,8 +5,11 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@thirdweb/contracts/interfaces/token/ITokenERC1155.sol";
+import "@prb-math/contracts/PRBMathUD60x18.sol";
 
 contract BakerMarket is AccessControl {
+  using PRBMathUD60x18 for uint256;
+
   error InvalidToken();
 
   // keccak256(wallet_address || tokenId) -> count
@@ -26,6 +29,8 @@ contract BakerMarket is AccessControl {
     tokenBaseCost[6] = 20000000 ether;
     tokenBaseCost[7] = 330000000 ether;
     tokenBaseCost[8] = 5100000000 ether;
+
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
 
   function buy(uint256 tokenId, uint256 want) public {
@@ -44,7 +49,15 @@ contract BakerMarket is AccessControl {
   }
 
   function price(uint256 cost, uint256 has, uint256 want) public pure returns (uint256) {
-    return ((cost * ((11500 ** want) - (11500 ** has))) / 1500) / 10000;
+    // COST * ((1.15 ^ Mwant) - (1.15 ^ Nhas)) / 0.15
+    require(want == 1 || want == 10 || want == 100, "want == 1,10,100");
+    uint256 multiplier = 1 ether;
+    if (want == 10) {
+      multiplier = 20.303718238 ether;
+    } else if (want == 100) {
+      multiplier = 7828749.671335256 ether;
+    }
+    return PRBMathUD60x18.fromUint(1.15 ether).toUint().pow(PRBMathUD60x18.fromUint(has)).mul(multiplier).mul(cost);
   }
 
   function withdraw(IERC20 token) external onlyRole(DEFAULT_ADMIN_ROLE) {

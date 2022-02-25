@@ -2,5 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { Bakery } from "./Bakery";
+export type { BakerMarket } from "./BakerMarket";
 
 export { Bakery__factory } from "./factories/Bakery__factory";
+export { BakerMarket__factory } from "./factories/BakerMarket__factory";

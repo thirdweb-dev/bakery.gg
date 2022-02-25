@@ -1,12 +1,14 @@
 import { Flex, Box, Text } from "@chakra-ui/react";
+import { useSigner, useToken } from "@thirdweb-dev/react";
 import { EditionMetadata } from "@thirdweb-dev/sdk";
+import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
+import { BakerMarket__factory } from "../../types/ethers-contracts";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
-import {
-  useEditionDropActiveClaimCondition,
-  useMintMutation,
-} from "../hooks/useEditionDropQueries";
-import { ChainId } from "../utils/network";
+import { useActiveChainId } from "../hooks/useActiveChainId";
+import { useBakerMarketBuy } from "../hooks/useEditionDropQueries";
+import { alchemyUrlMap, ChainId } from "../utils/network";
 import { Card } from "./Card";
 
 interface BakerProps {
@@ -20,14 +22,32 @@ export const Baker: React.FC<BakerProps> = ({
   balance,
   mintQuantity,
 }) => {
-  const activeClaimPhase = useEditionDropActiveClaimCondition(
-    CONTRACT_ADDRESSES[ChainId.Mumbai].bakers,
-    baker.metadata.id.toString(),
+  const chainId = useActiveChainId();
+  const [price, setPrice] = useState(BigNumber.from(0));
+  const signer = useSigner();
+  const market = BakerMarket__factory.connect(
+    CONTRACT_ADDRESSES[chainId ?? ChainId.Mumbai].markets,
+    signer || ethers.getDefaultProvider(alchemyUrlMap[ChainId.Mumbai]),
   );
+  const mintBakerMutation = useBakerMarketBuy(
+    CONTRACT_ADDRESSES[chainId ?? ChainId.Mumbai].markets,
+  );
+  const token = useToken(CONTRACT_ADDRESSES[chainId ?? ChainId.Mumbai].cookies);
 
-  const mintBakerMutation = useMintMutation(
-    CONTRACT_ADDRESSES[ChainId.Mumbai].bakers,
-  );
+  useEffect(() => {
+    if (mintQuantity === 0) {
+      return;
+    }
+    market
+      .tokenBaseCost(baker.metadata.id)
+      .then((cost) => {
+        return market.price(cost, balance || 0, mintQuantity);
+      })
+      .then((p) => {
+        setPrice(p);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balance, mintQuantity, baker]);
 
   return (
     <Card
@@ -36,12 +56,22 @@ export const Baker: React.FC<BakerProps> = ({
       _hover={{ bgColor: "white" }}
     >
       <Flex
-        onClick={() =>
+        onClick={async () => {
+          if (token) {
+            const allowance = await token.allowance(market.address);
+            if (allowance.lt(price)) {
+              await token.setAllowance(
+                market.address,
+                ethers.constants.MaxUint256,
+              );
+            }
+          }
+
           mintBakerMutation.mutate({
             tokenId: baker.metadata.id,
             quantity: mintQuantity,
-          })
-        }
+          });
+        }}
         cursor="pointer"
         overflow="hidden"
       >
@@ -56,15 +86,7 @@ export const Baker: React.FC<BakerProps> = ({
         >
           <Box>
             <Text fontSize={20}>{baker.metadata.name}</Text>
-            <Text fontSize={16}>
-              🍪{" "}
-              {Math.floor(
-                parseInt(
-                  activeClaimPhase.data?.currencyMetadata
-                    .displayValue as string,
-                ) * mintQuantity,
-              )}
-            </Text>
+            <Text fontSize={16}>🍪 {ethers.utils.formatUnits(price)}</Text>
           </Box>
           <Text fontSize={40} mr={4}>
             {balance}
