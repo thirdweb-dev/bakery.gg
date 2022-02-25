@@ -43,7 +43,7 @@ export const ConnectWallet: React.FC<ButtonProps> = (buttonProps) => {
     CONTRACT_ADDRESSES[ChainId.Mumbai].cookies,
   );
 
-  console.log(balance.data);
+  // console.log(balance.data);
 
   if (address && chainId) {
     const SVG = getNetworkMetadata(chainId).icon;

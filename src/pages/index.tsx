@@ -7,6 +7,7 @@ import {
   SimpleGrid,
   ButtonGroup,
   Button,
+  HStack,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
@@ -56,6 +57,10 @@ const GamePage = () => {
   );
   const ownedUpgrades = useEditionDropOwned(
     CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
+  );
+  const balance = useTokenBalance(
+    signerAddress || ethers.constants.AddressZero,
+    CONTRACT_ADDRESSES[ChainId.Mumbai].cookies,
   );
 
   const [clickCount, setClickCount] = useState<number>(0);
@@ -183,7 +188,7 @@ const GamePage = () => {
             <Box mt={1} w="full">
               {isBaking ? (
                 <Button onClick={() => onRebakeClick()} w="full">
-                  {clickCount > 0 ? `Rebake (${clickCount})` : "Rebake"}
+                  Serve
                 </Button>
               ) : (
                 <Button
@@ -196,12 +201,31 @@ const GamePage = () => {
                 </Button>
               )}
             </Box>
-            <Heading as="h3" size="2xl" mt={5}>
-              <NumberCounter
-                value={Math.floor(parseInt(ethers.utils.formatUnits(score)))}
-                transition={0}
-              />
-              cookies
+            <Heading as="h3" size="xl" mt={5}>
+              <HStack>
+                <Text>Chest:</Text>
+                <NumberCounter
+                  align="right"
+                  value={Math.floor(
+                    parseInt(
+                      ethers.utils.formatUnits(
+                        balance?.data?.value ?? BigNumber.from(0),
+                      ),
+                    ),
+                  )}
+                  transition={0}
+                />
+              </HStack>
+            </Heading>
+            <Heading as="h3" size="xl">
+              <HStack>
+                <Text>Oven:</Text>
+                <NumberCounter
+                  align="right"
+                  value={Math.floor(parseInt(ethers.utils.formatUnits(score)))}
+                  transition={0}
+                />
+              </HStack>
             </Heading>
             <Box onClick={() => onCookieClick(score)} my={3}>
               <Image src="/assets/goldcookie.png" width={250} height={250} />
