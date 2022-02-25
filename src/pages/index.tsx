@@ -189,7 +189,7 @@ const GamePage = () => {
         "radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)"
       }
     >
-      <SimpleGrid columns={3} gap={4}>
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
         <Card background="rgba(255, 255, 255, 0.5)" maxHeight="95vh">
           <Flex flexDir="column" textAlign="center">
             <ConnectWallet />
