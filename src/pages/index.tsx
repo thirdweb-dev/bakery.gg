@@ -64,6 +64,7 @@ const GamePage = () => {
 
   const [clickCount, setClickCount] = useState<number>(0);
   const [initBalance, setInitBalance] = useState(false);
+  const [animateCookie, setAnimateCookie] = useState(false);
 
   const ownedBakersIds = useMemo(
     () => ownedBakers?.data?.map((baker) => baker.metadata.id.toString()),
@@ -126,6 +127,10 @@ const GamePage = () => {
       if (isBaking) {
         setClickCount(clickCount + 1);
         setScore(_score.add(cookiePerClick));
+        setAnimateCookie(true);
+        setTimeout(() => {
+          setAnimateCookie(false);
+        }, 100);
       }
     },
     [isBaking, clickCount, cookiePerClick],
@@ -246,10 +251,11 @@ const GamePage = () => {
               my={3}
               _hover={{ transform: "scale(1.05)" }}
               transition="transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+              className={animateCookie ? "cookie-pulse" : ""}
             >
               <Image src="/assets/goldcookie.png" width={250} height={250} />
             </Box>
-            <Heading as="h5" size="lg">
+            <Heading as="h5" size="lg" my={2}>
               {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
             </Heading>
             <Heading as="h5" size="lg">

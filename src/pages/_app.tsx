@@ -6,6 +6,7 @@ import { QueryClient } from "react-query";
 import { Providers } from "../components/Provider";
 import theme from "../theme";
 import { ChainId } from "../utils/network";
+import "../styles/style.css";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
