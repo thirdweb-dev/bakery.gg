@@ -41,6 +41,9 @@ const GamePage = () => {
   const [blockNumber, setBlockNumber] = useState(0);
   const [isCookieMaxOut, setIsCookieBurned] = useState(false);
   const [mintQuantity, setMintQuantity] = useState(1);
+  const [clickCount, setClickCount] = useState<number>(0);
+  const [initBalance, setInitBalance] = useState(false);
+  const [isServing, setIsServing] = useState(false);
   const {
     contract: bakeryContract,
     loading: bakeryLoading,
@@ -67,9 +70,6 @@ const GamePage = () => {
     CONTRACT_ADDRESSES[ChainId.Mumbai].cookies,
   );
 
-  const [clickCount, setClickCount] = useState<number>(0);
-  const [initBalance, setInitBalance] = useState(false);
-
   const ownedBakersIds = useMemo(
     () => ownedBakers?.data?.map((baker) => baker.metadata.id.toString()),
     [ownedBakers],
@@ -81,6 +81,7 @@ const GamePage = () => {
   );
 
   const onRebakeClick = useCallback(() => {
+    setIsServing(true);
     if (signerAddress && clickCount) {
       fetch("/api/click", {
         method: "POST",
@@ -103,6 +104,9 @@ const GamePage = () => {
           setClickCount(0);
           setScore(BigNumber.from(0));
           bakeryRefresh();
+        })
+        .finally(() => {
+          setIsServing(false);
         });
     } else {
       bakeryContract
@@ -115,6 +119,9 @@ const GamePage = () => {
           balance.refetch();
           setScore(BigNumber.from(0));
           bakeryRefresh();
+        })
+        .finally(() => {
+          setIsServing(false);
         });
     }
   }, [
@@ -246,7 +253,12 @@ const GamePage = () => {
             <ConnectWallet />
             <Box mt={1} w="full">
               {isBaking ? (
-                <Button onClick={() => onRebakeClick()} w="full">
+                <Button
+                  onClick={() => onRebakeClick()}
+                  w="full"
+                  isLoading={isServing}
+                  loadingText={"Serving"}
+                >
                   Serve
                 </Button>
               ) : (
