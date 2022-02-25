@@ -7,7 +7,6 @@ import {
   SimpleGrid,
   ButtonGroup,
   Button,
-  HStack,
 } from "@chakra-ui/react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
@@ -208,7 +207,7 @@ const GamePage = () => {
                 </Button>
               )}
               {isCookieMaxOut ? (
-                <Text>
+                <Text mt={3}>
                   Batch of cookies are ready to serve! Put in the next batch.
                 </Text>
               ) : null}

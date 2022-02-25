@@ -2,7 +2,10 @@ import { Box, Tooltip } from "@chakra-ui/react";
 import { EditionMetadata } from "@thirdweb-dev/sdk";
 import Image from "next/image";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
-import { useMintMutation } from "../hooks/useEditionDropQueries";
+import {
+  useEditionDropActiveClaimCondition,
+  useMintMutation,
+} from "../hooks/useEditionDropQueries";
 import { ChainId } from "../utils/network";
 
 interface UpgradeProps {
@@ -14,8 +17,20 @@ export const Upgrade: React.FC<UpgradeProps> = ({ upgrade }) => {
     CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
   );
 
+  const activeClaimPhase = useEditionDropActiveClaimCondition(
+    CONTRACT_ADDRESSES[ChainId.Mumbai].upgrades,
+    upgrade.metadata.id.toString(),
+  );
+
   return (
-    <Tooltip label={upgrade.metadata.name}>
+    <Tooltip
+      label={
+        <>
+          {upgrade.metadata.name}
+          {activeClaimPhase.data?.currencyMetadata.displayValue}
+        </>
+      }
+    >
       <Box
         onClick={() =>
           mintUpgradeMutation.mutate({
