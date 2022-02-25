@@ -181,10 +181,9 @@ const GamePage = () => {
 
   return (
     <Flex
-      pt={12}
-      justifyContent="center"
-      p={5}
+      p={4}
       color="black"
+      justifyContent="center"
       background={
         "radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)"
       }
@@ -297,7 +296,7 @@ const GamePage = () => {
                   .slice(0, 6)}
               </SimpleGrid>
             </Card>
-            <Card p={0} overflow="hidden" background="rgba(255, 255, 255, 0.5)">
+            <Card p={0} background="rgba(255, 255, 255, 0.5)">
               <ButtonGroup isAttached size="lg" variant="outline" w="100%">
                 <Button
                   color="black"
