@@ -1,16 +1,8 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import {
-  defaultChains,
-  defaultL2Chains,
-  ThirdwebProvider,
-} from "@thirdweb-dev/react";
-import { BigNumberish } from "ethers";
+import { defaultChains, defaultL2Chains } from "@thirdweb-dev/react";
 import { DefaultSeo } from "next-seo";
 import { AppProps } from "next/app";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
-import { WalletLinkConnector } from "wagmi/connectors/walletLink";
+import { QueryClient } from "react-query";
 import { Providers } from "../components/Provider";
 import theme from "../theme";
 import { ChainId } from "../utils/network";
