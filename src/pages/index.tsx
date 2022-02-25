@@ -95,6 +95,7 @@ const GamePage = () => {
         .then((tx) => tx?.wait())
         .then(() => {
           setClickCount(0);
+          setScore(BigNumber.from(0));
           bakeryRefresh();
         });
     } else {
@@ -105,6 +106,7 @@ const GamePage = () => {
         )
         .then((tx) => tx?.wait())
         .then(() => {
+          setScore(BigNumber.from(0));
           bakeryRefresh();
         });
     }
@@ -345,7 +347,7 @@ const GamePage = () => {
               </Button>
             </ButtonGroup>
           </Card>
-          <Card overflowY="scroll">
+          <Card background="rgba(255, 255, 255, 0.5)" overflowY="scroll">
             <SimpleGrid spacing={1}>
               {bakers?.data?.map((baker) => (
                 <Baker
