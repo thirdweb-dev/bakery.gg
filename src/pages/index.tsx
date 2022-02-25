@@ -189,7 +189,7 @@ const GamePage = () => {
       }
     >
       <SimpleGrid columns={3} gap={4}>
-        <Card background="rgba(255, 255, 255, 0.5)">
+        <Card background="rgba(255, 255, 255, 0.5)" maxHeight="95vh">
           <Flex flexDir="column" textAlign="center">
             <ConnectWallet />
             <Box mt={1} w="full">
@@ -248,7 +248,7 @@ const GamePage = () => {
             </Heading>
           </Flex>
         </Card>
-        <Card background="rgba(255, 255, 255, 0.5)">
+        <Card background="rgba(255, 255, 255, 0.5)" maxHeight="95vh">
           <Flex flexGrow={1}>
             <Stack spacing={2} w="full">
               {lands?.data
@@ -272,84 +272,78 @@ const GamePage = () => {
           </Flex>
         </Card>
 
-        <Stack>
-          <Stack spacing={1}>
-            <Card background="rgba(255, 255, 255, 0.5)">
-              <SimpleGrid columns={6} spacing={1}>
-                {upgrades.data
-                  ?.filter((upgrade) => {
-                    const bakerId: string = upgrade?.metadata?.properties?.[
-                      "Baker ID"
-                    ] as string;
-                    return ownedBakersIds?.includes(bakerId);
-                  })
-                  ?.filter(
-                    (upgrade) =>
-                      !ownedUpgradesIds?.includes(
-                        upgrade.metadata.id.toString(),
-                      ),
-                  )
-                  ?.map((upgrade) => (
-                    <Upgrade
-                      key={upgrade.metadata.id.toString()}
-                      upgrade={upgrade}
-                    />
-                  ))
-                  .slice(0, 6)}
-              </SimpleGrid>
-            </Card>
-            <Card p={0} background="rgba(255, 255, 255, 0.5)">
-              <ButtonGroup isAttached size="lg" variant="outline" w="100%">
-                <Button
-                  color="black"
-                  background="rgba(255, 255, 255, 0.5)"
-                  _hover={{
-                    bg: "white",
-                  }}
-                  pointerEvents="none"
-                >
-                  Mint quantity:
-                </Button>
-                <Button
-                  color="black"
-                  bg={mintQuantity === 1 ? "white" : "rgba(255, 255, 255, 0.5)"}
-                  _hover={{
-                    bg: "white",
-                  }}
-                  onClick={() => setMintQuantity(1)}
-                  flexGrow={1}
-                >
-                  1
-                </Button>
-                <Button
-                  color="black"
-                  bg={
-                    mintQuantity === 10 ? "white" : "rgba(255, 255, 255, 0.5)"
-                  }
-                  _hover={{
-                    bg: "white",
-                  }}
-                  onClick={() => setMintQuantity(10)}
-                  flexGrow={1}
-                >
-                  10
-                </Button>
-                <Button
-                  color="black"
-                  bg={
-                    mintQuantity === 100 ? "white" : "rgba(255, 255, 255, 0.5)"
-                  }
-                  _hover={{
-                    bg: "white",
-                  }}
-                  onClick={() => setMintQuantity(100)}
-                  flexGrow={1}
-                >
-                  100
-                </Button>
-              </ButtonGroup>
-            </Card>
-            <SimpleGrid mt={6} spacing={1}>
+        <Stack spacing={1} maxHeight="95vh">
+          <Card background="rgba(255, 255, 255, 0.5)" overflowY="hidden">
+            <SimpleGrid columns={6} spacing={1}>
+              {upgrades.data
+                ?.filter((upgrade) => {
+                  const bakerId: string = upgrade?.metadata?.properties?.[
+                    "Baker ID"
+                  ] as string;
+                  return ownedBakersIds?.includes(bakerId);
+                })
+                ?.filter(
+                  (upgrade) =>
+                    !ownedUpgradesIds?.includes(upgrade.metadata.id.toString()),
+                )
+                ?.map((upgrade) => (
+                  <Upgrade
+                    key={upgrade.metadata.id.toString()}
+                    upgrade={upgrade}
+                  />
+                ))
+                .slice(0, 6)}
+            </SimpleGrid>
+          </Card>
+          <Card p={0} background="rgba(255, 255, 255, 0.5)">
+            <ButtonGroup isAttached size="lg" variant="outline" w="100%">
+              <Button
+                color="black"
+                background="rgba(255, 255, 255, 0.5)"
+                _hover={{
+                  bg: "white",
+                }}
+                pointerEvents="none"
+              >
+                Mint quantity:
+              </Button>
+              <Button
+                color="black"
+                bg={mintQuantity === 1 ? "white" : "rgba(255, 255, 255, 0.5)"}
+                _hover={{
+                  bg: "white",
+                }}
+                onClick={() => setMintQuantity(1)}
+                flexGrow={1}
+              >
+                1
+              </Button>
+              <Button
+                color="black"
+                bg={mintQuantity === 10 ? "white" : "rgba(255, 255, 255, 0.5)"}
+                _hover={{
+                  bg: "white",
+                }}
+                onClick={() => setMintQuantity(10)}
+                flexGrow={1}
+              >
+                10
+              </Button>
+              <Button
+                color="black"
+                bg={mintQuantity === 100 ? "white" : "rgba(255, 255, 255, 0.5)"}
+                _hover={{
+                  bg: "white",
+                }}
+                onClick={() => setMintQuantity(100)}
+                flexGrow={1}
+              >
+                100
+              </Button>
+            </ButtonGroup>
+          </Card>
+          <Card overflowY="scroll">
+            <SimpleGrid spacing={1}>
               {bakers?.data?.map((baker) => (
                 <Baker
                   key={baker.metadata.id.toString()}
@@ -367,7 +361,7 @@ const GamePage = () => {
                 />
               ))}
             </SimpleGrid>
-          </Stack>
+          </Card>
         </Stack>
       </SimpleGrid>
     </Flex>
