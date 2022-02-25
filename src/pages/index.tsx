@@ -218,7 +218,7 @@ const GamePage = () => {
         position="absolute"
         top={mouse.y as number}
         left={mouse.x as number}
-        display={animateCpc ? "block" : "none"}
+        display={pendingClicks > 0 ? "block" : "none"}
         className={animateCpc ? "cookie-up" : ""}
       />,
     );

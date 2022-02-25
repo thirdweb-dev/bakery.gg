@@ -8,5 +8,9 @@ export const CookieClick: React.FC<CookieClickProps> = ({
   cookiePerClick,
   ...rest
 }) => {
-  return <Box {...rest}>+{cookiePerClick}</Box>;
+  return (
+    <Box userSelect="none" {...rest}>
+      +{cookiePerClick}
+    </Box>
+  );
 };
