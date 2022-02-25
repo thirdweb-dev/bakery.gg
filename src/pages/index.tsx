@@ -248,7 +248,11 @@ const GamePage = () => {
             </Heading>
           </Flex>
         </Card>
-        <Card background="rgba(255, 255, 255, 0.5)" maxHeight="95vh">
+        <Card
+          background="rgba(255, 255, 255, 0.5)"
+          maxHeight="95vh"
+          overflowY="scroll"
+        >
           <Flex flexGrow={1}>
             <Stack spacing={2} w="full">
               {lands?.data
