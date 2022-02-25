@@ -241,7 +241,12 @@ const GamePage = () => {
                 />
               </Flex>
             </Heading>
-            <Box onClick={() => onCookieClick(score)} my={3}>
+            <Box
+              onClick={() => onCookieClick(score)}
+              my={3}
+              _hover={{ transform: "scale(1.05)" }}
+              transition="transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+            >
               <Image src="/assets/goldcookie.png" width={250} height={250} />
             </Box>
             <Heading as="h5" size="lg">
