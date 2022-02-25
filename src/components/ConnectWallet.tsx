@@ -9,21 +9,16 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  Skeleton,
   Text,
   useClipboard,
 } from "@chakra-ui/react";
-import { useAddress, useConnect, useDisconnect } from "@thirdweb-dev/react";
-import { BigNumber, ethers } from "ethers";
+import { useConnect, useDisconnect } from "@thirdweb-dev/react";
 import React from "react";
 import { AiOutlineDisconnect } from "react-icons/ai";
 import { FiCheck, FiChevronDown } from "react-icons/fi";
 import { ImCopy } from "react-icons/im";
-import { CONTRACT_ADDRESSES } from "../constants/addresses";
-import { useTokenBalance } from "../hooks/useEditionDropQueries";
 import { useWeb3 } from "../hooks/useWeb3";
 import { shortenIfAddress } from "../utils/address";
-import { ChainId } from "../utils/network";
 
 const connectorIdToImageUrl: Record<string, string> = {
   injected: "https://thirdweb.com/logos/metamask-fox.svg",
@@ -31,7 +26,6 @@ const connectorIdToImageUrl: Record<string, string> = {
   walletLink: "https://thirdweb.com/logos/coinbase-wallet-logo.svg",
 };
 export const ConnectWallet: React.FC<ButtonProps> = (buttonProps) => {
-  const signerAddress = useAddress();
   const [connector, connect] = useConnect();
   const { address, chainId, getNetworkMetadata } = useWeb3();
   const disconnect = useDisconnect();
