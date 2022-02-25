@@ -253,6 +253,7 @@ const GamePage = () => {
           background="rgba(255, 255, 255, 0.5)"
           maxHeight="95vh"
           overflowY="scroll"
+          border={0}
         >
           <Flex flexGrow={1}>
             <Stack spacing={2} w="full">

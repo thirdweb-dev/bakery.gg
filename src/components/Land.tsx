@@ -22,7 +22,7 @@ export const Land: React.FC<LandProps> = ({ land, baker }) => {
   }
 
   return (
-    <Card p={0} overflow="hidden" w="full">
+    <Card p={0} overflow="hidden" w="full" border={0}>
       <Box bgImage={land.metadata.image as string} w="full" h={24}>
         {allBakers}
       </Box>
