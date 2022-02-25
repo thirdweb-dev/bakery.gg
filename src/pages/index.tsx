@@ -35,7 +35,7 @@ const GamePage = () => {
   const chainId = useActiveChainId();
   const [score, setScore] = useState(BigNumber.from(0));
   const [blockNumber, setBlockNumber] = useState(0);
-  const [isCookieBurned, setIsCookieBurned] = useState(false);
+  const [isCookieMaxOut, setIsCookieBurned] = useState(false);
   const [mintQuantity, setMintQuantity] = useState(1);
   const {
     contract: bakeryContract,
@@ -129,11 +129,11 @@ const GamePage = () => {
 
   const onCookieIncrement = useCallback(
     (value) => {
-      if (isBaking && !isCookieBurned) {
+      if (isBaking && !isCookieMaxOut) {
         setScore(score.add(value));
       }
     },
-    [isBaking, score, isCookieBurned],
+    [isBaking, score, isCookieMaxOut],
   );
 
   useEffect(() => {
@@ -207,6 +207,11 @@ const GamePage = () => {
                   Start Baking
                 </Button>
               )}
+              {isCookieMaxOut ? (
+                <Text>
+                  Batch of cookies are ready to serve! Put in the next batch.
+                </Text>
+              ) : null}
             </Box>
             <Heading as="h3" size="xl" mt={5}>
               <Flex>
@@ -241,9 +246,6 @@ const GamePage = () => {
             <Heading as="h5" size="lg">
               {ethers.utils.formatUnits(cookiePerClick)} cookies per click
             </Heading>
-            {isCookieBurned ? (
-              <Text>Cookie burned! Please start the next batch</Text>
-            ) : null}
           </Flex>
         </Card>
         <Card background="rgba(255, 255, 255, 0.5)">
