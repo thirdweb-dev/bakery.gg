@@ -12,7 +12,12 @@ export const Land: React.FC<LandProps> = ({ land, baker }) => {
   const allBakers = [];
   for (let i = 0; i < baker?.quantityOwned; i++) {
     allBakers.push(
-      <Image src={baker?.metadata.image as string} width={24} height={24} />,
+      <Image
+        key={i}
+        src={baker?.metadata.image as string}
+        width={24}
+        height={24}
+      />,
     );
   }
 

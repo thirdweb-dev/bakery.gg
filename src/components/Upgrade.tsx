@@ -15,18 +15,18 @@ export const Upgrade: React.FC<UpgradeProps> = ({ upgrade }) => {
   );
 
   return (
-    <Box
-      onClick={() =>
-        mintUpgradeMutation.mutate({
-          tokenId: upgrade.metadata.id,
-          quantity: 1,
-        })
-      }
-      p={0}
-    >
-      <Tooltip label={upgrade.metadata.name}>
+    <Tooltip label={upgrade.metadata.name}>
+      <Box
+        onClick={() =>
+          mintUpgradeMutation.mutate({
+            tokenId: upgrade.metadata.id,
+            quantity: 1,
+          })
+        }
+        p={0}
+      >
         <Image src={upgrade.metadata.image as string} width={72} height={72} />
-      </Tooltip>
-    </Box>
+      </Box>
+    </Tooltip>
   );
 };
