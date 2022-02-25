@@ -113,11 +113,12 @@ const GamePage = () => {
         });
     }
   }, [
-    bakeryRefresh,
-    bakeryContract,
     signerAddress,
     clickCount,
     bakeStartBlock,
+    bakeryContract,
+    balance,
+    bakeryRefresh,
   ]);
 
   const onCookieClick = useCallback(
