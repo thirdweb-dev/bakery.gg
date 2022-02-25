@@ -94,6 +94,7 @@ const GamePage = () => {
         )
         .then((tx) => tx?.wait())
         .then(() => {
+          balance.refetch();
           setClickCount(0);
           setScore(BigNumber.from(0));
           bakeryRefresh();
@@ -106,6 +107,7 @@ const GamePage = () => {
         )
         .then((tx) => tx?.wait())
         .then(() => {
+          balance.refetch();
           setScore(BigNumber.from(0));
           bakeryRefresh();
         });
