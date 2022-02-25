@@ -47,7 +47,7 @@ contract Bakery is AccessControl, EIP712 {
   error InvalidSender();
 
   ITokenERC20 immutable public cookie = ITokenERC20(0xeF960235b91E653327d82337e9329Ff7c85c917E);
-  ITokenERC1155 immutable public baker = ITokenERC1155(0xaaC61B51873f226257725a49D68a28E38bbE3BA0);
+  ITokenERC1155 immutable public baker = ITokenERC1155(0xF4A6BAda61996fEFDCf7a8027fdEA54B5086517e);
   ITokenERC1155 immutable public upgrade = ITokenERC1155(0x02B5904Eb879A6912B0b28e128f1328AA32b7823);
   ITokenERC1155 immutable public land = ITokenERC1155(0xa44000cb4fAD817b92A781CDF6A1A2ceb57D945b);
   // thirdweb community early access token (not transferable)
