@@ -296,8 +296,7 @@ const GamePage = () => {
                     key={upgrade.metadata.id.toString()}
                     upgrade={upgrade}
                   />
-                ))
-                .slice(0, 6)}
+                ))}
             </SimpleGrid>
           </Card>
           <Card p={0} background="rgba(255, 255, 255, 0.5)">
