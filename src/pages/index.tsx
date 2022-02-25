@@ -8,7 +8,13 @@ import {
   ButtonGroup,
   Button,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import { ConnectWallet } from "../components/ConnectWallet";
 import {
@@ -27,8 +33,16 @@ import { ChainId } from "../utils/network";
 import { Card } from "../components/Card";
 import { useActiveChainId } from "../hooks/useActiveChainId";
 import { Upgrade } from "../components/Upgrade";
+import useMouse from "@react-hook/mouse-position";
+import { CookieClick } from "../components/CookieClick";
 
 const GamePage = () => {
+  const ref = useRef(null);
+  const mouse = useMouse(ref, {
+    enterDelay: 100,
+    leaveDelay: 100,
+  });
+
   const signerAddress = useAddress();
   const signer = useSigner();
   const chainId = useActiveChainId();
@@ -65,6 +79,7 @@ const GamePage = () => {
   const [clickCount, setClickCount] = useState<number>(0);
   const [initBalance, setInitBalance] = useState(false);
   const [animateCookie, setAnimateCookie] = useState(false);
+  const [animateCpc, setAnimateCpc] = useState(false);
 
   const ownedBakersIds = useMemo(
     () => ownedBakers?.data?.map((baker) => baker.metadata.id.toString()),
@@ -128,9 +143,13 @@ const GamePage = () => {
         setClickCount(clickCount + 1);
         setScore(_score.add(cookiePerClick));
         setAnimateCookie(true);
+        setAnimateCpc(true);
         setTimeout(() => {
           setAnimateCookie(false);
         }, 100);
+        setTimeout(() => {
+          setAnimateCpc(false);
+        }, 1000);
       }
     },
     [isBaking, clickCount, cookiePerClick],
@@ -252,8 +271,18 @@ const GamePage = () => {
               _hover={{ transform: "scale(1.05)" }}
               transition="transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
               className={animateCookie ? "cookie-pulse" : ""}
+              ref={ref}
+              position="relative"
             >
               <Image src="/assets/goldcookie.png" width={250} height={250} />
+              <CookieClick
+                cookiePerClick={ethers.utils.formatUnits(cookiePerClick)}
+                position="absolute"
+                top={mouse.y as number}
+                left={mouse.x as number}
+                display={animateCpc ? "block" : "none"}
+                className={animateCpc ? "cookie-up" : ""}
+              />
             </Box>
             <Heading as="h5" size="lg" my={2}>
               {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
