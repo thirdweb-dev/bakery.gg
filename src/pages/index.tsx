@@ -180,9 +180,17 @@ const GamePage = () => {
   }, [initBalance, onCookieIncrement, cookiePerSecond]);
 
   return (
-    <Flex pt={12} justifyContent="center" p={5} color="black">
+    <Flex
+      pt={12}
+      justifyContent="center"
+      p={5}
+      color="black"
+      background={
+        "radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)"
+      }
+    >
       <SimpleGrid columns={3} gap={4}>
-        <Card>
+        <Card background="rgba(255, 255, 255, 0.5)">
           <Flex flexDir="column" textAlign="center">
             <ConnectWallet />
             <Box mt={1} w="full">
@@ -239,7 +247,7 @@ const GamePage = () => {
             ) : null}
           </Flex>
         </Card>
-        <Card>
+        <Card background="rgba(255, 255, 255, 0.5)">
           <Flex flexGrow={1}>
             <Stack spacing={2} w="full">
               {lands?.data
@@ -265,7 +273,7 @@ const GamePage = () => {
 
         <Stack>
           <Stack spacing={1}>
-            <Card>
+            <Card background="rgba(255, 255, 255, 0.5)">
               <SimpleGrid columns={6} spacing={1}>
                 {upgrades.data
                   ?.filter((upgrade) => {
@@ -289,13 +297,13 @@ const GamePage = () => {
                   .slice(0, 6)}
               </SimpleGrid>
             </Card>
-            <Card p={0} overflow="hidden">
+            <Card p={0} overflow="hidden" background="rgba(255, 255, 255, 0.5)">
               <ButtonGroup isAttached size="lg" variant="outline" w="100%">
                 <Button
                   color="black"
-                  bg="white"
+                  background="rgba(255, 255, 255, 0.5)"
                   _hover={{
-                    bg: "gray.200",
+                    bg: "white",
                   }}
                   pointerEvents="none"
                 >
@@ -303,9 +311,9 @@ const GamePage = () => {
                 </Button>
                 <Button
                   color="black"
-                  bg={mintQuantity === 1 ? "gray.200" : "white"}
+                  bg={mintQuantity === 1 ? "white" : "rgba(255, 255, 255, 0.5)"}
                   _hover={{
-                    bg: "gray.200",
+                    bg: "white",
                   }}
                   onClick={() => setMintQuantity(1)}
                   flexGrow={1}
@@ -314,9 +322,11 @@ const GamePage = () => {
                 </Button>
                 <Button
                   color="black"
-                  bg={mintQuantity === 10 ? "gray.200" : "white"}
+                  bg={
+                    mintQuantity === 10 ? "white" : "rgba(255, 255, 255, 0.5)"
+                  }
                   _hover={{
-                    bg: "gray.200",
+                    bg: "white",
                   }}
                   onClick={() => setMintQuantity(10)}
                   flexGrow={1}
@@ -325,9 +335,11 @@ const GamePage = () => {
                 </Button>
                 <Button
                   color="black"
-                  bg={mintQuantity === 100 ? "gray.200" : "white"}
+                  bg={
+                    mintQuantity === 100 ? "white" : "rgba(255, 255, 255, 0.5)"
+                  }
                   _hover={{
-                    bg: "gray.200",
+                    bg: "white",
                   }}
                   onClick={() => setMintQuantity(100)}
                   flexGrow={1}

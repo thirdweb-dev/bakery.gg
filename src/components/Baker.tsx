@@ -30,7 +30,11 @@ export const Baker: React.FC<BakerProps> = ({
   );
 
   return (
-    <Card p={1} _hover={{ bgColor: "gray.200" }}>
+    <Card
+      p={1}
+      background="rgba(255, 255, 255, 0.5)"
+      _hover={{ bgColor: "white" }}
+    >
       <Flex
         onClick={() =>
           mintBakerMutation.mutate({
