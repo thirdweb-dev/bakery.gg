@@ -202,10 +202,9 @@ const GamePage = () => {
               )}
             </Box>
             <Heading as="h3" size="xl" mt={5}>
-              <HStack>
-                <Text>Chest:</Text>
+              <Flex>
+                <Image src="/assets/Chest.png" width="48" height="48" />
                 <NumberCounter
-                  align="right"
                   value={Math.floor(
                     parseInt(
                       ethers.utils.formatUnits(
@@ -215,17 +214,16 @@ const GamePage = () => {
                   )}
                   transition={0}
                 />
-              </HStack>
+              </Flex>
             </Heading>
             <Heading as="h3" size="xl">
-              <HStack>
-                <Text>Oven:</Text>
+              <Flex>
+                <Image src="/assets/Cooking.png" width="48" height="48" />
                 <NumberCounter
-                  align="right"
                   value={Math.floor(parseInt(ethers.utils.formatUnits(score)))}
                   transition={0}
                 />
-              </HStack>
+              </Flex>
             </Heading>
             <Box onClick={() => onCookieClick(score)} my={3}>
               <Image src="/assets/goldcookie.png" width={250} height={250} />
