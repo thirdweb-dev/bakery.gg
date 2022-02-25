@@ -351,13 +351,15 @@ const GamePage = () => {
               {bakers?.data?.map((baker) => (
                 <Baker
                   key={baker.metadata.id.toString()}
-                  balance={ownedBakers?.data
-                    ?.find(
-                      (nft) =>
-                        nft.metadata.id.toString() ===
-                        baker.metadata.id.toString(),
-                    )
-                    ?.quantityOwned?.toString()}
+                  balance={
+                    ownedBakers?.data
+                      ?.find(
+                        (nft) =>
+                          nft.metadata.id.toString() ===
+                          baker.metadata.id.toString(),
+                      )
+                      ?.quantityOwned?.toString() ?? "0"
+                  }
                   baker={baker}
                   mintQuantity={mintQuantity}
                 />
