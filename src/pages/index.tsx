@@ -346,7 +346,7 @@ const GamePage = () => {
               </Button>
             </ButtonGroup>
           </Card>
-          <Card overflowY="scroll">
+          <Card background="rgba(255, 255, 255, 0.5)" overflowY="scroll">
             <SimpleGrid spacing={1}>
               {bakers?.data?.map((baker) => (
                 <Baker
