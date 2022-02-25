@@ -38,13 +38,6 @@ export const ConnectWallet: React.FC<ButtonProps> = (buttonProps) => {
 
   const { hasCopied, onCopy } = useClipboard(address || "");
 
-  const balance = useTokenBalance(
-    signerAddress || ethers.constants.AddressZero,
-    CONTRACT_ADDRESSES[ChainId.Mumbai].cookies,
-  );
-
-  // console.log(balance.data);
-
   if (address && chainId) {
     const SVG = getNetworkMetadata(chainId).icon;
     return (
@@ -59,12 +52,6 @@ export const ConnectWallet: React.FC<ButtonProps> = (buttonProps) => {
           <Flex direction="row" gap={3} align="center">
             <Icon boxSize={6} as={SVG} />
             <Flex gap={0.5} direction="column" textAlign="left">
-              <Text fontSize="sm">
-                <Skeleton as="span" isLoaded={!balance.isLoading}>
-                  {balance?.data?.displayValue}
-                </Skeleton>{" "}
-                COOKIES
-              </Text>
               <Text fontSize="sm" color="gray.500">
                 {shortenIfAddress(address, true)} (
                 {getNetworkMetadata(chainId).chainName})
