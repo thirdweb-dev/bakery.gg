@@ -1,16 +1,16 @@
 import { Box } from "@chakra-ui/react";
-import { EditionMetadata } from "@thirdweb-dev/sdk";
+import { EditionMetadata, EditionMetadataOwner } from "@thirdweb-dev/sdk";
 import Image from "next/image";
 import { Card } from "./Card";
 
 interface LandProps {
   land: EditionMetadata;
-  baker?: EditionMetadata;
+  baker?: EditionMetadataOwner;
 }
 
 export const Land: React.FC<LandProps> = ({ land, baker }) => {
   const allBakers = [];
-  for (let i = 0; i < baker?.quantityOwned; i++) {
+  for (let i = 0; i < Number(baker?.quantityOwned); i++) {
     allBakers.push(
       <Image
         key={i}
