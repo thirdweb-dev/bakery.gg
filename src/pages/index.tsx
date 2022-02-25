@@ -278,7 +278,7 @@ const GamePage = () => {
         </Card>
 
         <Stack spacing={1} maxHeight="95vh">
-          <Card background="rgba(255, 255, 255, 0.5)" overflowY="hidden">
+          <Card background="rgba(255, 255, 255, 0.5)">
             <SimpleGrid columns={6} spacing={1}>
               {upgrades.data
                 ?.filter((upgrade) => {
