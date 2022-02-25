@@ -225,8 +225,6 @@ const GamePage = () => {
     );
   }
 
-  console.log(network);
-
   if (!network?.[0].data.chain) {
     return (
       <Flex w="100vw" h="100vh" justifyContent="center" alignItems="center">
