@@ -80,6 +80,7 @@ const GamePage = () => {
   const [initBalance, setInitBalance] = useState(false);
   const [animateCookie, setAnimateCookie] = useState(false);
   const [animateCpc, setAnimateCpc] = useState(false);
+  const [pendingClicks, setPendingClicks] = useState(0);
 
   const ownedBakersIds = useMemo(
     () => ownedBakers?.data?.map((baker) => baker.metadata.id.toString()),
@@ -144,11 +145,13 @@ const GamePage = () => {
         setScore(_score.add(cookiePerClick));
         setAnimateCookie(true);
         setAnimateCpc(true);
+        setPendingClicks((clicks) => clicks + 1);
         setTimeout(() => {
           setAnimateCookie(false);
         }, 100);
         setTimeout(() => {
           setAnimateCpc(false);
+          setPendingClicks((clicks) => clicks - 1);
         }, 1000);
       }
     },
@@ -206,6 +209,20 @@ const GamePage = () => {
     }, 100);
     return () => clearInterval(timeout);
   }, [initBalance, onCookieIncrement, cookiePerSecond]);
+
+  const allClicks = [];
+  for (let i = 0; i < pendingClicks; i++) {
+    allClicks.push(
+      <CookieClick
+        cookiePerClick={ethers.utils.formatUnits(cookiePerClick)}
+        position="absolute"
+        top={mouse.y as number}
+        left={mouse.x as number}
+        display={animateCpc ? "block" : "none"}
+        className={animateCpc ? "cookie-up" : ""}
+      />,
+    );
+  }
 
   return (
     <Flex
@@ -275,14 +292,7 @@ const GamePage = () => {
               position="relative"
             >
               <Image src="/assets/goldcookie.png" width={250} height={250} />
-              <CookieClick
-                cookiePerClick={ethers.utils.formatUnits(cookiePerClick)}
-                position="absolute"
-                top={mouse.y as number}
-                left={mouse.x as number}
-                display={animateCpc ? "block" : "none"}
-                className={animateCpc ? "cookie-up" : ""}
-              />
+              {allClicks}
             </Box>
             <Heading as="h5" size="lg" my={2}>
               {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
