@@ -24,7 +24,7 @@ export function useBakery() {
   const [loading, setLoading] = useState(true);
 
   const contract = useMemo(() => {
-    if (!chainId) {
+    if (chainId !== ChainId.Mumbai) {
       return null;
     }
     if (!signer) {

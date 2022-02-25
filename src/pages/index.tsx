@@ -28,7 +28,7 @@ import { useBakery } from "../hooks/useBakery";
 import { BigNumber, ethers } from "ethers";
 import NumberCounter from "react-smooth-number-counter";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
-import { useAddress, useSigner } from "@thirdweb-dev/react";
+import { useAddress, useNetwork, useSigner } from "@thirdweb-dev/react";
 import { ChainId } from "../utils/network";
 import { Card } from "../components/Card";
 import { useActiveChainId } from "../hooks/useActiveChainId";
@@ -46,6 +46,7 @@ const GamePage = () => {
   const signerAddress = useAddress();
   const signer = useSigner();
   const chainId = useActiveChainId();
+  const network = useNetwork();
   const [score, setScore] = useState(BigNumber.from(0));
   const [blockNumber, setBlockNumber] = useState(0);
   const [isCookieMaxOut, setIsCookieBurned] = useState(false);
@@ -221,6 +222,41 @@ const GamePage = () => {
         display={pendingClicks > 0 ? "block" : "none"}
         className={animateCpc ? "cookie-up" : ""}
       />,
+    );
+  }
+
+  console.log(network);
+
+  if (!network?.[0].data.chain) {
+    return (
+      <Flex w="100vw" h="100vh" justifyContent="center" alignItems="center">
+        <Flex flexDir="column">
+          <Heading size="2xl" textAlign="center" color="white">
+            Welcome to the Bakery
+          </Heading>
+          <Text mb={2} color="white">
+            You need to connect your wallet to the Polygon network to start
+            baking cookies.
+          </Text>
+          <ConnectWallet />
+        </Flex>
+      </Flex>
+    );
+  }
+
+  if (network?.[0].data?.chain?.id !== ChainId.Mumbai) {
+    return (
+      <Flex w="100vw" h="100vh" justifyContent="center" alignItems="center">
+        <Box color="white">
+          <Heading size="2xl" textAlign="center">
+            Please connect to Polygon
+          </Heading>
+          <Text>
+            You can only bake cookies in the Polygon network, please switch
+            networks in your connected wallet.
+          </Text>
+        </Box>
+      </Flex>
     );
   }
 
