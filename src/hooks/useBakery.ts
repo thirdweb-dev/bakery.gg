@@ -21,7 +21,7 @@ export function useBakery() {
   const [bakeEndBlock, setBakeEndBlock] = useState(0);
   const [maxNumberOfBlockReward, setMaxNumberOfBlockReward] = useState(0);
   const [isBaking, setIsBaking] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const contract = useMemo(() => {
     if (chainId !== ChainId.Mumbai && chainId !== ChainId.Polygon) {

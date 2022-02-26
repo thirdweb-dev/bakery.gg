@@ -12,6 +12,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ConnectWallet } from "../components/ConnectWallet";
 import {
+  useBakeryRefreshMutation,
+  useBakeStartBlock,
   useCookiePerClick,
   useCookiePerSecond,
   useEditionDropList,
@@ -41,7 +43,7 @@ const GamePage = () => {
   const network = useNetwork();
   const [score, setScore] = useState(BigNumber.from(0));
   const [blockNumber, setBlockNumber] = useState(0);
-  const [isCookieMaxOut, setIsCookieBurned] = useState(false);
+  const [isCookieMaxOut, setIsCookieMaxOut] = useState(false);
   const [mintQuantity, setMintQuantity] = useState(1);
   const [clickCount, setClickCount] = useState<number>(0);
   const [initBalance, setInitBalance] = useState(false);
@@ -50,10 +52,12 @@ const GamePage = () => {
     contract: bakeryContract,
     loading: bakeryLoading,
     maxNumberOfBlockReward,
-    bakeStartBlock,
     isBaking,
-    refresh: bakeryRefresh,
   } = useBakery();
+  const bakeStartBlock = useBakeStartBlock(
+    signerAddress || ethers.constants.AddressZero,
+    CONTRACT_ADDRESSES[ChainId.Mumbai].bakery,
+  );
   const cookiePerSecond = useCookiePerSecond(
     signerAddress || ethers.constants.AddressZero,
     CONTRACT_ADDRESSES[ChainId.Mumbai].bakery,
@@ -78,6 +82,8 @@ const GamePage = () => {
     CONTRACT_ADDRESSES[ChainId.Mumbai].cookies,
   );
 
+  const refreshMutation = useBakeryRefreshMutation();
+
   const ownedBakersIds = useMemo(
     () => ownedBakers?.data?.map((baker) => baker.metadata.id.toString()),
     [ownedBakers],
@@ -99,7 +105,7 @@ const GamePage = () => {
         body: JSON.stringify({
           to: signerAddress,
           amount: clickCount,
-          startBlock: bakeStartBlock,
+          startBlock: bakeStartBlock?.data,
         }),
       })
         .then((r) => r.json())
@@ -109,9 +115,10 @@ const GamePage = () => {
         .then((tx) => tx?.wait())
         .then(() => {
           balance.refetch();
+          bakeStartBlock.refetch();
           setClickCount(0);
           setScore(BigNumber.from(0));
-          bakeryRefresh();
+          return refreshMutation.mutate();
         })
         .finally(() => {
           setIsServing(false);
@@ -125,8 +132,9 @@ const GamePage = () => {
         .then((tx) => tx?.wait())
         .then(() => {
           balance.refetch();
+          bakeStartBlock.refetch();
           setScore(BigNumber.from(0));
-          bakeryRefresh();
+          return refreshMutation.mutate();
         })
         .finally(() => {
           setIsServing(false);
@@ -138,7 +146,7 @@ const GamePage = () => {
     bakeStartBlock,
     bakeryContract,
     balance,
-    bakeryRefresh,
+    refreshMutation,
   ]);
 
   const onCookieClick = useCallback(
@@ -170,13 +178,38 @@ const GamePage = () => {
     [isBaking, score, isCookieMaxOut],
   );
 
+  const onBlockNumberSet = useCallback(
+    (block) => {
+      if (block > blockNumber) {
+        setBlockNumber(block);
+
+        const bakeEndBlock =
+          (bakeStartBlock?.data ?? 0) + maxNumberOfBlockReward;
+
+        console.log(
+          block,
+          bakeStartBlock?.data,
+          bakeEndBlock,
+          block >= bakeEndBlock,
+        );
+
+        if (bakeStartBlock?.data) {
+          setIsCookieMaxOut(block >= bakeEndBlock);
+        }
+      }
+    },
+    [blockNumber, bakeStartBlock?.data, maxNumberOfBlockReward],
+  );
+
   useEffect(() => {
     if (signer?.provider) {
-      signer.provider.getBlockNumber().then((bn) => {
-        setBlockNumber(bn);
+      signer.provider.removeAllListeners("block");
+      signer.provider.on("block", (block) => {
+        onBlockNumberSet(block);
       });
     }
-  }, [signer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onBlockNumberSet, signer]);
 
   useEffect(() => {
     setInitBalance(false);
@@ -185,30 +218,44 @@ const GamePage = () => {
   useEffect(() => {
     async function update() {
       let estScore = BigNumber.from(0);
-      if (isBaking && bakeStartBlock > 0) {
+      const startBlock = bakeStartBlock?.data || 0;
+      if (isBaking && startBlock > 0) {
         const blocks = Math.min(
           maxNumberOfBlockReward,
-          blockNumber - bakeStartBlock,
+          blockNumber - startBlock,
         );
-        estScore = cookiePerSecond?.data?.mul(blocks) ?? BigNumber.from(1);
-        setIsCookieBurned(blocks === maxNumberOfBlockReward);
+        const cps = BigNumber.from(cookiePerSecond?.data ?? BigNumber.from(1));
+        estScore = cps.mul(blocks) ?? BigNumber.from(1);
+        setIsCookieMaxOut(blocks === maxNumberOfBlockReward);
       }
       setScore(estScore);
       setInitBalance(true);
     }
 
-    if (!initBalance && !bakeryLoading && blockNumber) {
+    if (
+      !initBalance &&
+      !bakeryLoading &&
+      blockNumber &&
+      !bakeStartBlock?.isLoading &&
+      cookiePerSecond?.data
+    ) {
       update();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockNumber, bakeryLoading, onCookieIncrement]);
+  }, [
+    blockNumber,
+    bakeryLoading,
+    onCookieIncrement,
+    bakeStartBlock,
+    cookiePerSecond,
+  ]);
 
   useEffect(() => {
     if (!initBalance) {
       return;
     }
     const timeout = setInterval(() => {
-      onCookieIncrement(cookiePerSecond?.data?.div(10));
+      onCookieIncrement(BigNumber.from(cookiePerSecond?.data ?? 0).div(10));
     }, 100);
     return () => clearInterval(timeout);
   }, [initBalance, onCookieIncrement, cookiePerSecond]);
@@ -238,9 +285,19 @@ const GamePage = () => {
     );
   }
 
-  if (network?.[0].data?.chain?.id !== ChainId.Mumbai) {
+  if (
+    ![ChainId.Mumbai, ChainId.Polygon].includes(network?.[0].data?.chain?.id)
+  ) {
     return (
-      <Flex w="100vw" h="100vh" justifyContent="center" alignItems="center">
+      <Flex
+        w="100vw"
+        h="100vh"
+        justifyContent="center"
+        alignItems="center"
+        background={
+          "radial-gradient(circle, rgba(238,174,202,0.9) 0%, rgba(148,187,233,0.9) 100%)"
+        }
+      >
         <Box color="white">
           <Heading size="2xl" textAlign="center">
             Please connect to Polygon

@@ -37,7 +37,25 @@ export function useCookiePerSecond(address: string, contractAddress?: string) {
 
   return useQueryWithNetwork(
     bakeryKeys.cookiePerSecond(contractAddress, address),
-    () => contract?.totalReward(address, 1),
+    async () => {
+      const reward = (await contract?.totalReward(address, 1)) ?? 1;
+      return BigNumber.from(reward);
+    },
+    {
+      enabled: !!contract && !!contractAddress && !!address,
+    },
+  );
+}
+
+export function useBakeStartBlock(address: string, contractAddress?: string) {
+  const { contract } = useBakery();
+
+  return useQueryWithNetwork(
+    bakeryKeys.bakeStartBlock(contractAddress, address),
+    async () => {
+      const oven = await contract?.ovens(address);
+      return BigNumber.from(oven?.startBlock ?? 0).toNumber();
+    },
     {
       enabled: !!contract && !!contractAddress && !!address,
     },
@@ -102,42 +120,15 @@ export function useEditionDropActiveClaimCondition(
   );
 }
 
-export function useMintMutation(contractAddress?: string) {
-  const address = useAddress();
-  const editionDrop = useEditionDrop(contractAddress);
+export function useBakeryRefreshMutation() {
   const { refresh } = useBakery();
-
-  const toast = useToast();
-
   return useMutationWithInvalidate(
-    (data: EditionDropInput) => {
-      if (!address || !editionDrop) {
-        throw new Error("No address or Edition Drop");
-      }
-      return editionDrop.claim(data.tokenId, data.quantity);
+    async () => {
+      return await refresh();
     },
     {
       onSuccess: (_data, _variables, _options, invalidate) => {
-        toast({
-          title: "Successfuly minted.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-        refresh();
-        return invalidate([
-          editionDropKeys.list(contractAddress),
-          editionDropKeys.detail(contractAddress),
-        ]);
-      },
-      onError: (err) => {
-        toast({
-          title: "Minting failed",
-          description: parseError(err),
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-        });
+        return invalidate([bakeryKeys.all]);
       },
     },
   );
@@ -193,4 +184,12 @@ export function useBakerMarketBuy(
       },
     },
   );
+}
+
+export function useMintMutation(contractAddress?: string) {
+  const address = useAddress();
+  const editionDrop = useEditionDrop(contractAddress);
+  const { refresh } = useBakery();
+
+  const toast = useToast();
 }

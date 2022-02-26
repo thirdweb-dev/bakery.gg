@@ -3,7 +3,7 @@ import { useSigner, useToken } from "@thirdweb-dev/react";
 import { EditionMetadata } from "@thirdweb-dev/sdk";
 import { BigNumber, ethers } from "ethers";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BakerMarket__factory } from "../../types/ethers-contracts";
 import { CONTRACT_ADDRESSES } from "../constants/addresses";
 import { useActiveChainId } from "../hooks/useActiveChainId";

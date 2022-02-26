@@ -37,6 +37,12 @@ export const bakeryKeys = {
       "cookiePerClick",
       { address: userAddress },
     ] as const,
+  bakeStartBlock: (address = AddressZero, userAddress = AddressZero) =>
+    [
+      ...bakeryKeys.detail(address),
+      "bakeStartBlock",
+      { address: userAddress },
+    ] as const,
 };
 
 export const dropKeys = {
