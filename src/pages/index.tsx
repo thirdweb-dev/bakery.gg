@@ -12,6 +12,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ConnectWallet } from "../components/ConnectWallet";
 import {
+  useCookiePerClick,
+  useCookiePerSecond,
   useEditionDropList,
   useEditionDropOwned,
   useTokenBalance,
@@ -49,11 +51,17 @@ const GamePage = () => {
     loading: bakeryLoading,
     maxNumberOfBlockReward,
     bakeStartBlock,
-    cookiePerClick,
-    cookiePerSecond,
     isBaking,
     refresh: bakeryRefresh,
   } = useBakery();
+  const cookiePerSecond = useCookiePerSecond(
+    signerAddress || ethers.constants.AddressZero,
+    CONTRACT_ADDRESSES[ChainId.Mumbai].bakery,
+  );
+  const cookiePerClick = useCookiePerClick(
+    signerAddress || ethers.constants.AddressZero,
+    CONTRACT_ADDRESSES[ChainId.Mumbai].bakery,
+  );
   const bakers = useEditionDropList(CONTRACT_ADDRESSES[ChainId.Mumbai].bakers);
   const lands = useEditionDropList(CONTRACT_ADDRESSES[ChainId.Mumbai].lands);
   const upgrades = useEditionDropList(
@@ -137,7 +145,7 @@ const GamePage = () => {
     (_score) => {
       if (isBaking) {
         setClickCount(clickCount + 1);
-        setScore(_score.add(cookiePerClick));
+        setScore(_score.add(cookiePerClick?.data));
         setAnimateCookie(true);
         setAnimateCpc(true);
         setPendingClicks((clicks) => clicks + 1);
@@ -182,7 +190,7 @@ const GamePage = () => {
           maxNumberOfBlockReward,
           blockNumber - bakeStartBlock,
         );
-        estScore = cookiePerSecond.mul(blocks);
+        estScore = cookiePerSecond?.data?.mul(blocks) ?? BigNumber.from(1);
         setIsCookieBurned(blocks === maxNumberOfBlockReward);
       }
       setScore(estScore);
@@ -200,7 +208,7 @@ const GamePage = () => {
       return;
     }
     const timeout = setInterval(() => {
-      onCookieIncrement(cookiePerSecond.div(10));
+      onCookieIncrement(cookiePerSecond?.data?.div(10));
     }, 100);
     return () => clearInterval(timeout);
   }, [initBalance, onCookieIncrement, cookiePerSecond]);
@@ -313,14 +321,16 @@ const GamePage = () => {
               onClick={() => onCookieClick(score)}
               animateCookie={animateCookie}
               animateCpc={animateCpc}
-              cookiePerClick={cookiePerClick}
+              cookiePerClick={cookiePerClick?.data ?? BigNumber.from(1)}
               pendingClicks={pendingClicks}
             />
             <Heading as="h5" size="lg" my={2}>
-              {ethers.utils.formatUnits(cookiePerSecond)} cookies per second
+              {ethers.utils.formatUnits(cookiePerSecond?.data ?? 0)} cookies per
+              second
             </Heading>
             <Heading as="h5" size="lg">
-              {ethers.utils.formatUnits(cookiePerClick)} cookies per click
+              {ethers.utils.formatUnits(cookiePerClick?.data ?? 0)} cookies per
+              click
             </Heading>
           </Flex>
         </Card>

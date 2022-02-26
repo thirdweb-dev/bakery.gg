@@ -20,6 +20,25 @@ export const tokenKeys = {
     ] as const,
 };
 
+export const bakeryKeys = {
+  all: ["bakery"] as const,
+  details: () => [...bakeryKeys.all, "detail"] as const,
+  detail: (address = AddressZero) =>
+    [...bakeryKeys.details(), address] as const,
+  cookiePerSecond: (address = AddressZero, userAddress = AddressZero) =>
+    [
+      ...bakeryKeys.detail(address),
+      "cookiePerSecond",
+      { address: userAddress },
+    ] as const,
+  cookiePerClick: (address = AddressZero, userAddress = AddressZero) =>
+    [
+      ...bakeryKeys.detail(address),
+      "cookiePerClick",
+      { address: userAddress },
+    ] as const,
+};
+
 export const dropKeys = {
   all: ["drop"] as const,
   lists: () => [...dropKeys.all, "list"] as const,

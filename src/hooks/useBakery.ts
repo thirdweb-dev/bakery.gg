@@ -24,7 +24,7 @@ export function useBakery() {
   const [loading, setLoading] = useState(true);
 
   const contract = useMemo(() => {
-    if (chainId !== ChainId.Mumbai) {
+    if (chainId !== ChainId.Mumbai && chainId !== ChainId.Polygon) {
       return null;
     }
     if (!signer) {
@@ -34,9 +34,10 @@ export function useBakery() {
   }, [chainId, signer]);
 
   const refresh = useCallback(async () => {
-    if (!contract || !chainId) {
+    if (!contract || !chainId || loading) {
       return;
     }
+    setLoading(true);
 
     const rewardPerSec = (
       (await contract?.totalReward(
@@ -69,11 +70,13 @@ export function useBakery() {
     }
     setCookiePerSecond(rewardPerSec);
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contract, signerAddress, chainId]);
 
   useEffect(() => {
     refresh();
-  }, [refresh, contract, signerAddress, chainId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contract, signerAddress, chainId]);
 
   return {
     contract,

@@ -13,7 +13,7 @@ import {
 } from "./useQueryWithNetwork";
 import { useBakery } from "./useBakery";
 import { BakerMarket__factory } from "../../types/ethers-contracts";
-import { editionDropKeys, tokenKeys } from "../utils/cacheKeys";
+import { bakeryKeys, editionDropKeys, tokenKeys } from "../utils/cacheKeys";
 
 interface EditionDropInput {
   tokenId: BigNumberish;
@@ -28,6 +28,34 @@ export function useTokenBalance(address: string, contractAddress?: string) {
     () => token?.balanceOf(address),
     {
       enabled: !!token && !!contractAddress && !!address,
+    },
+  );
+}
+
+export function useCookiePerSecond(address: string, contractAddress?: string) {
+  const { contract } = useBakery();
+
+  return useQueryWithNetwork(
+    bakeryKeys.cookiePerSecond(contractAddress, address),
+    () => contract?.totalReward(address, 1),
+    {
+      enabled: !!contract && !!contractAddress && !!address,
+    },
+  );
+}
+
+export function useCookiePerClick(address: string, contractAddress?: string) {
+  const { contract } = useBakery();
+
+  return useQueryWithNetwork(
+    bakeryKeys.cookiePerClick(contractAddress, address),
+    async () => {
+      const rps = (await contract?.rewardPerSpice(address)) ?? 1;
+      const boost = (await contract?.spiceBoost(address)) ?? 1;
+      return BigNumber.from(rps).mul(boost);
+    },
+    {
+      enabled: !!contract && !!contractAddress && !!address,
     },
   );
 }
@@ -147,6 +175,7 @@ export function useBakerMarketBuy(
         });
         refresh();
         return invalidate([
+          bakeryKeys.all,
           editionDropKeys.list(bakerAddress),
           editionDropKeys.detail(bakerAddress),
           editionDropKeys.list(contractAddress),
