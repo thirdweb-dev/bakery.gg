@@ -115,7 +115,10 @@ export function useMintMutation(contractAddress?: string) {
   );
 }
 
-export function useBakerMarketBuy(contractAddress: string) {
+export function useBakerMarketBuy(
+  contractAddress: string,
+  bakerAddress: string,
+) {
   const address = useAddress();
   const signer = useSigner();
   const market = BakerMarket__factory.connect(
@@ -144,6 +147,8 @@ export function useBakerMarketBuy(contractAddress: string) {
         });
         refresh();
         return invalidate([
+          editionDropKeys.list(bakerAddress),
+          editionDropKeys.detail(bakerAddress),
           editionDropKeys.list(contractAddress),
           editionDropKeys.detail(contractAddress),
         ]);

@@ -31,6 +31,7 @@ export const Baker: React.FC<BakerProps> = ({
   );
   const mintBakerMutation = useBakerMarketBuy(
     CONTRACT_ADDRESSES[chainId ?? ChainId.Mumbai].markets,
+    CONTRACT_ADDRESSES[chainId ?? ChainId.Mumbai].bakers,
   );
   const token = useToken(CONTRACT_ADDRESSES[chainId ?? ChainId.Mumbai].cookies);
 
