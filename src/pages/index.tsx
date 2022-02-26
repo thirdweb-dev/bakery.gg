@@ -207,7 +207,15 @@ const GamePage = () => {
 
   if (!network?.[0].data.chain) {
     return (
-      <Flex w="100vw" h="100vh" justifyContent="center" alignItems="center">
+      <Flex
+        w="100vw"
+        h="100vh"
+        justifyContent="center"
+        alignItems="center"
+        background={
+          "radial-gradient(circle, rgba(238,174,202,0.9) 0%, rgba(148,187,233,0.9) 100%)"
+        }
+      >
         <Flex flexDir="column">
           <Heading size="2xl" textAlign="center" color="white">
             Welcome to the Bakery
