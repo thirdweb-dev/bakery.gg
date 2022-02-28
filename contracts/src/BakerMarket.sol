@@ -17,7 +17,7 @@ contract BakerMarket is AccessControl {
   mapping (uint256 => uint256) public tokenBaseCost;
 
   IERC20 constant private cookie = IERC20(0xeF960235b91E653327d82337e9329Ff7c85c917E);
-  ITokenERC1155 constant private baker = ITokenERC1155(0xF4A6BAda61996fEFDCf7a8027fdEA54B5086517e);
+  ITokenERC1155 constant private baker = ITokenERC1155(0xDEc98C282c50b95cB2525A56874BBf37055F5F92);
 
   constructor() {
     tokenBaseCost[0] = 15 ether;
