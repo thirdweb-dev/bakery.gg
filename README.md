@@ -1,6 +1,6 @@
 # Idle Game Cookie Clicker On-chain
 
 Uses:
-* [https://github.com/thirdweb-dev/typescript-sdk](thirdweb SDK)
-* [https://github.com/thirdweb-dev/react](thirdweb react SDK)
-* [https://github.com/thirdweb-dev/contracts](thirdweb contract SDK)
+* [thirdweb SDK](https://github.com/thirdweb-dev/typescript-sdk)
+* [thirdweb react SDK](https://github.com/thirdweb-dev/react])
+* [thirdweb contract SDK](https://github.com/thirdweb-dev/contracts)
